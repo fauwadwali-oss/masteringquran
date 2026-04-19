@@ -114,6 +114,12 @@
 }
 
 @layer base {
+  :root {
+    --app-font-scale: 1;
+  }
+  html {
+    font-size: calc(16px * var(--app-font-scale));
+  }
   * {
     @apply border-border outline-ring/50;
   }

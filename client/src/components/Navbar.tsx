@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import SettingsMenu from "@/components/SettingsMenu";
 
 export default function Navbar() {
     const location = useLocation();
@@ -119,6 +120,11 @@ export default function Navbar() {
                         <Sparkles className="h-3.5 w-3.5 text-emerald-500" />
                         Ask AI
                     </Link>
+                    <SettingsMenu />
+                </div>
+
+                <div className="flex items-center gap-1 md:hidden">
+                    <SettingsMenu />
                 </div>
 
                 <button

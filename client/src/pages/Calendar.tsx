@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SEO from "@/components/SEO";
+import MoonPhaseWidget from "@/components/MoonPhaseWidget";
 
 interface Event {
     name: string;
@@ -159,6 +160,9 @@ export default function CalendarPage() {
                             )}
                         </CardContent>
                     </Card>
+
+                    {/* Moon phase widget */}
+                    <MoonPhaseWidget />
 
                     {loadingCore && (
                         <div className="flex justify-center py-8">

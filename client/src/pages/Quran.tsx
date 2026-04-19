@@ -13,6 +13,7 @@ import WordByWordVerse, { QuranWord } from "@/components/WordByWordVerse";
 import TajweedText, { TajweedLegend } from "@/components/TajweedText";
 import ChapterInfoPanel from "@/components/ChapterInfoPanel";
 import SimilarVersesPanel from "@/components/SimilarVersesPanel";
+import CompareTranslationsModal from "@/components/CompareTranslationsModal";
 
 // Types
 interface Surah {
@@ -173,6 +174,9 @@ export default function Quran() {
 
     // Per-verse "show similar" toggle
     const [expandedSimilar, setExpandedSimilar] = useState<Set<string>>(new Set());
+
+    // Compare-translations modal — stores the verse_key currently being compared
+    const [compareKey, setCompareKey] = useState<string | null>(null);
     const toggleSimilar = (verseKey: string) => {
         setExpandedSimilar((prev) => {
             const next = new Set(prev);
@@ -1421,6 +1425,15 @@ export default function Quran() {
                                             <Sparkles className="h-4 w-4" />
                                             {expandedSimilar.has(`${verse.surahNumber}:${verse.number}`) ? "Hide similar" : "Similar verses"}
                                         </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setCompareKey(`${verse.surahNumber}:${verse.number}`)}
+                                            className="text-xs rounded-lg text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 gap-2"
+                                        >
+                                            <Languages className="h-4 w-4" />
+                                            Compare all 17
+                                        </Button>
                                     </div>
 
                                     {/* Similar verses panel (lazy-loaded per verse) */}
@@ -1433,6 +1446,9 @@ export default function Quran() {
                     </div>
                 )}
             </div>
+
+            {/* Compare translations modal */}
+            {compareKey && <CompareTranslationsModal verseKey={compareKey} onClose={() => setCompareKey(null)} />}
 
             {/* Floating Audio Player */}
             <div className="fixed bottom-0 left-0 right-0 z-50">

@@ -14,9 +14,13 @@ import Duas from "./pages/Duas";
 import Ramadan from "./pages/Ramadan";
 import CalendarPage from "./pages/Calendar";
 import Topics from "./pages/Topics";
+import About from "./pages/About";
+import FAQ from "./pages/FAQ";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+import UserPreferences from "./components/UserPreferences";
+import KeyboardShortcutsProvider from "./components/KeyboardShortcutsProvider";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
@@ -34,31 +38,36 @@ function Layout({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light">
-        <TooltipProvider>
-          <Toaster />
-          <BrowserRouter>
-            <ScrollToTop />
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/quran" element={<Quran />} />
-                <Route path="/hadith" element={<Hadith />} />
-                <Route path="/ask" element={<Ask />} />
-                <Route path="/prayer-times" element={<PrayerTimes />} />
-                <Route path="/qibla" element={<Qibla />} />
-                <Route path="/names" element={<Names />} />
-                <Route path="/duas" element={<Duas />} />
-                <Route path="/ramadan" element={<Ramadan />} />
-                <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/topics" element={<Topics />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          </BrowserRouter>
-        </TooltipProvider>
+      <ThemeProvider defaultTheme="light" switchable>
+        <UserPreferences>
+          <TooltipProvider>
+            <Toaster />
+            <BrowserRouter>
+              <ScrollToTop />
+              <KeyboardShortcutsProvider />
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/quran" element={<Quran />} />
+                  <Route path="/hadith" element={<Hadith />} />
+                  <Route path="/ask" element={<Ask />} />
+                  <Route path="/prayer-times" element={<PrayerTimes />} />
+                  <Route path="/qibla" element={<Qibla />} />
+                  <Route path="/names" element={<Names />} />
+                  <Route path="/duas" element={<Duas />} />
+                  <Route path="/ramadan" element={<Ramadan />} />
+                  <Route path="/calendar" element={<CalendarPage />} />
+                  <Route path="/topics" element={<Topics />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Layout>
+            </BrowserRouter>
+          </TooltipProvider>
+        </UserPreferences>
       </ThemeProvider>
     </ErrorBoundary>
   );

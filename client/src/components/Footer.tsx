@@ -20,14 +20,19 @@ export default function Footer() {
                         <Link to="/quran" className="hover:text-white transition-colors">Read the Quran</Link>
                         <Link to="/hadith" className="hover:text-white transition-colors">Browse Hadith</Link>
                         <Link to="/ask" className="hover:text-white transition-colors">Ask AI</Link>
+                        <Link to="/topics" className="hover:text-white transition-colors">Topics</Link>
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <h4 className="text-white font-semibold mb-4">Contact</h4>
-                    <p className="text-sm">
-                        Email: <a href="mailto:info@masteringquran.com" className="hover:text-white transition-colors">info@masteringquran.com</a>
-                    </p>
+                    <h4 className="text-white font-semibold mb-4">Project</h4>
+                    <div className="flex flex-col gap-2 text-sm">
+                        <Link to="/about" className="hover:text-white transition-colors">About</Link>
+                        <Link to="/faq" className="hover:text-white transition-colors">FAQ</Link>
+                        <a href="mailto:info@masteringquran.com" className="hover:text-white transition-colors">
+                            Contact
+                        </a>
+                    </div>
                 </div>
             </div>
 
