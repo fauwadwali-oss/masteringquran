@@ -21,6 +21,9 @@ import AuthCallback from "./pages/AuthCallback";
 import Bookmarks from "./pages/Bookmarks";
 import Notes from "./pages/Notes";
 import Memorize from "./pages/Memorize";
+import Plans from "./pages/Plans";
+import Quiz from "./pages/Quiz";
+import Flashcards from "./pages/Flashcards";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -70,6 +73,9 @@ function App() {
                     <Route path="/bookmarks" element={<Bookmarks />} />
                     <Route path="/notes" element={<Notes />} />
                     <Route path="/memorize" element={<Memorize />} />
+                    <Route path="/plans" element={<Plans />} />
+                    <Route path="/quiz" element={<Quiz />} />
+                    <Route path="/flashcards" element={<Flashcards />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="*" element={<NotFound />} />

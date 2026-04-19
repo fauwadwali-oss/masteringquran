@@ -17,6 +17,7 @@ import CompareTranslationsModal from "@/components/CompareTranslationsModal";
 import VerseActionsModal from "@/components/VerseActionsModal";
 import { useAuth } from "@/contexts/AuthContext";
 import * as bmQuery from "@/lib/queries/bookmarks";
+import { recordReading } from "@/lib/queries/streak";
 
 // Types
 interface Surah {
@@ -347,6 +348,12 @@ export default function Quran() {
             if (Array.isArray(data.verses)) {
                 setVerses(mapQuranComVerses(data.verses));
                 localStorage.setItem("lastViewedSurah", currentSurah.number.toString());
+                // Fire-and-forget: record today's reading activity for streak tracking
+                if (user) {
+                    const firstVerse = data.verses[0];
+                    const vkey = firstVerse?.verse_key || `${currentSurah.number}:1`;
+                    recordReading(user.id, vkey).catch(() => { });
+                }
             } else {
                 setError("Failed to fetch verses");
             }

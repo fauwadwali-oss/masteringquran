@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { BookOpen, Library, Sparkles, ArrowDown, Volume2, Layers, Languages, Search, Clock, Compass, Star, Heart } from "lucide-react";
+import { BookOpen, Library, Sparkles, ArrowDown, Volume2, Layers, Languages, Search, Clock, Compass, Star, Heart, Calendar, Target, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
 import TodayStrip from "@/components/TodayStrip";
+import ReadingPaceWidget from "@/components/ReadingPaceWidget";
 
 export default function Home() {
     return (
@@ -72,6 +73,11 @@ export default function Home() {
                     </div>
                 </div>
             </section>
+
+            {/* Reading pace widget — only shows when signed in */}
+            <div className="max-w-6xl mx-auto px-6 pt-10">
+                <ReadingPaceWidget />
+            </div>
 
             {/* Today strip — Verse, Hadith, Dua, Name of the day */}
             <TodayStrip />
@@ -196,6 +202,43 @@ export default function Home() {
                                     </div>
                                     <h3 className="font-semibold text-slate-900 dark:text-white">Duas</h3>
                                     <p className="text-sm text-slate-500 dark:text-slate-400">126 authentic supplications across 27 categories — morning, travel, and more.</p>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    </div>
+
+                    {/* Practice & plans row */}
+                    <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                        <Link to="/plans" className="group">
+                            <Card className="h-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-emerald-400 hover:shadow-xl transition-all hover:-translate-y-1">
+                                <CardContent className="p-6 space-y-3">
+                                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl flex items-center justify-center">
+                                        <Calendar className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                                    </div>
+                                    <h3 className="font-semibold text-slate-900 dark:text-white">Reading Plans</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">30-day, Ramadan, weekly, and themed plans to sustain your reading.</p>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                        <Link to="/quiz" className="group">
+                            <Card className="h-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-400 hover:shadow-xl transition-all hover:-translate-y-1">
+                                <CardContent className="p-6 space-y-3">
+                                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/40 rounded-xl flex items-center justify-center">
+                                        <Trophy className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                    </div>
+                                    <h3 className="font-semibold text-slate-900 dark:text-white">Quiz</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Test your recognition of verses and 99 Names of Allah.</p>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                        <Link to="/flashcards" className="group">
+                            <Card className="h-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-amber-400 hover:shadow-xl transition-all hover:-translate-y-1">
+                                <CardContent className="p-6 space-y-3">
+                                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 rounded-xl flex items-center justify-center">
+                                        <Target className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                                    </div>
+                                    <h3 className="font-semibold text-slate-900 dark:text-white">Flash Cards</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Practice 99 Names, Arabic roots, and Surah names.</p>
                                 </CardContent>
                             </Card>
                         </Link>
