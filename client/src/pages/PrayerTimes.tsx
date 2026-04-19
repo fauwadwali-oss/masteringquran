@@ -3,6 +3,7 @@ import { Loader2, AlertCircle, MapPin, Moon, Sun, Sunrise, Sunset } from "lucide
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SEO from "@/components/SEO";
 
 interface Location {
@@ -58,6 +59,13 @@ const PRAYER_ORDER: { key: keyof PrayerTimes; label: string; icon: typeof Sunris
     { key: "isha", label: "Isha", icon: Moon },
 ];
 
+interface MonthDay {
+    day: number;
+    date: string;
+    day_name?: string;
+    prayer_times: PrayerTimes;
+}
+
 export default function PrayerTimes() {
     const [location, setLocation] = useState<Location | null>(null);
     const [data, setData] = useState<PrayerData | null>(null);
@@ -66,6 +74,11 @@ export default function PrayerTimes() {
     const [method, setMethod] = useState("MuslimWorldLeague");
     const [madhab, setMadhab] = useState("Shafi");
     const [hijri, setHijri] = useState<string | null>(null);
+
+    // Month view
+    const [mode, setMode] = useState<"today" | "month">("today");
+    const [monthDays, setMonthDays] = useState<MonthDay[]>([]);
+    const [monthLoading, setMonthLoading] = useState(false);
 
     const requestLocation = () => {
         setError(null);
@@ -127,6 +140,24 @@ export default function PrayerTimes() {
             .catch(() => { });
     }, []);
 
+    // Fetch monthly table when mode switches to month
+    useEffect(() => {
+        if (!location || mode !== "month") return;
+        setMonthLoading(true);
+        const now = new Date();
+        const url = `https://ummahapi.com/api/prayer-times/month?latitude=${location.latitude}&longitude=${location.longitude}&madhab=${madhab}&method=${method}&month=${now.getMonth() + 1}&year=${now.getFullYear()}`;
+        fetch(url)
+            .then(async (r) => {
+                if (!r.ok) throw new Error("failed");
+                const d: any = await r.json();
+                const payload = d.data || d;
+                const rawDays = payload.prayer_times || payload.days || [];
+                setMonthDays(Array.isArray(rawDays) ? rawDays : []);
+            })
+            .catch(() => setMonthDays([]))
+            .finally(() => setMonthLoading(false));
+    }, [location, mode, method, madhab]);
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-indigo-50/30 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 font-sans">
             <SEO
@@ -163,6 +194,14 @@ export default function PrayerTimes() {
 
                     {location && (
                         <>
+                            {/* View mode tabs */}
+                            <Tabs value={mode} onValueChange={(v) => setMode(v as "today" | "month")} className="w-full mb-6">
+                                <TabsList className="grid grid-cols-2 max-w-xs mx-auto bg-indigo-50 dark:bg-indigo-950/30 p-1 rounded-xl">
+                                    <TabsTrigger value="today" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 rounded-lg">Today</TabsTrigger>
+                                    <TabsTrigger value="month" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 rounded-lg">This Month</TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+
                             {/* Controls */}
                             <div className="grid sm:grid-cols-2 gap-4 mb-6">
                                 <div className="space-y-2">
@@ -207,7 +246,7 @@ export default function PrayerTimes() {
                                 </div>
                             )}
 
-                            {data && !loading && (
+                            {mode === "today" && data && !loading && (
                                 <>
                                     <div className="flex flex-wrap items-center justify-between gap-2 mb-5 text-xs text-slate-500 dark:text-slate-400">
                                         <span>{data.date} · {data.timezone}</span>
@@ -253,6 +292,54 @@ export default function PrayerTimes() {
                                             Update location
                                         </Button>
                                     </div>
+                                </>
+                            )}
+
+                            {/* Monthly table */}
+                            {mode === "month" && (
+                                <>
+                                    {monthLoading ? (
+                                        <div className="flex flex-col items-center justify-center py-16 gap-3">
+                                            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                                            <p className="text-slate-500 text-sm">Loading the month…</p>
+                                        </div>
+                                    ) : monthDays.length === 0 ? (
+                                        <div className="text-center py-8 text-slate-500">No timetable available for this month.</div>
+                                    ) : (
+                                        <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-sm">
+                                                    <thead className="bg-slate-50 dark:bg-slate-800/60">
+                                                        <tr>
+                                                            <th className="text-left px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Date</th>
+                                                            <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Fajr</th>
+                                                            <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300 hidden sm:table-cell">Sunrise</th>
+                                                            <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Dhuhr</th>
+                                                            <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Asr</th>
+                                                            <th className="text-right px-3 py-3 font-semibold text-indigo-700 dark:text-indigo-400">Maghrib</th>
+                                                            <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Isha</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {monthDays.map((d, i) => (
+                                                            <tr key={i} className="border-t border-slate-100 dark:border-slate-800 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/10">
+                                                                <td className="px-3 py-2">
+                                                                    <div className="font-medium text-slate-900 dark:text-white">{d.day}</div>
+                                                                    <div className="text-[11px] text-slate-400">{d.day_name || ""}</div>
+                                                                </td>
+                                                                <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300">{d.prayer_times?.fajr || "—"}</td>
+                                                                <td className="px-3 py-2 text-right font-mono text-slate-500 hidden sm:table-cell">{d.prayer_times?.sunrise || "—"}</td>
+                                                                <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300">{d.prayer_times?.dhuhr || "—"}</td>
+                                                                <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300">{d.prayer_times?.asr || "—"}</td>
+                                                                <td className="px-3 py-2 text-right font-mono font-semibold text-indigo-700 dark:text-indigo-400">{d.prayer_times?.maghrib || "—"}</td>
+                                                                <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300">{d.prayer_times?.isha || "—"}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </Card>
+                                    )}
                                 </>
                             )}
                         </>

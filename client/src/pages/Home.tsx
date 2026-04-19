@@ -3,6 +3,7 @@ import { BookOpen, Library, Sparkles, ArrowDown, Volume2, Layers, Languages, Sea
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
+import TodayStrip from "@/components/TodayStrip";
 
 export default function Home() {
     return (
@@ -71,6 +72,9 @@ export default function Home() {
                     </div>
                 </div>
             </section>
+
+            {/* Today strip — Verse, Hadith, Dua, Name of the day */}
+            <TodayStrip />
 
             {/* Tool tiles */}
             <section id="tools" className="py-16 px-6 bg-gradient-to-b from-white via-emerald-50/30 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">

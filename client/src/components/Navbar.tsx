@@ -112,6 +112,8 @@ export default function Navbar() {
                     <Link to="/qibla" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Qibla</Link>
                     <Link to="/names" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>99 Names</Link>
                     <Link to="/duas" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Duas</Link>
+                    <Link to="/ramadan" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Ramadan</Link>
+                    <Link to="/calendar" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Calendar</Link>
                     <Link to="/ask" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>
                         <Sparkles className="h-4 w-4 text-emerald-500" /> Ask AI
                     </Link>

@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import SEO from "@/components/SEO";
 import TafsirPanel from "@/components/TafsirPanel";
 import WordByWordVerse, { QuranWord } from "@/components/WordByWordVerse";
+import TajweedText, { TajweedLegend } from "@/components/TajweedText";
+import ChapterInfoPanel from "@/components/ChapterInfoPanel";
 
 // Types
 interface Surah {
@@ -34,6 +36,7 @@ interface VerseData {
     surahNumber: number;
     globalNumber: number;
     arabic: string;
+    arabicTajweed?: string;
     english: string;
     urdu: string;
     audio?: string;
@@ -140,8 +143,9 @@ export default function Quran() {
     const [secondaryTranslation, setSecondaryTranslation] = useState("57");
 
     // Navigation state
-    const [viewMode, setViewMode] = useState<"surah" | "juz" | "page">("surah");
+    const [viewMode, setViewMode] = useState<"surah" | "juz" | "hizb" | "page">("surah");
     const [currentJuz, setCurrentJuz] = useState(1);
+    const [currentHizb, setCurrentHizb] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
 
     // Bookmarks state
@@ -155,6 +159,9 @@ export default function Quran() {
 
     // Word-by-word mode
     const [showWordByWord, setShowWordByWord] = useState(false);
+
+    // Tajweed mode (color-coded tajweed rules)
+    const [showTajweed, setShowTajweed] = useState(false);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -239,10 +246,12 @@ export default function Quran() {
             fetchSurahVerses();
         } else if (viewMode === "juz") {
             fetchJuzVerses();
+        } else if (viewMode === "hizb") {
+            fetchHizbVerses();
         } else if (viewMode === "page") {
             fetchPageVerses();
         }
-    }, [currentSurah, viewMode, currentJuz, currentPage, selectedReciter, selectedTranslation, secondaryTranslation]);
+    }, [currentSurah, viewMode, currentJuz, currentHizb, currentPage, selectedReciter, selectedTranslation, secondaryTranslation]);
 
     // Map Quran.com verses payload to our VerseData shape
     const mapQuranComVerses = (verses: any[]): VerseData[] =>
@@ -255,6 +264,7 @@ export default function Quran() {
                 surahNumber: surahNum,
                 globalNumber: v.id,
                 arabic: v.text_uthmani || "",
+                arabicTajweed: v.text_uthmani_tajweed || undefined,
                 english: cleanTranslation(primary?.text),
                 urdu: cleanTranslation(secondary?.text),
                 audio: normalizeAudioUrl(v.audio?.url),
@@ -270,7 +280,7 @@ export default function Quran() {
         setError(null);
         try {
             const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_chapter/${currentSurah.number}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
+                `https://api.quran.com/api/v4/verses/by_chapter/${currentSurah.number}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
             );
             const data = await response.json();
 
@@ -292,7 +302,7 @@ export default function Quran() {
         setError(null);
         try {
             const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_juz/${currentJuz}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
+                `https://api.quran.com/api/v4/verses/by_juz/${currentJuz}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
             );
             const data = await response.json();
 
@@ -313,7 +323,7 @@ export default function Quran() {
         setError(null);
         try {
             const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_page/${currentPage}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=50`
+                `https://api.quran.com/api/v4/verses/by_page/${currentPage}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=50`
             );
             const data = await response.json();
 
@@ -324,6 +334,27 @@ export default function Quran() {
             }
         } catch (err) {
             setError("An error occurred while fetching page");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchHizbVerses = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(
+                `https://api.quran.com/api/v4/verses/by_hizb/${currentHizb}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
+            );
+            const data = await response.json();
+
+            if (Array.isArray(data.verses)) {
+                setVerses(mapQuranComVerses(data.verses));
+            } else {
+                setError("Failed to fetch Hizb");
+            }
+        } catch (err) {
+            setError("An error occurred while fetching Hizb");
         } finally {
             setLoading(false);
         }
@@ -679,28 +710,19 @@ export default function Quran() {
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/80 dark:border-slate-800 p-6 mb-8">
 
                     {/* View Mode Tabs */}
-                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "surah" | "juz" | "page")} className="w-full mb-6">
-                        <TabsList className="grid w-full grid-cols-3 max-w-sm mx-auto bg-emerald-50 dark:bg-emerald-950/30 p-1 rounded-xl">
-                            <TabsTrigger
-                                value="surah"
-                                className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all"
-                            >
-                                <BookOpen className="w-4 h-4 mr-2" />
-                                Surah
+                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "surah" | "juz" | "hizb" | "page")} className="w-full mb-6">
+                        <TabsList className="grid w-full grid-cols-4 max-w-md mx-auto bg-emerald-50 dark:bg-emerald-950/30 p-1 rounded-xl">
+                            <TabsTrigger value="surah" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-xs md:text-sm">
+                                <BookOpen className="w-4 h-4 mr-1" /> Surah
                             </TabsTrigger>
-                            <TabsTrigger
-                                value="juz"
-                                className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all"
-                            >
-                                <Layers className="w-4 h-4 mr-2" />
-                                Juz
+                            <TabsTrigger value="juz" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-xs md:text-sm">
+                                <Layers className="w-4 h-4 mr-1" /> Juz
                             </TabsTrigger>
-                            <TabsTrigger
-                                value="page"
-                                className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all"
-                            >
-                                <BookOpen className="w-4 h-4 mr-2" />
-                                Page
+                            <TabsTrigger value="hizb" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-xs md:text-sm">
+                                <Layers className="w-4 h-4 mr-1" /> Hizb
+                            </TabsTrigger>
+                            <TabsTrigger value="page" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-xs md:text-sm">
+                                <BookOpen className="w-4 h-4 mr-1" /> Page
                             </TabsTrigger>
                         </TabsList>
                     </Tabs>
@@ -768,6 +790,39 @@ export default function Quran() {
                             </div>
                         )}
 
+                        {viewMode === "hizb" && (
+                            <div className="flex items-center gap-3">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => setCurrentHizb(Math.max(1, currentHizb - 1))}
+                                    disabled={currentHizb === 1}
+                                    className="h-12 w-12 rounded-xl shadow-sm"
+                                >
+                                    <ChevronLeft className="h-5 w-5" />
+                                </Button>
+                                <Select value={currentHizb.toString()} onValueChange={(v) => setCurrentHizb(parseInt(v))}>
+                                    <SelectTrigger className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-[300px]">
+                                        {Array.from({ length: 60 }, (_, i) => i + 1).map((hizb) => (
+                                            <SelectItem key={hizb} value={hizb.toString()}>Hizb {hizb}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => setCurrentHizb(Math.min(60, currentHizb + 1))}
+                                    disabled={currentHizb === 60}
+                                    className="h-12 w-12 rounded-xl shadow-sm"
+                                >
+                                    <ChevronRight className="h-5 w-5" />
+                                </Button>
+                            </div>
+                        )}
+
                         {viewMode === "page" && (
                             <div className="flex items-center gap-3">
                                 <Button
@@ -803,6 +858,16 @@ export default function Quran() {
                             </div>
                         )}
 
+                        <Button
+                            variant={showTajweed ? "default" : "outline"}
+                            onClick={() => setShowTajweed(!showTajweed)}
+                            className={`h-12 px-5 rounded-xl gap-2 transition-all ${
+                                showTajweed ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-500/30' : 'hover:bg-rose-50 dark:hover:bg-rose-900/20'
+                            }`}
+                        >
+                            <Star className="h-5 w-5" />
+                            <span className="hidden sm:inline">Tajweed</span>
+                        </Button>
                         <Button
                             variant={showWordByWord ? "default" : "outline"}
                             onClick={() => setShowWordByWord(!showWordByWord)}
@@ -976,6 +1041,17 @@ export default function Quran() {
                     </div>
                 )}
 
+                {viewMode === "hizb" && (
+                    <div className="text-center mb-10">
+                        <div className="inline-block bg-white dark:bg-slate-900 rounded-2xl px-10 py-6 shadow-xl shadow-emerald-500/5 border border-emerald-100 dark:border-slate-800">
+                            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
+                                Hizb {currentHizb}
+                            </h2>
+                            <p className="text-slate-500 mt-1">{verses.length} verses</p>
+                        </div>
+                    </div>
+                )}
+
                 {viewMode === "page" && (
                     <div className="text-center mb-10">
                         <div className="inline-block bg-white dark:bg-slate-900 rounded-2xl px-10 py-6 shadow-xl shadow-emerald-500/5 border border-emerald-100 dark:border-slate-800">
@@ -1008,6 +1084,21 @@ export default function Quran() {
                     </div>
                 ) : (
                     <div className="space-y-5">
+                        {/* Chapter info (surah mode only) */}
+                        {viewMode === "surah" && currentSurah && (
+                            <ChapterInfoPanel surahNumber={currentSurah.number} surahName={currentSurah.englishName} />
+                        )}
+
+                        {/* Tajweed legend */}
+                        {showTajweed && (
+                            <div className="p-4 rounded-xl bg-rose-50/60 dark:bg-rose-950/10 border border-rose-100 dark:border-rose-900/30">
+                                <p className="text-xs font-semibold text-rose-700 dark:text-rose-400 uppercase tracking-wider mb-2">
+                                    Tajweed rules
+                                </p>
+                                <TajweedLegend />
+                            </div>
+                        )}
+
                         {/* Bismillah */}
                         {viewMode === "surah" && currentSurah?.number !== 1 && currentSurah?.number !== 9 && (
                             <div className="text-center py-10 mb-4">
@@ -1081,6 +1172,11 @@ export default function Quran() {
                                     <div className="text-right py-6 px-4 bg-gradient-to-r from-transparent via-emerald-50/50 to-emerald-50 dark:via-emerald-950/20 dark:to-emerald-950/30 rounded-xl">
                                         {showWordByWord && verse.words && verse.words.length ? (
                                             <WordByWordVerse words={verse.words} />
+                                        ) : showTajweed && verse.arabicTajweed ? (
+                                            <TajweedText
+                                                html={verse.arabicTajweed}
+                                                className="font-amiri text-3xl md:text-4xl lg:text-[2.75rem] leading-[2.8] text-slate-900 dark:text-slate-100 selection:bg-emerald-200 dark:selection:bg-emerald-800"
+                                            />
                                         ) : (
                                             <p
                                                 className="font-amiri text-3xl md:text-4xl lg:text-[2.75rem] leading-[2.8] text-slate-900 dark:text-slate-100 selection:bg-emerald-200 dark:selection:bg-emerald-800"

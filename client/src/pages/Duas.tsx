@@ -32,6 +32,30 @@ export default function Duas() {
     const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState("");
 
+    // Global search results (when no category selected and search is non-empty)
+    const [globalResults, setGlobalResults] = useState<Dua[]>([]);
+    const [globalSearching, setGlobalSearching] = useState(false);
+
+    // Debounced global search across ALL duas when on picker view
+    useEffect(() => {
+        if (selected || !search.trim()) {
+            setGlobalResults([]);
+            return;
+        }
+        const timer = setTimeout(() => {
+            setGlobalSearching(true);
+            fetch(`https://ummahapi.com/api/duas/search?q=${encodeURIComponent(search)}`)
+                .then(async (r) => {
+                    if (!r.ok) throw new Error("failed");
+                    const d: any = await r.json();
+                    setGlobalResults(d.data?.results || []);
+                })
+                .catch(() => setGlobalResults([]))
+                .finally(() => setGlobalSearching(false));
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [search, selected]);
+
     useEffect(() => {
         fetch("https://ummahapi.com/api/duas/categories")
             .then(async (r) => {
@@ -137,7 +161,7 @@ export default function Duas() {
                         </div>
                     )}
 
-                    {/* Category picker */}
+                    {/* Category picker + global search */}
                     {!selected && (
                         <>
                             {loadingCats ? (
@@ -145,7 +169,47 @@ export default function Duas() {
                                     <Loader2 className="h-10 w-10 animate-spin text-teal-600" />
                                     <p className="text-slate-500">Loading categories…</p>
                                 </div>
+                            ) : search.trim() ? (
+                                /* Global search mode */
+                                <>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                                            {globalSearching ? "Searching…" : `${globalResults.length} ${globalResults.length === 1 ? "dua matches" : "duas match"} "${search}"`}
+                                        </p>
+                                        {globalSearching && <Loader2 className="h-4 w-4 animate-spin text-teal-600" />}
+                                    </div>
+                                    {!globalSearching && globalResults.length === 0 && (
+                                        <Card className="p-12 text-center">
+                                            <p className="text-slate-500">No duas match this search. Try different keywords or browse by category below.</p>
+                                        </Card>
+                                    )}
+                                    <div className="space-y-4">
+                                        {globalResults.map((d) => (
+                                            <Card key={d.id} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                                                <CardContent className="p-6 space-y-3">
+                                                    <div className="flex items-start justify-between gap-3 flex-wrap">
+                                                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{d.title}</h3>
+                                                        <span className="text-xs bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 px-2 py-1 rounded-full border border-teal-200 dark:border-teal-900/40">
+                                                            {d.category}
+                                                        </span>
+                                                    </div>
+                                                    <p className="font-amiri text-xl leading-loose text-slate-900 dark:text-slate-100 text-right" dir="rtl">
+                                                        {d.arabic}
+                                                    </p>
+                                                    <p className="text-sm italic text-slate-500 dark:text-slate-400">{d.transliteration}</p>
+                                                    <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm">{d.translation}</p>
+                                                    {d.source && (
+                                                        <p className="text-xs text-slate-400 dark:text-slate-500 font-mono pt-2 border-t border-slate-100 dark:border-slate-800">
+                                                            Source: {d.source}
+                                                        </p>
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                </>
                             ) : (
+                                /* Category grid */
                                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {filteredCats.map((c) => (
                                         <Card

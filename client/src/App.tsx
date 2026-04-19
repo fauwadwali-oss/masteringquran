@@ -11,6 +11,8 @@ import PrayerTimes from "./pages/PrayerTimes";
 import Qibla from "./pages/Qibla";
 import Names from "./pages/Names";
 import Duas from "./pages/Duas";
+import Ramadan from "./pages/Ramadan";
+import CalendarPage from "./pages/Calendar";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -46,6 +48,8 @@ function App() {
                 <Route path="/qibla" element={<Qibla />} />
                 <Route path="/names" element={<Names />} />
                 <Route path="/duas" element={<Duas />} />
+                <Route path="/ramadan" element={<Ramadan />} />
+                <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="*" element={<NotFound />} />
