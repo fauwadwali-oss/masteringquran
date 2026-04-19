@@ -12,7 +12,7 @@ const MORE_GROUPS: Array<{ label: string; items: Array<{ to: string; label: stri
         label: "Daily practice",
         items: [
             { to: "/prayer-times", label: "Prayer Times", emoji: "🕌" },
-            { to: "/qibla", label: "Qibla Direction", emoji: "🧭" },
+            { to: "/qibla", label: "Qibla", emoji: "🧭" },
             { to: "/duas", label: "Duas", emoji: "🤲" },
             { to: "/ramadan", label: "Ramadan", emoji: "🌙" },
         ],
@@ -23,6 +23,15 @@ const MORE_GROUPS: Array<{ label: string; items: Array<{ to: string; label: stri
             { to: "/names", label: "99 Names", emoji: "✨" },
             { to: "/calendar", label: "Calendar", emoji: "📅" },
             { to: "/topics", label: "Topics", emoji: "💡" },
+            { to: "/glossary", label: "Glossary", emoji: "📚" },
+        ],
+    },
+    {
+        label: "Learn",
+        items: [
+            { to: "/prophets", label: "Stories of Prophets", emoji: "🕯️" },
+            { to: "/seerah", label: "Seerah", emoji: "📜" },
+            { to: "/hajj", label: "Hajj & Umrah", emoji: "🕋" },
         ],
     },
     {
@@ -84,8 +93,8 @@ export default function Navbar() {
                                 More <ChevronDown className="h-3.5 w-3.5" />
                             </button>
                         </PopoverTrigger>
-                        <PopoverContent align="end" sideOffset={10} className="w-[480px] p-0">
-                            <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800">
+                        <PopoverContent align="end" sideOffset={10} className="w-[640px] p-0">
+                            <div className="grid grid-cols-4 divide-x divide-slate-100 dark:divide-slate-800">
                                 {MORE_GROUPS.map((group) => (
                                     <div key={group.label} className="p-3 space-y-1">
                                         <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 px-2 pb-1">

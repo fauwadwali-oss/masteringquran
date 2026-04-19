@@ -24,6 +24,10 @@ import Memorize from "./pages/Memorize";
 import Plans from "./pages/Plans";
 import Quiz from "./pages/Quiz";
 import Flashcards from "./pages/Flashcards";
+import Prophets from "./pages/Prophets";
+import Seerah from "./pages/Seerah";
+import Glossary from "./pages/Glossary";
+import HajjPage from "./pages/Hajj";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -76,6 +80,10 @@ function App() {
                     <Route path="/plans" element={<Plans />} />
                     <Route path="/quiz" element={<Quiz />} />
                     <Route path="/flashcards" element={<Flashcards />} />
+                    <Route path="/prophets" element={<Prophets />} />
+                    <Route path="/seerah" element={<Seerah />} />
+                    <Route path="/glossary" element={<Glossary />} />
+                    <Route path="/hajj" element={<HajjPage />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="*" element={<NotFound />} />

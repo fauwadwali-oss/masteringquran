@@ -76,6 +76,26 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://masteringquran.com/prophets</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/seerah</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/glossary</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/hajj</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://masteringquran.com/ask</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
