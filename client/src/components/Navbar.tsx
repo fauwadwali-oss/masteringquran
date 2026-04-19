@@ -30,7 +30,6 @@ const MORE_GROUPS: Array<{ label: string; items: Array<{ to: string; label: stri
     {
         label: "Learn",
         items: [
-            { to: "/learn-arabic", label: "Learn Arabic", emoji: "🔤" },
             { to: "/prophets", label: "Stories of Prophets", emoji: "🕯️" },
             { to: "/seerah", label: "Seerah", emoji: "📜" },
             { to: "/hajj", label: "Hajj & Umrah", emoji: "🕋" },
@@ -83,6 +82,15 @@ export default function Navbar() {
                         className={cn("hover:opacity-80 transition-opacity", location.pathname === "/hadith" && "opacity-100")}
                     >
                         Hadith
+                    </Link>
+                    <Link
+                        to="/learn-arabic"
+                        className={cn(
+                            "hover:opacity-80 transition-opacity",
+                            location.pathname.startsWith("/learn-arabic") && "opacity-100 text-emerald-700 dark:text-emerald-400",
+                        )}
+                    >
+                        Learn Arabic
                     </Link>
 
                     {/* More dropdown */}
@@ -161,6 +169,7 @@ export default function Navbar() {
                     <Link to="/" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Home</Link>
                     <Link to="/quran" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Quran</Link>
                     <Link to="/hadith" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Hadith</Link>
+                    <Link to="/learn-arabic" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Learn Arabic</Link>
                     <Link to="/ask" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>
                         <Sparkles className="h-4 w-4 text-emerald-500" /> Ask AI
                     </Link>

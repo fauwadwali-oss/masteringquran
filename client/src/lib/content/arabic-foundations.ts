@@ -366,10 +366,15 @@ export interface Lesson {
 }
 
 export const LESSONS: Lesson[] = [
+    // Milestone 1, Noorani Qaida foundations
     { id: "letters", number: 1, slug: "letters", title: "The 28 Arabic Letters", subtitle: "Learn each letter, its name, sound, and articulation point.", estimatedMinutes: 15, emoji: "🔤" },
     { id: "shapes", number: 2, slug: "shapes", title: "Letter Shapes", subtitle: "How letters change form depending on position in a word (isolated, initial, medial, final).", estimatedMinutes: 10, emoji: "✍️" },
     { id: "harakat", number: 3, slug: "harakat", title: "Harakat, The Vowel Marks", subtitle: "Fatha, kasra, damma, sukun, the marks that give letters their vowel sounds.", estimatedMinutes: 10, emoji: "◌" },
     { id: "tanween-madd", number: 4, slug: "tanween-madd", title: "Tanween & Madd", subtitle: "Nunation (the 'n' sound) and elongation (holding the vowel).", estimatedMinutes: 10, emoji: "⏱️" },
     { id: "tajweed", number: 5, slug: "tajweed", title: "Essential Tajweed Rules", subtitle: "The five foundational rules of Quranic recitation.", estimatedMinutes: 15, emoji: "🎶" },
     { id: "first-surah", number: 6, slug: "first-surah", title: "Read Your First Surah", subtitle: "Apply everything you learned to recite Surah An-Nas, word by word.", estimatedMinutes: 15, emoji: "🎓" },
+    // Milestone 2, vocabulary
+    { id: "vocabulary", number: 7, slug: "vocabulary", title: "Quranic Vocabulary", subtitle: "175 most common Quranic words in 11 themes, covering ~70% of what you'll read.", estimatedMinutes: 30, emoji: "📚" },
+    // Milestone 3, grammar
+    { id: "grammar", number: 8, slug: "grammar", title: "Grammar Basics", subtitle: "Pronouns, the definite article, verb tenses, noun cases, possessive suffixes.", estimatedMinutes: 25, emoji: "🧩" },
 ];

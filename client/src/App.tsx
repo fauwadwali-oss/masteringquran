@@ -38,6 +38,8 @@ import LearnHarakat from "./pages/learn/Harakat";
 import LearnTanweenMadd from "./pages/learn/TanweenMadd";
 import LearnTajweed from "./pages/learn/Tajweed";
 import LearnFirstSurah from "./pages/learn/FirstSurah";
+import LearnVocabulary from "./pages/learn/Vocabulary";
+import LearnGrammar from "./pages/learn/Grammar";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -104,6 +106,8 @@ function App() {
                     <Route path="/learn-arabic/tanween-madd" element={<LearnTanweenMadd />} />
                     <Route path="/learn-arabic/tajweed" element={<LearnTajweed />} />
                     <Route path="/learn-arabic/first-surah" element={<LearnFirstSurah />} />
+                    <Route path="/learn-arabic/vocabulary" element={<LearnVocabulary />} />
+                    <Route path="/learn-arabic/grammar" element={<LearnGrammar />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="*" element={<NotFound />} />
