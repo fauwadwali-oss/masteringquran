@@ -18,7 +18,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Desktop Menu */}
-                <div className="hidden md:flex gap-6 text-sm font-medium">
+                <div className="hidden md:flex gap-4 lg:gap-5 text-sm font-medium">
                     <Link
                         to="/"
                         className={cn(
@@ -54,6 +54,24 @@ export default function Navbar() {
                         )}
                     >
                         Prayers
+                    </Link>
+                    <Link
+                        to="/qibla"
+                        className={cn(
+                            "hover:opacity-80 transition-opacity",
+                            location.pathname === "/qibla" && "opacity-100"
+                        )}
+                    >
+                        Qibla
+                    </Link>
+                    <Link
+                        to="/names"
+                        className={cn(
+                            "hover:opacity-80 transition-opacity whitespace-nowrap",
+                            location.pathname === "/names" && "opacity-100"
+                        )}
+                    >
+                        99 Names
                     </Link>
                     <Link
                         to="/duas"
