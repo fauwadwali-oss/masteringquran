@@ -1,0 +1,19 @@
+{
+  "name": "mq-daily-delivery",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hourly cron that sends the verse of the day via email (Resend) and push (Web Push) to subscribed Mastering Quran users.",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240620.0",
+    "typescript": "^5.4.5",
+    "wrangler": "^3.68.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

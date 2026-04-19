@@ -101,6 +101,16 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://masteringquran.com/daily</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/zakat</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://masteringquran.com/ask</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

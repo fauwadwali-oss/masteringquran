@@ -15,6 +15,7 @@ const MORE_GROUPS: Array<{ label: string; items: Array<{ to: string; label: stri
             { to: "/qibla", label: "Qibla", emoji: "🧭" },
             { to: "/duas", label: "Duas", emoji: "🤲" },
             { to: "/ramadan", label: "Ramadan", emoji: "🌙" },
+            { to: "/daily", label: "Daily Reminder", emoji: "📬" },
         ],
     },
     {
@@ -32,6 +33,7 @@ const MORE_GROUPS: Array<{ label: string; items: Array<{ to: string; label: stri
             { to: "/prophets", label: "Stories of Prophets", emoji: "🕯️" },
             { to: "/seerah", label: "Seerah", emoji: "📜" },
             { to: "/hajj", label: "Hajj & Umrah", emoji: "🕋" },
+            { to: "/zakat", label: "Zakat Calculator", emoji: "💰" },
         ],
     },
     {
