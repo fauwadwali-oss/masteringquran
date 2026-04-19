@@ -101,6 +101,15 @@ export default function Navbar() {
                         Calendar
                     </Link>
                     <Link
+                        to="/topics"
+                        className={cn(
+                            "hover:opacity-80 transition-opacity",
+                            location.pathname === "/topics" && "opacity-100"
+                        )}
+                    >
+                        Topics
+                    </Link>
+                    <Link
                         to="/ask"
                         className={cn(
                             "inline-flex items-center gap-1 hover:opacity-80 transition-opacity",
