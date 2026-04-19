@@ -12,6 +12,7 @@ import TafsirPanel from "@/components/TafsirPanel";
 import WordByWordVerse, { QuranWord } from "@/components/WordByWordVerse";
 import TajweedText, { TajweedLegend } from "@/components/TajweedText";
 import ChapterInfoPanel from "@/components/ChapterInfoPanel";
+import SimilarVersesPanel from "@/components/SimilarVersesPanel";
 
 // Types
 interface Surah {
@@ -169,6 +170,16 @@ export default function Quran() {
 
     // Tajweed mode (color-coded tajweed rules)
     const [showTajweed, setShowTajweed] = useState(false);
+
+    // Per-verse "show similar" toggle
+    const [expandedSimilar, setExpandedSimilar] = useState<Set<string>>(new Set());
+    const toggleSimilar = (verseKey: string) => {
+        setExpandedSimilar((prev) => {
+            const next = new Set(prev);
+            if (next.has(verseKey)) next.delete(verseKey); else next.add(verseKey);
+            return next;
+        });
+    };
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -1401,7 +1412,21 @@ export default function Quran() {
                                             <Share2 className="h-4 w-4" />
                                             Share
                                         </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => toggleSimilar(`${verse.surahNumber}:${verse.number}`)}
+                                            className="text-xs rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 gap-2"
+                                        >
+                                            <Sparkles className="h-4 w-4" />
+                                            {expandedSimilar.has(`${verse.surahNumber}:${verse.number}`) ? "Hide similar" : "Similar verses"}
+                                        </Button>
                                     </div>
+
+                                    {/* Similar verses panel (lazy-loaded per verse) */}
+                                    {expandedSimilar.has(`${verse.surahNumber}:${verse.number}`) && (
+                                        <SimilarVersesPanel verseKey={`${verse.surahNumber}:${verse.number}`} />
+                                    )}
                                 </CardContent>
                             </Card>
                         ))}
