@@ -18,7 +18,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Desktop Menu */}
-                <div className="hidden md:flex gap-4 lg:gap-5 text-sm font-medium">
+                <div className="hidden md:flex gap-3 lg:gap-4 text-sm font-medium items-center">
                     <Link
                         to="/"
                         className={cn(
@@ -67,11 +67,11 @@ export default function Navbar() {
                     <Link
                         to="/names"
                         className={cn(
-                            "hover:opacity-80 transition-opacity whitespace-nowrap",
+                            "hover:opacity-80 transition-opacity",
                             location.pathname === "/names" && "opacity-100"
                         )}
                     >
-                        99 Names
+                        Names
                     </Link>
                     <Link
                         to="/duas"
@@ -81,6 +81,24 @@ export default function Navbar() {
                         )}
                     >
                         Duas
+                    </Link>
+                    <Link
+                        to="/ramadan"
+                        className={cn(
+                            "hover:opacity-80 transition-opacity",
+                            location.pathname === "/ramadan" && "opacity-100"
+                        )}
+                    >
+                        Ramadan
+                    </Link>
+                    <Link
+                        to="/calendar"
+                        className={cn(
+                            "hover:opacity-80 transition-opacity",
+                            location.pathname === "/calendar" && "opacity-100"
+                        )}
+                    >
+                        Calendar
                     </Link>
                     <Link
                         to="/ask"
