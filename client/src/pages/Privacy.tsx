@@ -50,7 +50,7 @@ export default function Privacy() {
           <section>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Your choices</h2>
             <p>You can request that we delete any memorial submission or message you sent by emailing{" "}
-              <a href="mailto:info@masteringquran.com" className="text-blue-600 dark:text-blue-400 hover:underline">info@masteringquran.com</a>. You can disable cookies or analytics in your browser at any time.
+              <a href="mailto:fauwad@nusratwaliventures.com" className="text-blue-600 dark:text-blue-400 hover:underline">fauwad@nusratwaliventures.com</a>. You can disable cookies or analytics in your browser at any time.
             </p>
           </section>
 
@@ -68,7 +68,7 @@ export default function Privacy() {
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Contact</h2>
             <p>
               Questions? Email{" "}
-              <a href="mailto:info@masteringquran.com" className="text-blue-600 dark:text-blue-400 hover:underline">info@masteringquran.com</a>.
+              <a href="mailto:fauwad@nusratwaliventures.com" className="text-blue-600 dark:text-blue-400 hover:underline">fauwad@nusratwaliventures.com</a>.
             </p>
           </section>
         </div>

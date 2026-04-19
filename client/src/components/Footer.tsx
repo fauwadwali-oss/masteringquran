@@ -29,7 +29,8 @@ export default function Footer() {
                     <div className="flex flex-col gap-2 text-sm">
                         <Link to="/about" className="hover:text-white transition-colors">About</Link>
                         <Link to="/faq" className="hover:text-white transition-colors">FAQ</Link>
-                        <a href="mailto:info@masteringquran.com" className="hover:text-white transition-colors">
+                        <Link to="/in-loving-memory" className="hover:text-white transition-colors">In Loving Memory</Link>
+                        <a href="mailto:fauwad@nusratwaliventures.com" className="hover:text-white transition-colors">
                             Contact
                         </a>
                     </div>
@@ -37,7 +38,7 @@ export default function Footer() {
             </div>
 
             <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-                <span>&copy; 2026 Nusrat Wali Ventures LLC · All rights reserved</span>
+                <span>&copy; 2026 Nusrat Wali Ventures LLC · Dedicated to <Link to="/in-loving-memory" className="hover:text-white transition-colors underline">Dr. Nusrat Wali and Dr. Wali Ahmad</Link></span>
                 <div className="flex gap-6">
                     <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
                     <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>

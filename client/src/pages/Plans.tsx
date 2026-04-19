@@ -7,6 +7,7 @@ import SEO from "@/components/SEO";
 import { READING_PLANS, ReadingPlan, PlanSegment, getPlanById } from "@/lib/plans";
 import { useAuth } from "@/contexts/AuthContext";
 import { getLocalProgress, startPlan, markDayComplete, resetPlan, PlanProgress } from "@/lib/queries/plans";
+import RequireAuth from "@/components/RequireAuth";
 
 function PlanDetail({ plan, onBack }: { plan: ReadingPlan; onBack: () => void }) {
     const { user } = useAuth();
@@ -149,7 +150,7 @@ function PlanLink({ seg }: { seg: PlanSegment }) {
     );
 }
 
-export default function Plans() {
+function PlansInner() {
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const selected = selectedId ? getPlanById(selectedId) : null;
 
@@ -210,5 +211,13 @@ export default function Plans() {
                 </div>
             </section>
         </div>
+    );
+}
+
+export default function Plans() {
+    return (
+        <RequireAuth reason="Reading plans track your day-by-day progress. Sign in so your progress follows you across devices.">
+            <PlansInner />
+        </RequireAuth>
     );
 }

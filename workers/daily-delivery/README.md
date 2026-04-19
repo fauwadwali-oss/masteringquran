@@ -45,7 +45,7 @@ npx wrangler secret put RESEND_API_KEY
 npx wrangler secret put VAPID_PUBLIC_KEY
 npx wrangler secret put VAPID_PRIVATE_KEY
 npx wrangler secret put VAPID_SUBJECT
-#   → e.g. mailto:info@masteringquran.com
+#   → e.g. mailto:fauwad@nusratwaliventures.com
 ```
 
 ### 3. Generate VAPID keys

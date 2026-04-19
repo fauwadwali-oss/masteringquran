@@ -63,7 +63,7 @@ const FAQS: QA[] = [
         q: "Can I report an error or suggest a feature?",
         a: (
             <>
-                Please do — email <a href="mailto:info@masteringquran.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">info@masteringquran.com</a>. Errors in sacred text or translation are the highest priority.
+                Please do — email <a href="mailto:fauwad@nusratwaliventures.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">fauwad@nusratwaliventures.com</a>. Errors in sacred text or translation are the highest priority.
             </>
         ),
     },
@@ -123,8 +123,8 @@ export default function FAQ() {
 
                     <div className="text-center text-sm text-slate-500 dark:text-slate-400">
                         Something else on your mind? Email{" "}
-                        <a href="mailto:info@masteringquran.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">
-                            info@masteringquran.com
+                        <a href="mailto:fauwad@nusratwaliventures.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                            fauwad@nusratwaliventures.com
                         </a>.
                     </div>
                 </div>

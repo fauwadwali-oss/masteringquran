@@ -97,7 +97,7 @@ export default function About() {
                                 This project is offered as <em>sadaqah jariyah</em> — a continuing charity. If the site benefits your worship or study, please remember us, our parents, and the scholars whose work we carry forward in your duʿā.
                             </p>
                             <p className="text-sm text-slate-500 dark:text-slate-400">
-                                Contact: <a href="mailto:info@masteringquran.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">info@masteringquran.com</a>
+                                Contact: <a href="mailto:fauwad@nusratwaliventures.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">fauwad@nusratwaliventures.com</a>
                             </p>
                         </CardContent>
                     </Card>

@@ -15,4 +15,4 @@ crons = ["5 * * * *"]
 #   RESEND_API_KEY               — for email delivery (https://resend.com)
 #   VAPID_PUBLIC_KEY             — web push application server public key
 #   VAPID_PRIVATE_KEY            — web push application server private key
-#   VAPID_SUBJECT                — mailto: address used for web push identity, e.g. mailto:info@masteringquran.com
+#   VAPID_SUBJECT                — mailto: address used for web push identity, e.g. mailto:fauwad@nusratwaliventures.com

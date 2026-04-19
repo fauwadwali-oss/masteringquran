@@ -11,7 +11,7 @@
 //   RESEND_API_KEY             (optional — skip email delivery if missing)
 //   VAPID_PUBLIC_KEY
 //   VAPID_PRIVATE_KEY          (optional — skip push delivery if missing)
-//   VAPID_SUBJECT              (e.g. mailto:info@masteringquran.com)
+//   VAPID_SUBJECT              (e.g. mailto:fauwad@nusratwaliventures.com)
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 

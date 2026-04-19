@@ -44,6 +44,7 @@ import LearnNumbersPhrases from "./pages/learn/NumbersPhrases";
 import LearnRoots from "./pages/learn/Roots";
 import LearnWriting from "./pages/learn/Writing";
 import LearnGraduation from "./pages/learn/Graduation";
+import Tribute from "./pages/Tribute";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -116,6 +117,7 @@ function App() {
                     <Route path="/learn-arabic/roots" element={<LearnRoots />} />
                     <Route path="/learn-arabic/writing" element={<LearnWriting />} />
                     <Route path="/learn-arabic/graduation" element={<LearnGraduation />} />
+                    <Route path="/in-loving-memory" element={<Tribute />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="*" element={<NotFound />} />

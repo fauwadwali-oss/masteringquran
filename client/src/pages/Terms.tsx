@@ -68,7 +68,7 @@ export default function Terms() {
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Contact</h2>
             <p>
               Questions? Email{" "}
-              <a href="mailto:info@masteringquran.com" className="text-blue-600 dark:text-blue-400 hover:underline">info@masteringquran.com</a>.
+              <a href="mailto:fauwad@nusratwaliventures.com" className="text-blue-600 dark:text-blue-400 hover:underline">fauwad@nusratwaliventures.com</a>.
             </p>
           </section>
         </div>
