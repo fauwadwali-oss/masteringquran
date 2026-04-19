@@ -52,6 +52,7 @@ const RULE_LABELS: Record<string, string> = {
 };
 
 interface Token {
+    type: "plain" | "tajweed" | "end";
     text: string;
     rule?: string;
 }
@@ -59,15 +60,22 @@ interface Token {
 function tokenize(input: string): Token[] {
     if (!input) return [];
     const tokens: Token[] = [];
-    const regex = /<tajweed class=([^>]+)>([\s\S]*?)<\/tajweed>/g;
+    // Match either a <tajweed class=...>...</tajweed> OR a <span class=end>N<span/> or </span> wrapper
+    const regex = /<tajweed class=([^>]+)>([\s\S]*?)<\/tajweed>|<span class=end>([\s\S]*?)<\/?span\/?>/g;
     let lastIndex = 0;
     let m: RegExpExecArray | null;
     while ((m = regex.exec(input)) !== null) {
-        if (m.index > lastIndex) tokens.push({ text: input.slice(lastIndex, m.index) });
-        tokens.push({ text: m[2], rule: m[1].replace(/["']/g, "").trim() });
+        if (m.index > lastIndex) tokens.push({ type: "plain", text: input.slice(lastIndex, m.index) });
+        if (m[1] !== undefined && m[2] !== undefined) {
+            // Tajweed rule span
+            tokens.push({ type: "tajweed", text: m[2], rule: m[1].replace(/["']/g, "").trim() });
+        } else if (m[3] !== undefined) {
+            // Verse-end number glyph
+            tokens.push({ type: "end", text: m[3] });
+        }
         lastIndex = m.index + m[0].length;
     }
-    if (lastIndex < input.length) tokens.push({ text: input.slice(lastIndex) });
+    if (lastIndex < input.length) tokens.push({ type: "plain", text: input.slice(lastIndex) });
     return tokens;
 }
 
@@ -75,15 +83,28 @@ export default function TajweedText({ html, className = "" }: { html: string; cl
     const tokens = tokenize(html);
     return (
         <p className={className} dir="rtl">
-            {tokens.map((t, i) =>
-                t.rule ? (
-                    <span key={i} className={TAJWEED_COLORS[t.rule] || "text-slate-900 dark:text-slate-100"} title={RULE_LABELS[t.rule] || t.rule}>
-                        {t.text}
-                    </span>
-                ) : (
-                    <span key={i}>{t.text}</span>
-                ),
-            )}
+            {tokens.map((t, i) => {
+                if (t.type === "tajweed" && t.rule) {
+                    return (
+                        <span
+                            key={i}
+                            className={TAJWEED_COLORS[t.rule] || "text-slate-900 dark:text-slate-100"}
+                            title={RULE_LABELS[t.rule] || t.rule}
+                        >
+                            {t.text}
+                        </span>
+                    );
+                }
+                if (t.type === "end") {
+                    // Verse-end ornament — subtle gold glyph, smaller than main text
+                    return (
+                        <span key={i} className="inline-block mx-1 text-amber-600 dark:text-amber-400 opacity-70 text-[0.7em] font-amiri align-middle">
+                            ۝{t.text}
+                        </span>
+                    );
+                }
+                return <span key={i}>{t.text}</span>;
+            })}
         </p>
     );
 }
