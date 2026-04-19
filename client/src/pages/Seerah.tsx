@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ChevronDown, ChevronRight, MapPin, Calendar as CalendarIcon, BookOpen, Star } from "lucide-react";
+import { ChevronDown, ChevronRight, MapPin, Calendar as CalendarIcon, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import SEO from "@/components/SEO";
+import VerseInline from "@/components/VerseInline";
 import { SEERAH } from "@/lib/content/seerah";
 
 export default function Seerah() {
@@ -107,16 +107,9 @@ export default function Seerah() {
                                                             {ev.description}
                                                         </p>
                                                         {ev.quranRef && ev.quranRef.length > 0 && (
-                                                            <div className="flex flex-wrap gap-1.5 pt-1">
+                                                            <div className="space-y-2 pt-2">
                                                                 {ev.quranRef.map((v) => (
-                                                                    <Link
-                                                                        key={v}
-                                                                        to={`/quran?verse=${v}`}
-                                                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
-                                                                    >
-                                                                        <BookOpen className="h-2.5 w-2.5" />
-                                                                        {v}
-                                                                    </Link>
+                                                                    <VerseInline key={v} verseKey={v} compact />
                                                                 ))}
                                                             </div>
                                                         )}

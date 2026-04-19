@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, BookOpen, Sparkles, Search } from "lucide-react";
+import { ArrowLeft, Sparkles, Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import SEO from "@/components/SEO";
+import VerseInline from "@/components/VerseInline";
 import { PROPHETS, type Prophet } from "@/lib/content/prophets";
 
 export default function Prophets() {
@@ -154,22 +154,15 @@ function ProphetDetail({ prophet, onBack }: { prophet: Prophet; onBack: () => vo
                         </div>
 
                         <div>
-                            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-3">
                                 Key Verses ({prophet.keyVerses.length})
                             </h3>
-                            <div className="flex flex-wrap gap-1.5">
+                            <div className="space-y-3">
                                 {prophet.keyVerses.map((v) => (
-                                    <Link
-                                        key={v}
-                                        to={`/quran?verse=${v}`}
-                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-xs font-medium hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
-                                    >
-                                        <BookOpen className="h-3 w-3" />
-                                        {v}
-                                    </Link>
+                                    <VerseInline key={v} verseKey={v} />
                                 ))}
                             </div>
-                            <p className="text-[11px] text-slate-400 mt-2">Tap any reference to open it in the Quran reader.</p>
+                            <p className="text-[11px] text-slate-400 mt-3">Tap any reference to open the verse in the Quran reader.</p>
                         </div>
                     </CardContent>
                 </Card>

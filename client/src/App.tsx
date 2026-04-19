@@ -28,6 +28,7 @@ import Prophets from "./pages/Prophets";
 import Seerah from "./pages/Seerah";
 import Glossary from "./pages/Glossary";
 import HajjPage from "./pages/Hajj";
+import Share from "./pages/Share";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -84,6 +85,7 @@ function App() {
                     <Route path="/seerah" element={<Seerah />} />
                     <Route path="/glossary" element={<Glossary />} />
                     <Route path="/hajj" element={<HajjPage />} />
+                    <Route path="/share" element={<Share />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="*" element={<NotFound />} />

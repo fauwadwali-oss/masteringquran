@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search, Play, Pause, BookOpen, Loader2, AlertCircle, Bookmark, BookmarkCheck, Volume2, VolumeX, SkipForward, SkipBack, ChevronLeft, ChevronRight, Star, X, Mic, Moon, Languages, Layers, Copy, Share2, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -125,12 +126,24 @@ const normalizeAudioUrl = (url: string | undefined | null): string | undefined =
 };
 
 export default function Quran() {
+    const [searchParams] = useSearchParams();
+
+    // Parse optional ?verse=SURAH:AYAH query param (e.g. from Prophets / Seerah / Share)
+    const verseParam = searchParams.get("verse");
+    const targetFromQuery = (() => {
+        if (!verseParam) return null;
+        const m = /^(\d{1,3}):(\d{1,3})$/.exec(verseParam.trim());
+        if (!m) return null;
+        return { surah: parseInt(m[1], 10), ayah: parseInt(m[2], 10) };
+    })();
+
     // State
     const [surahs, setSurahs] = useState<Surah[]>([]);
     const [currentSurah, setCurrentSurah] = useState<Surah | null>(null);
     const [verses, setVerses] = useState<VerseData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [highlightVerse, setHighlightVerse] = useState<number | null>(targetFromQuery?.ayah ?? null);
 
     // Search state
     const [searchQuery, setSearchQuery] = useState("");
@@ -280,8 +293,14 @@ export default function Quran() {
                 }));
                 if (mapped.length) {
                     setSurahs(mapped);
-                    const lastViewed = localStorage.getItem("lastViewedSurah");
-                    const initialSurahNumber = lastViewed ? parseInt(lastViewed) : 1;
+                    // Priority: ?verse=S:A query param > lastViewedSurah > Fatiha
+                    let initialSurahNumber: number;
+                    if (targetFromQuery?.surah) {
+                        initialSurahNumber = targetFromQuery.surah;
+                    } else {
+                        const lastViewed = localStorage.getItem("lastViewedSurah");
+                        initialSurahNumber = lastViewed ? parseInt(lastViewed) : 1;
+                    }
                     const initialSurah = mapped.find((s: Surah) => s.number === initialSurahNumber);
                     setCurrentSurah(initialSurah || mapped[0]);
                 } else {
@@ -313,6 +332,26 @@ export default function Quran() {
             fetchPageVerses();
         }
     }, [currentSurah, viewMode, currentJuz, currentHizb, currentRub, currentManzil, currentPage, selectedReciter, selectedTranslation, secondaryTranslation]);
+
+    // Scroll to and highlight the ayah when the URL carries ?verse=S:A and the verses have loaded.
+    useEffect(() => {
+        if (!highlightVerse || !verses.length || !currentSurah) return;
+        if (currentSurah.number !== targetFromQuery?.surah) return;
+        // Defer until the DOM renders the card
+        const id = `ayah-${currentSurah.number}-${highlightVerse}`;
+        const t = setTimeout(() => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }, 200);
+        // Remove the highlight ring after a few seconds so it doesn't stay forever
+        const t2 = setTimeout(() => setHighlightVerse(null), 6000);
+        return () => {
+            clearTimeout(t);
+            clearTimeout(t2);
+        };
+    }, [verses, highlightVerse, currentSurah, targetFromQuery?.surah]);
 
     // Map Quran.com verses payload to our VerseData shape
     const mapQuranComVerses = (verses: any[]): VerseData[] =>
@@ -1319,8 +1358,11 @@ export default function Quran() {
                         {verses.map((verse, index) => (
                             <Card
                                 key={`${verse.globalNumber}-${index}`}
+                                id={`ayah-${verse.surahNumber}-${verse.number}`}
                                 className={`overflow-hidden transition-all duration-500 group ${
-                                    currentPlayingVerse === index
+                                    highlightVerse === verse.number
+                                        ? 'ring-2 ring-amber-400 shadow-2xl shadow-amber-400/20 scroll-mt-24'
+                                        : currentPlayingVerse === index
                                         ? 'ring-2 ring-emerald-500 shadow-2xl shadow-emerald-500/20 scale-[1.01]'
                                         : 'hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none border-slate-200/80 dark:border-slate-800'
                                 } ${verse.isSajda ? 'border-l-4 border-l-amber-400 bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-950/20' : 'bg-white dark:bg-slate-900'}`}

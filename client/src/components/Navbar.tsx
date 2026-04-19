@@ -40,6 +40,7 @@ const MORE_GROUPS: Array<{ label: string; items: Array<{ to: string; label: stri
             { to: "/plans", label: "Reading Plans", emoji: "📖" },
             { to: "/quiz", label: "Quiz", emoji: "🏆" },
             { to: "/flashcards", label: "Flash Cards", emoji: "🎴" },
+            { to: "/share", label: "Share a Verse", emoji: "🖼️" },
         ],
     },
 ];
