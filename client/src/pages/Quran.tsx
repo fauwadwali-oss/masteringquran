@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Play, Pause, BookOpen, Loader2, AlertCircle, Bookmark, BookmarkCheck, Volume2, VolumeX, SkipForward, SkipBack, ChevronLeft, ChevronRight, Star, X, Mic, Moon, Languages, Layers, Copy, Share2, Check } from "lucide-react";
+import { Search, Play, Pause, BookOpen, Loader2, AlertCircle, Bookmark, BookmarkCheck, Volume2, VolumeX, SkipForward, SkipBack, ChevronLeft, ChevronRight, Star, X, Mic, Moon, Languages, Layers, Copy, Share2, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
