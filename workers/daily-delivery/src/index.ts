@@ -208,9 +208,9 @@ async function runDelivery(env: Env) {
 }
 
 async function fetchVerse(verseKey: string): Promise<VerseData> {
-    // 131 = Mustafa Khattab, The Clear Quran
+    // 203 = Al-Hilali & Khan (strictly literal with explanatory parentheticals)
     const r = await fetch(
-        `https://api.quran.com/api/v4/verses/by_key/${verseKey}?translations=131&language=en&fields=text_uthmani`,
+        `https://api.quran.com/api/v4/verses/by_key/${verseKey}?translations=203&language=en&fields=text_uthmani`,
     );
     if (!r.ok) throw new Error(`Quran API ${r.status}`);
     const j = (await r.json()) as any;
@@ -224,10 +224,14 @@ async function fetchVerse(verseKey: string): Promise<VerseData> {
         surahEnglish = cj?.chapter?.name_simple ?? surahEnglish;
         surahArabic = cj?.chapter?.name_arabic ?? "";
     } catch { /* ignore */ }
+    const translation = (v.translations?.[0]?.text ?? "")
+        .replace(/<sup[^>]*>.*?<\/sup>/g, "")
+        .replace(/<[^>]+>/g, "")
+        .trim();
     return {
         verseKey: v.verse_key,
         arabic: v.text_uthmani,
-        translation: (v.translations?.[0]?.text ?? "").replace(/<[^>]+>/g, ""),
+        translation,
         surahEnglish,
         surahArabic,
     };
@@ -331,7 +335,7 @@ function renderEmailHtml(v: VerseData): string {
       <a class="cta" href="https://masteringquran.com/quran?verse=${encodeURIComponent(v.verseKey)}">Open in Quran reader →</a>
     </div>
     <p class="foot">
-      Translation: Dr. Mustafa Khattab, <em>The Clear Quran</em>.<br/>
+      Translation: Al-Hilali &amp; Khan, <em>Noble Qur'an</em>.<br/>
       You're receiving this because you subscribed at
       <a href="https://masteringquran.com/daily">masteringquran.com/daily</a>.
       <a href="https://masteringquran.com/daily">Manage preferences</a>.

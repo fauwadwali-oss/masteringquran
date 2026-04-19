@@ -5,7 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import SEO from "@/components/SEO";
 import VerseInline from "@/components/VerseInline";
-import { PROPHETS, type Prophet } from "@/lib/content/prophets";
+import ProphetHadithBrowser from "@/components/ProphetHadithBrowser";
+import {
+    PROPHETS,
+    PROPHET_HADITH_TERMS,
+    HADITH_NARRATOR_EXCLUSIONS,
+    type Prophet,
+} from "@/lib/content/prophets";
 
 export default function Prophets() {
     const [selected, setSelected] = useState<Prophet | null>(null);
@@ -28,8 +34,8 @@ export default function Prophets() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-white dark:from-slate-950 dark:to-slate-900 py-10 px-4">
             <SEO
-                title="Stories of the 25 Prophets in the Quran — Mastering Quran"
-                description="Explore the lives, lessons, and Quranic references of the 25 prophets named in the Quran — from Adam to Muhammad ﷺ."
+                title="Stories of the 25 Prophets in the Quran, Mastering Quran"
+                description="Explore the lives, lessons, and Quranic references of the 25 prophets named in the Quran, from Adam to Muhammad ﷺ."
             />
             <div className="max-w-4xl mx-auto space-y-6">
                 <div className="text-center space-y-2">
@@ -39,7 +45,7 @@ export default function Prophets() {
                     </div>
                     <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Stories of the Prophets</h1>
                     <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                        The 25 messengers named in the Quran — their lives, their people, and the lessons for every believer.
+                        The 25 messengers named in the Quran, their lives, their people, and the lessons for every believer.
                     </p>
                 </div>
 
@@ -95,7 +101,7 @@ function ProphetDetail({ prophet, onBack }: { prophet: Prophet; onBack: () => vo
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-white dark:from-slate-950 dark:to-slate-900 py-10 px-4">
             <SEO
-                title={`${prophet.name} (${prophet.arabic}) — Stories of the Prophets`}
+                title={`${prophet.name} (${prophet.arabic}), Stories of the Prophets`}
                 description={prophet.summary}
             />
             <div className="max-w-3xl mx-auto space-y-6">
@@ -166,6 +172,14 @@ function ProphetDetail({ prophet, onBack }: { prophet: Prophet; onBack: () => vo
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Hadith browser, Bukhari / Muslim */}
+                <ProphetHadithBrowser
+                    prophetId={prophet.id}
+                    prophetName={prophet.name}
+                    searchTerms={PROPHET_HADITH_TERMS[prophet.id] ?? []}
+                    narratorExclusions={HADITH_NARRATOR_EXCLUSIONS[prophet.id] ?? []}
+                />
             </div>
         </div>
     );

@@ -13,8 +13,8 @@ export default function Seerah() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-white dark:from-slate-950 dark:to-slate-900 py-10 px-4">
             <SEO
-                title="Seerah — The Life of Prophet Muhammad ﷺ"
-                description="A chronological biography of Prophet Muhammad ﷺ — from the Year of the Elephant to the Farewell Sermon. 10 chapters with key events, locations, and Quranic references."
+                title="Seerah, The Life of Prophet Muhammad ﷺ"
+                description="A chronological biography of Prophet Muhammad ﷺ, from the Year of the Elephant to the Farewell Sermon. 10 chapters with key events, locations, and Quranic references."
             />
             <div className="max-w-4xl mx-auto space-y-6">
                 <div className="text-center space-y-2">
@@ -26,7 +26,7 @@ export default function Seerah() {
                         The Life of Prophet Muhammad ﷺ
                     </h1>
                     <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                        From orphan of Mecca to mercy to the worlds — the journey in ten chapters.
+                        From orphan of Mecca to mercy to the worlds, the journey in ten chapters.
                     </p>
                 </div>
 

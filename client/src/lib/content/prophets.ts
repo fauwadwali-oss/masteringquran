@@ -1,7 +1,7 @@
 // The 25 prophets named in the Quran. Order follows the traditional chronological sequence.
 // Verse refs use (surah:ayah) format. `mainSurah` points to where the main story block lives.
 // All content hand-curated from classical sources (Ibn Kathir's Stories of the Prophets, Tafsir Ibn Kathir).
-// Portable pure-data module — no React deps, safe to reuse in mobile app.
+// Portable pure-data module, no React deps, safe to reuse in mobile app.
 
 export interface Prophet {
     id: string;
@@ -26,10 +26,10 @@ export const PROPHETS: Prophet[] = [
         people: "First humans",
         mainSurah: "Al-Baqarah (2)",
         keyVerses: ["2:30", "2:31", "2:34", "2:35", "2:37", "7:11", "7:19", "7:22", "20:115", "20:121", "20:122"],
-        summary: "The first human and first prophet. Allah taught him the names of all things, commanded the angels to prostrate before him, and placed him in the Garden. After being tempted by Shaytan and eating from the forbidden tree, he and Hawwa (Eve) were sent to earth — and Adam repented with words Allah taught him, becoming the first human to return to his Lord in tawba.",
+        summary: "The first human and first prophet. Allah taught him the names of all things, commanded the angels to prostrate before him, and placed him in the Garden. After being tempted by Shaytan and eating from the forbidden tree, he and Hawwa (Eve) were sent to earth, and Adam repented with words Allah taught him, becoming the first human to return to his Lord in tawba.",
         lessons: [
             "Repentance (tawba) is the path back to Allah after any slip.",
-            "Knowledge — taught by Allah Himself — is the honor of humankind.",
+            "Knowledge, taught by Allah Himself, is the honor of humankind.",
             "Shaytan's enmity to mankind is ancient and ongoing.",
         ],
     },
@@ -44,7 +44,7 @@ export const PROPHETS: Prophet[] = [
         summary: "A prophet of high station, described by Allah as 'a man of truth, a prophet' whom He 'raised to a high place.' Traditions link him to the first use of the pen and to knowledge of the stars, though the Quran keeps its account brief.",
         lessons: [
             "Truthfulness (siddiq) is a rank Allah elevates believers to.",
-            "Not every prophet's story is told in full — some honor rests in silence.",
+            "Not every prophet's story is told in full, some honor rests in silence.",
         ],
     },
     {
@@ -56,11 +56,11 @@ export const PROPHETS: Prophet[] = [
         people: "His people (Qawm Nuh)",
         mainSurah: "Nuh (71)",
         keyVerses: ["71:1", "71:5", "71:26", "11:25", "11:37", "11:42", "11:44", "7:59", "26:105"],
-        summary: "Called his people to tawhid for 950 years — in public, in private, by night and by day — and was rejected. Allah commanded him to build the Ark; the earth's fountains gushed forth and the sky poured, and all who rejected him were drowned, including his own son. The ark came to rest on Mount Judi.",
+        summary: "Called his people to tawhid for 950 years, in public, in private, by night and by day, and was rejected. Allah commanded him to build the Ark; the earth's fountains gushed forth and the sky poured, and all who rejected him were drowned, including his own son. The ark came to rest on Mount Judi.",
         lessons: [
-            "Da'wah requires generations of patience — results belong to Allah.",
-            "Lineage does not save — Nuh's son drowned despite his father.",
-            "Allah's mercy includes a way out for the righteous — an ark is always built before the flood.",
+            "Da'wah requires generations of patience, results belong to Allah.",
+            "Lineage does not save, Nuh's son drowned despite his father.",
+            "Allah's mercy includes a way out for the righteous, an ark is always built before the flood.",
         ],
     },
     {
@@ -85,10 +85,10 @@ export const PROPHETS: Prophet[] = [
         people: "Thamud (in Al-Hijr, northwestern Arabia)",
         mainSurah: "Al-A'raf (7)",
         keyVerses: ["7:73", "7:77", "11:64", "11:67", "26:155", "26:157", "91:11", "91:14"],
-        summary: "Sent to Thamud, who carved houses into mountains. As a sign he brought a she-camel from the rock — she was to graze freely and share the water. They hamstrung her, and the land was seized by a terrifying shout (sayha) that left them 'lifeless in their homes.'",
+        summary: "Sent to Thamud, who carved houses into mountains. As a sign he brought a she-camel from the rock, she was to graze freely and share the water. They hamstrung her, and the land was seized by a terrifying shout (sayha) that left them 'lifeless in their homes.'",
         lessons: [
-            "Allah's signs come on Allah's terms — not on human demand.",
-            "Collective guilt: 'they hamstrung her' though one man struck — silence is complicity.",
+            "Allah's signs come on Allah's terms, not on human demand.",
+            "Collective guilt: 'they hamstrung her' though one man struck, silence is complicity.",
         ],
     },
     {
@@ -100,11 +100,11 @@ export const PROPHETS: Prophet[] = [
         people: "Chaldeans of Ur, later Mecca and Canaan",
         mainSurah: "Ibrahim (14) and Al-An'am (6)",
         keyVerses: ["2:124", "2:127", "6:74", "6:79", "14:35", "14:37", "19:41", "21:51", "21:69", "37:102", "37:107", "60:4"],
-        summary: "The father of monotheism and the patriarch of prophets. He rejected his people's idols, argued with Nimrod, smashed the idols in the temple, was cast into fire that Allah cooled, migrated to the Holy Land, was granted Isma'il and Ishaq in old age, was commanded to sacrifice Isma'il (and ransomed by Allah with a great sacrifice), and — with Isma'il — raised the foundations of the Ka'bah in Mecca, praying for a messenger from their descendants (the Prophet Muhammad ﷺ).",
+        summary: "The father of monotheism and the patriarch of prophets. He rejected his people's idols, argued with Nimrod, smashed the idols in the temple, was cast into fire that Allah cooled, migrated to the Holy Land, was granted Isma'il and Ishaq in old age, was commanded to sacrifice Isma'il (and ransomed by Allah with a great sacrifice), and, with Isma'il, raised the foundations of the Ka'bah in Mecca, praying for a messenger from their descendants (the Prophet Muhammad ﷺ).",
         lessons: [
-            "Tawhid is the foundation — everything else rests on 'there is no god but Allah.'",
+            "Tawhid is the foundation, everything else rests on 'there is no god but Allah.'",
             "Total surrender ('I submit to the Lord of the worlds') is the meaning of Islam.",
-            "Legacy: every Muslim today invokes his name in every prayer — 'as You blessed Ibrahim.'",
+            "Legacy: every Muslim today invokes his name in every prayer, 'as You blessed Ibrahim.'",
         ],
     },
     {
@@ -115,11 +115,11 @@ export const PROPHETS: Prophet[] = [
         people: "People of Sodom (in the Dead Sea region)",
         mainSurah: "Hud (11) and Ash-Shu'ara (26)",
         keyVerses: ["7:80", "7:84", "11:77", "11:82", "15:61", "15:74", "26:160", "26:173", "27:54", "29:28"],
-        summary: "Nephew of Ibrahim, sent to cities practicing open homosexuality and highway robbery. His guests — angels in human form — were besieged by the men of the city. Allah rescued Lut and his family (except his wife) and overturned the cities, raining stones of baked clay upon them.",
+        summary: "Nephew of Ibrahim, sent to cities practicing open homosexuality and highway robbery. His guests, angels in human form, were besieged by the men of the city. Allah rescued Lut and his family (except his wife) and overturned the cities, raining stones of baked clay upon them.",
         lessons: [
             "Sexual transgression against fitrah is treated by the Quran as a nation-destroying sin.",
             "The righteous are always rescued before the destruction.",
-            "Family members are not saved by lineage — the wife 'looked back' and shared their fate.",
+            "Family members are not saved by lineage, the wife 'looked back' and shared their fate.",
         ],
     },
     {
@@ -131,10 +131,10 @@ export const PROPHETS: Prophet[] = [
         people: "Jurhum tribe in Mecca, later Arabs",
         mainSurah: "As-Saffat (37)",
         keyVerses: ["2:125", "2:127", "14:39", "19:54", "19:55", "37:101", "37:107"],
-        summary: "First son of Ibrahim, born to Hajar. Placed as an infant in the barren valley of Mecca — where Hajar's running between Safa and Marwah (now a rite of Hajj) led to the springing of Zamzam. Grew up and helped his father rebuild the Ka'bah. He was the son Ibrahim was commanded to sacrifice and who willingly submitted.",
+        summary: "First son of Ibrahim, born to Hajar. Placed as an infant in the barren valley of Mecca, where Hajar's running between Safa and Marwah (now a rite of Hajj) led to the springing of Zamzam. Grew up and helped his father rebuild the Ka'bah. He was the son Ibrahim was commanded to sacrifice and who willingly submitted.",
         lessons: [
-            "Submission in youth: 'O my father, do what you are commanded' — trust is learned from parents.",
-            "Mecca itself — its water, its rites, its sanctuary — is a monument to Isma'il's family.",
+            "Submission in youth: 'O my father, do what you are commanded', trust is learned from parents.",
+            "Mecca itself, its water, its rites, its sanctuary, is a monument to Isma'il's family.",
         ],
     },
     {
@@ -146,7 +146,7 @@ export const PROPHETS: Prophet[] = [
         keyVerses: ["11:71", "14:39", "19:49", "21:72", "37:112"],
         summary: "Second son of Ibrahim, born to Sarah in her old age as glad tidings from the angels. Father of Ya'qub (Israel), grandfather of the tribes of Bani Isra'il. Prophet to the people of Canaan.",
         lessons: [
-            "Old age is never too late — Sarah laughed, then bore Ishaq.",
+            "Old age is never too late, Sarah laughed, then bore Ishaq.",
             "From one righteous line, Allah raised an entire nation of prophets.",
         ],
     },
@@ -158,9 +158,9 @@ export const PROPHETS: Prophet[] = [
         people: "Father of the 12 tribes of Bani Isra'il",
         mainSurah: "Yusuf (12)",
         keyVerses: ["2:132", "2:133", "12:6", "12:18", "12:83", "12:86", "19:49"],
-        summary: "Son of Ishaq, father of Yusuf and eleven other sons. Endured the loss of Yusuf, his grief turning his eyes white — yet he never lost hope: 'I complain of my grief and sorrow only to Allah.' Reunited with Yusuf in Egypt in his old age.",
+        summary: "Son of Ishaq, father of Yusuf and eleven other sons. Endured the loss of Yusuf, his grief turning his eyes white, yet he never lost hope: 'I complain of my grief and sorrow only to Allah.' Reunited with Yusuf in Egypt in his old age.",
         lessons: [
-            "Sabr jameel — 'beautiful patience' — is grief without complaint to people.",
+            "Sabr jameel, 'beautiful patience', is grief without complaint to people.",
             "Hope in Allah is never misplaced: 'do not despair of the mercy of Allah.'",
         ],
     },
@@ -170,12 +170,12 @@ export const PROPHETS: Prophet[] = [
         arabic: "يُوسُف",
         era: "Son of Ya'qub",
         people: "Egypt (under the Pharaohs)",
-        mainSurah: "Yusuf (12) — entire surah",
+        mainSurah: "Yusuf (12), entire surah",
         keyVerses: ["12:4", "12:15", "12:23", "12:33", "12:53", "12:87", "12:92", "12:100"],
         summary: "Surah Yusuf is called 'the best of stories.' Thrown into a well by jealous brothers, sold as a slave to the chief minister of Egypt, seduced and then imprisoned, rose to become Egypt's treasurer through interpretation of the king's dream, saved the region from famine, and forgave his brothers with 'no blame upon you today.' A complete arc from pit to palace.",
         lessons: [
             "Forgiveness is the mark of power, not weakness.",
-            "Allah's plan runs through betrayal, prison, and famine — all lead to the destined station.",
+            "Allah's plan runs through betrayal, prison, and famine, all lead to the destined station.",
             "Chastity in the face of temptation: 'prison is dearer to me than what they invite me to.'",
         ],
     },
@@ -190,7 +190,7 @@ export const PROPHETS: Prophet[] = [
         keyVerses: ["7:85", "7:93", "11:84", "11:95", "26:177", "26:189", "29:36"],
         summary: "Sent to Madyan, a trading people who cheated in weights and measures. He called them to honest dealing and tawhid; they mocked him and threatened exile. The earthquake seized them and they lay prostrate in their homes. Shu'ayb also received Musa when he fled Egypt and gave him his daughter in marriage.",
         lessons: [
-            "Economic honesty is part of iman — 'do not decrease the measure and the scale.'",
+            "Economic honesty is part of iman, 'do not decrease the measure and the scale.'",
             "Business ethics is prophetic territory, not separate from religion.",
         ],
     },
@@ -202,11 +202,11 @@ export const PROPHETS: Prophet[] = [
         era: "Descendant of Ibrahim",
         mainSurah: "Sad (38)",
         keyVerses: ["4:163", "6:84", "21:83", "21:84", "38:41", "38:44"],
-        summary: "Tested with the loss of wealth, children, and bodily health for years, yet never complained against Allah — only whispered: 'adversity has touched me, and You are the Most Merciful.' Allah commanded him to strike the ground; a spring gushed forth that healed him, and everything was restored.",
+        summary: "Tested with the loss of wealth, children, and bodily health for years, yet never complained against Allah, only whispered: 'adversity has touched me, and You are the Most Merciful.' Allah commanded him to strike the ground; a spring gushed forth that healed him, and everything was restored.",
         lessons: [
             "Patience in affliction without complaint to Allah is the prophetic response.",
-            "Healing often comes through an unexpected action — 'strike with your foot.'",
-            "'Truly, he was an excellent servant — ever turning back to Us.'",
+            "Healing often comes through an unexpected action, 'strike with your foot.'",
+            "'Truly, he was an excellent servant, ever turning back to Us.'",
         ],
     },
     {
@@ -233,7 +233,7 @@ export const PROPHETS: Prophet[] = [
         summary: "The prophet mentioned by name more than any other in the Quran. Born under Pharaoh's slaughter-decree, floated in a basket, raised in Pharaoh's palace, fled to Madyan after killing an Egyptian, met Allah at the burning bush on Mount Tur, confronted Pharaoh with signs, led Bani Isra'il through the parted sea, received the Torah on Mount Sinai, and led his people through forty years in the wilderness.",
         lessons: [
             "One man with Allah is more than any army: 'my Lord is with me; He will guide me.'",
-            "Allah speaks — the first revelation to Musa was direct, not through Jibril.",
+            "Allah speaks, the first revelation to Musa was direct, not through Jibril.",
             "The path to the promised land passes through the wilderness.",
         ],
     },
@@ -247,8 +247,8 @@ export const PROPHETS: Prophet[] = [
         keyVerses: ["20:29", "20:32", "20:90", "20:94", "26:13", "28:34"],
         summary: "Brother of Musa, more eloquent in speech, granted as a supporter when Musa prayed for help. Stood with Musa before Pharaoh. Left in charge of Bani Isra'il when Musa went to Mount Tur; tried to stop them from worshipping the golden calf and was nearly harmed by them.",
         lessons: [
-            "Du'a is answered — Musa asked for Harun, and Allah made him a prophet.",
-            "Authority without force is sometimes the harder test — Harun held back, unable to stop the calf-worshippers.",
+            "Du'a is answered, Musa asked for Harun, and Allah made him a prophet.",
+            "Authority without force is sometimes the harder test, Harun held back, unable to stop the calf-worshippers.",
         ],
     },
     {
@@ -274,9 +274,9 @@ export const PROPHETS: Prophet[] = [
         people: "Bani Isra'il",
         mainSurah: "An-Naml (27) and Saba (34)",
         keyVerses: ["21:78", "21:81", "27:16", "27:18", "27:23", "27:30", "27:40", "34:12", "38:35"],
-        summary: "Inherited prophethood and kingship from Dawud. Granted understanding of the speech of birds and ants, command of the jinn and the wind, and a fortune beyond any king. His exchange with the Queen of Sheba (Bilqis) — through the hoopoe and a throne moved 'in the blink of an eye' — ended with her submission to Allah. A prophet who attributed every favor to his Lord.",
+        summary: "Inherited prophethood and kingship from Dawud. Granted understanding of the speech of birds and ants, command of the jinn and the wind, and a fortune beyond any king. His exchange with the Queen of Sheba (Bilqis), through the hoopoe and a throne moved 'in the blink of an eye', ended with her submission to Allah. A prophet who attributed every favor to his Lord.",
         lessons: [
-            "Power without gratitude becomes tyranny — Sulayman said 'this is from the favor of my Lord.'",
+            "Power without gratitude becomes tyranny, Sulayman said 'this is from the favor of my Lord.'",
             "The most powerful creatures served the most grateful king.",
             "Even an ant's warning was heard and honored by a prophet-king.",
         ],
@@ -291,7 +291,7 @@ export const PROPHETS: Prophet[] = [
         keyVerses: ["6:85", "37:123", "37:130"],
         summary: "Sent to a people who worshipped Ba'l (Baal, a Canaanite idol). He called them to the worship of Allah alone, declaring Him 'the Best of Creators' and the Lord of their fathers.",
         lessons: [
-            "Naming false gods directly — 'do you call upon Ba'l?' — is part of the prophetic method.",
+            "Naming false gods directly, 'do you call upon Ba'l?', is part of the prophetic method.",
         ],
     },
     {
@@ -303,7 +303,7 @@ export const PROPHETS: Prophet[] = [
         keyVerses: ["6:86", "38:48"],
         summary: "A successor of Ilyas, mentioned among the chosen and favored prophets. The Quran does not narrate his story in detail.",
         lessons: [
-            "Continuity — Allah does not leave a people without guidance; one prophet follows another.",
+            "Continuity, Allah does not leave a people without guidance; one prophet follows another.",
         ],
     },
     {
@@ -315,11 +315,11 @@ export const PROPHETS: Prophet[] = [
         people: "Nineveh (Iraq)",
         mainSurah: "Yunus (10) and As-Saffat (37)",
         keyVerses: ["10:98", "21:87", "21:88", "37:139", "37:148", "68:48"],
-        summary: "Sent to Nineveh; frustrated with their rejection, he left without permission. Boarded a ship, was cast into the sea, and swallowed by a great fish. In its darkness he cried: 'There is no god but You; glory be to You; I have indeed been of the wrongdoers.' Allah delivered him, and his entire people — over a hundred thousand — believed. The only people mentioned in the Quran whose belief was accepted after the warning.",
+        summary: "Sent to Nineveh; frustrated with their rejection, he left without permission. Boarded a ship, was cast into the sea, and swallowed by a great fish. In its darkness he cried: 'There is no god but You; glory be to You; I have indeed been of the wrongdoers.' Allah delivered him, and his entire people, over a hundred thousand, believed. The only people mentioned in the Quran whose belief was accepted after the warning.",
         lessons: [
             "The prayer of Yunus is the prayer for anyone in distress.",
-            "Da'is do not abandon their people — the worker waits on Allah's timing.",
-            "Allah's mercy is wider than our despair — a whole city believed.",
+            "Da'is do not abandon their people, the worker waits on Allah's timing.",
+            "Allah's mercy is wider than our despair, a whole city believed.",
         ],
     },
     {
@@ -332,7 +332,7 @@ export const PROPHETS: Prophet[] = [
         keyVerses: ["3:37", "3:38", "6:85", "19:2", "19:8", "21:89"],
         summary: "Guardian of Maryam. An old man whose wife was barren, he saw that Maryam was provided with out-of-season fruits and prayed: 'My Lord, grant me from Yourself a good offspring; indeed You hear du'a.' Allah granted him Yahya in his old age.",
         lessons: [
-            "Du'a in private — 'when he called upon his Lord a secret call' — is heard louder than we imagine.",
+            "Du'a in private, 'when he called upon his Lord a secret call', is heard louder than we imagine.",
             "Signs in another's life strengthen faith in our own.",
         ],
     },
@@ -345,7 +345,7 @@ export const PROPHETS: Prophet[] = [
         keyVerses: ["3:39", "6:85", "19:7", "19:12", "19:13", "21:90"],
         summary: "Son of Zakariyya, given a name 'no one before him has had.' Allah said to him: 'Take the Scripture with determination.' Granted wisdom as a child, dutiful to his parents, neither arrogant nor disobedient. A prophet of piety from his earliest years.",
         lessons: [
-            "Devotion is not a function of age — Yahya had wisdom as a child.",
+            "Devotion is not a function of age, Yahya had wisdom as a child.",
             "'Peace upon him the day he was born, the day he dies, and the day he is raised alive.'",
         ],
     },
@@ -358,11 +358,11 @@ export const PROPHETS: Prophet[] = [
         people: "Bani Isra'il",
         mainSurah: "Al 'Imran (3) and Maryam (19)",
         keyVerses: ["3:45", "3:49", "3:55", "4:157", "4:171", "5:75", "5:110", "19:30", "43:63"],
-        summary: "Born miraculously to the virgin Maryam — spoke from the cradle defending his mother's honor. A messenger to Bani Isra'il with clear signs: healing the blind and the leper, giving life to the dead by Allah's permission, making birds of clay that flew. They did not kill him nor crucify him — it was made to appear so to them — and Allah raised him to Himself. He will return before the Day of Judgment.",
+        summary: "Born miraculously to the virgin Maryam, spoke from the cradle defending his mother's honor. A messenger to Bani Isra'il with clear signs: healing the blind and the leper, giving life to the dead by Allah's permission, making birds of clay that flew. They did not kill him nor crucify him, it was made to appear so to them, and Allah raised him to Himself. He will return before the Day of Judgment.",
         lessons: [
-            "A servant and a messenger, not a son of God — 'I am a servant of Allah' (19:30).",
+            "A servant and a messenger, not a son of God, 'I am a servant of Allah' (19:30).",
             "Miracles are by Allah's permission, not independent power.",
-            "His story is a correction of a distortion — the Quran restores his true station.",
+            "His story is a correction of a distortion, the Quran restores his true station.",
         ],
     },
     {
@@ -378,7 +378,56 @@ export const PROPHETS: Prophet[] = [
         lessons: [
             "The best of character is the summary of the message: 'I was sent to perfect noble character.'",
             "Mercy, not harshness, is the engine of the final mission.",
-            "Every detail of his life — how he ate, walked, ruled, prayed, forgave — is preserved as example.",
+            "Every detail of his life, how he ate, walked, ruled, prayed, forgave, is preserved as example.",
         ],
     },
 ];
+
+// Name variants used to search English hadith text (Bukhari, Muslim) for hadiths
+// that mention each prophet. Includes both the Anglicized form and common
+// transliterations. Chosen to be distinctive enough to avoid false positives
+// (e.g. "Lut" not "Lot" because "Lot" matches English "lot").
+// For Muhammad ﷺ: no search terms, every hadith is narrated from him, so we
+// show a link to browse the full collections instead of filtered results.
+export const PROPHET_HADITH_TERMS: Record<string, string[]> = {
+    adam: ["Adam"],
+    idris: ["Idris", "Enoch"],
+    nuh: ["Noah", "Nuh"],
+    hud: ["Hud", "'Ad"],
+    salih: ["Salih", "Thamud"],
+    ibrahim: ["Abraham", "Ibrahim", "Khalil"],
+    lut: ["Lut", "Sodom"],
+    ismail: ["Ishmael", "Isma'il", "Ismail"],
+    ishaq: ["Isaac", "Ishaq"],
+    yaqub: ["Jacob", "Ya'qub", "Yaqub"],
+    yusuf: ["Joseph", "Yusuf"],
+    shuayb: ["Shu'ayb", "Shuaib", "Midian", "Madyan"],
+    ayyub: ["Job", "Ayyub"],
+    dhulkifl: ["Dhul-Kifl", "Dhu'l-Kifl"],
+    musa: ["Moses", "Musa"],
+    harun: ["Aaron", "Harun"],
+    dawud: ["David", "Dawud", "Dawood"],
+    sulayman: ["Solomon", "Sulaiman", "Sulayman"],
+    ilyas: ["Elijah", "Ilyas"],
+    alyasa: ["Elisha", "Al-Yasa"],
+    yunus: ["Jonah", "Yunus"],
+    zakariyya: ["Zechariah", "Zakariya"],
+    yahya: ["John the Baptist", "Yahya son of Zakariya"],
+    isa: ["Jesus", "Messiah", "Son of Mary", "Son of Maryam"],
+    muhammad: [], // Special: all of Bukhari/Muslim is from him. Show full-collection link instead.
+};
+
+// Name-narrator disambiguation. Some names clash with narrator names:
+//   - "Musa" matches Abu Musa al-Ash'ari (a famous Companion), not just the prophet
+//   - "Yunus" matches Yunus ibn... (narrator), not just the prophet
+//   - "Yahya" matches many narrators named Yahya
+// If a hadith's text contains any of these exclusion phrases, we filter it out
+// when showing a prophet's hadiths (unless the prophet name also appears in a
+// distinctly prophetic context).
+export const HADITH_NARRATOR_EXCLUSIONS: Record<string, string[]> = {
+    musa: ["Abu Musa", "Musa bin", "Musa ibn", "Musa b."],
+    yunus: ["Yunus bin", "Yunus ibn", "Yunus b."],
+    yahya: ["Yahya bin", "Yahya ibn", "Yahya b."],
+    ishaq: ["Ishaq bin", "Ishaq ibn", "Ishaq b."],
+};
+

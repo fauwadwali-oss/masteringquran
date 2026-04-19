@@ -14,8 +14,8 @@ export default function HajjPage() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-white dark:from-slate-950 dark:to-slate-900 py-10 px-4">
             <SEO
-                title="Hajj & Umrah Step-by-Step Guide — Mastering Quran"
-                description="A complete step-by-step guide to Hajj and Umrah — rites, locations, days, and duas for each step. From ihram to the Farewell Tawaf."
+                title="Hajj & Umrah Step-by-Step Guide, Mastering Quran"
+                description="A complete step-by-step guide to Hajj and Umrah, rites, locations, days, and duas for each step. From ihram to the Farewell Tawaf."
             />
             <div className="max-w-3xl mx-auto space-y-6">
                 <div className="text-center space-y-2">

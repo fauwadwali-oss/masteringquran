@@ -100,9 +100,9 @@ const SUGGESTED: string[] = [
 ];
 
 async function fetchVerse(verseKey: string): Promise<VerseData> {
-    // Translation 131 = Mustafa Khattab (The Clear Quran)
+    // Translation 203 = Al-Hilali & Khan (strictly literal with explanatory parentheticals)
     const r = await fetch(
-        `https://api.quran.com/api/v4/verses/by_key/${verseKey}?translations=131&language=en&fields=text_uthmani&word_fields=text_uthmani`,
+        `https://api.quran.com/api/v4/verses/by_key/${verseKey}?translations=203&language=en&fields=text_uthmani&word_fields=text_uthmani`,
     );
     const j = await r.json();
     const v = j?.verse;
@@ -112,13 +112,18 @@ async function fetchVerse(verseKey: string): Promise<VerseData> {
     const cr = await fetch(`https://api.quran.com/api/v4/chapters/${surah}?language=en`);
     const cj = await cr.json();
     const chapter = cj?.chapter;
+    // Strip HTML (footnote <sup> markers, etc.) so the translation is clean text only
+    const translation = (v.translations?.[0]?.text ?? "")
+        .replace(/<sup[^>]*>.*?<\/sup>/g, "")
+        .replace(/<[^>]+>/g, "")
+        .trim();
     return {
         verseKey: v.verse_key,
         arabic: v.text_uthmani,
-        translation: v.translations?.[0]?.text?.replace(/<[^>]+>/g, "") ?? "",
+        translation,
         surahName: chapter?.name_arabic ?? "",
         surahEnglish: chapter?.name_simple ?? `Surah ${surah}`,
-        translator: "Dr. Mustafa Khattab, The Clear Quran",
+        translator: "Al-Hilali & Khan",
     };
 }
 
@@ -243,7 +248,7 @@ export default function Share() {
             const file = new File([blob], `mastering-quran-${verse.verseKey}.png`, { type: "image/png" });
             const shareData: ShareData = {
                 title: `Quran ${verse.verseKey}`,
-                text: `"${verse.translation}" — Quran ${verse.verseKey}`,
+                text: `"${verse.translation}", Quran ${verse.verseKey}`,
                 files: [file] as any,
             };
             if (navigator.share && navigator.canShare?.(shareData as any)) {
@@ -251,7 +256,7 @@ export default function Share() {
             } else if (navigator.share) {
                 await navigator.share({ title: shareData.title, text: shareData.text });
             } else {
-                setErr("Share not supported here — use Download.");
+                setErr("Share not supported here, use Download.");
             }
         } catch (e: any) {
             if (e?.name !== "AbortError") {
@@ -265,7 +270,7 @@ export default function Share() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-white dark:from-slate-950 dark:to-slate-900 py-10 px-4">
             <SEO
-                title="Share a Verse as Image — Mastering Quran"
+                title="Share a Verse as Image, Mastering Quran"
                 description="Create beautiful Quran verse images to share. Choose a template, pick a verse, and download or share directly."
             />
             <div className="max-w-4xl mx-auto space-y-6">
@@ -358,7 +363,7 @@ export default function Share() {
                 {/* Preview */}
                 <div className="space-y-3">
                     <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 text-center">
-                        Preview (1080 × 1080 — perfect for Instagram)
+                        Preview (1080 × 1080, perfect for Instagram)
                     </h3>
                     <div className="flex justify-center">
                         <div className="w-full max-w-[560px]">
@@ -396,7 +401,7 @@ export default function Share() {
                 )}
 
                 <p className="text-center text-[11px] text-slate-400 pt-2">
-                    Translation: Dr. Mustafa Khattab, <em>The Clear Quran</em>. Image rendered locally in your browser — nothing is uploaded.
+                    Translation: Al-Hilali & Khan, <em>Noble Qur'an</em>. Image rendered locally in your browser, nothing is uploaded.
                 </p>
             </div>
         </div>

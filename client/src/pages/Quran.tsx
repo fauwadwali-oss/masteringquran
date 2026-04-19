@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { Search, Play, Pause, BookOpen, Loader2, AlertCircle, Bookmark, BookmarkCheck, Volume2, VolumeX, SkipForward, SkipBack, ChevronLeft, ChevronRight, Star, X, Mic, Moon, Languages, Layers, Copy, Share2, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1412,6 +1412,14 @@ export default function Quran() {
                                                     )}
                                                 </Button>
                                             )}
+                                            <Link
+                                                to={`/share?verse=${verse.surahNumber}:${verse.number}`}
+                                                title="Share as image"
+                                                aria-label="Share this verse as an image"
+                                                className="h-10 w-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-all"
+                                            >
+                                                <Share2 className="h-5 w-5" />
+                                            </Link>
                                         </div>
                                     </div>
 

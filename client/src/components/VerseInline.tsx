@@ -22,18 +22,22 @@ async function fetchVerseInline(verseKey: string): Promise<VerseInlineData> {
     if (inflight) return inflight;
 
     const p = (async () => {
-        // Translation 131 = Dr. Mustafa Khattab, The Clear Quran
+        // Translation 203 = Al-Hilali & Khan
         const r = await fetch(
-            `https://api.quran.com/api/v4/verses/by_key/${verseKey}?translations=131&language=en&fields=text_uthmani`,
+            `https://api.quran.com/api/v4/verses/by_key/${verseKey}?translations=203&language=en&fields=text_uthmani`,
         );
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const j = await r.json();
         const v = j?.verse;
         if (!v) throw new Error("Verse not found");
+        const translation = (v.translations?.[0]?.text ?? "")
+            .replace(/<sup[^>]*>.*?<\/sup>/g, "")
+            .replace(/<[^>]+>/g, "")
+            .trim();
         const data: VerseInlineData = {
             verseKey: v.verse_key,
             arabic: v.text_uthmani,
-            translation: (v.translations?.[0]?.text ?? "").replace(/<[^>]+>/g, ""),
+            translation,
         };
         VERSE_CACHE.set(verseKey, data);
         return data;
@@ -135,7 +139,7 @@ export default function VerseInline({ verseKey, compact = false }: Props) {
                     >
                         &ldquo;{data.translation}&rdquo;
                     </p>
-                    <p className="text-[10px] text-slate-400">— Dr. Mustafa Khattab, The Clear Quran</p>
+                    <p className="text-[10px] text-slate-400">Al-Hilali &amp; Khan</p>
                 </div>
             )}
         </div>

@@ -31,7 +31,7 @@ const GOLD_NISAB_G = 85;
 const SILVER_NISAB_G = 595;
 const ZAKAT_RATE = 0.025; // 2.5%
 
-// Default starting prices (USD/gram) — user can update via "Refresh prices"
+// Default starting prices (USD/gram), user can update via "Refresh prices"
 // (calls a free public API) or type their own.
 const DEFAULT_GOLD_PRICE_USD = 85;   // ~typical spring 2026 level
 const DEFAULT_SILVER_PRICE_USD = 1.05;
@@ -176,7 +176,7 @@ export default function Zakat() {
                 }
             }
             // Fallback: simple API via Yahoo Finance JSON (may be blocked by CORS; try anyway)
-            throw new Error("Live fetch failed — keeping current values");
+            throw new Error("Live fetch failed, keeping current values");
         } catch (e) {
             toast.error("Couldn't refresh prices automatically. Enter today's price manually.");
         } finally {
@@ -221,8 +221,8 @@ export default function Zakat() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-white dark:from-slate-950 dark:to-slate-900 py-10 px-4">
             <SEO
-                title="Zakat Calculator — Mastering Quran"
-                description="Calculate your annual zakat. Live gold and silver nisab, cash, investments, business inventory, liabilities — all in one form."
+                title="Zakat Calculator, Mastering Quran"
+                description="Calculate your annual zakat. Live gold and silver nisab, cash, investments, business inventory, liabilities, all in one form."
             />
             <div className="max-w-4xl mx-auto space-y-6">
                 <div className="text-center space-y-2">
@@ -284,8 +284,8 @@ export default function Zakat() {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="silver">Silver — 595 g (recommended)</SelectItem>
-                                    <SelectItem value="gold">Gold — 85 g</SelectItem>
+                                    <SelectItem value="silver">Silver, 595 g (recommended)</SelectItem>
+                                    <SelectItem value="gold">Gold, 85 g</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -301,7 +301,7 @@ export default function Zakat() {
                             <Field label="Bank balance" value={form.bank} type="number" onChange={(v) => setForm((f) => ({ ...f, bank: v }))} />
                             <Field label="Gold (grams)" value={form.gold_grams} type="number" onChange={(v) => setForm((f) => ({ ...f, gold_grams: v }))} />
                             <Field label="Silver (grams)" value={form.silver_grams} type="number" onChange={(v) => setForm((f) => ({ ...f, silver_grams: v }))} />
-                            <Field label="Investments (stocks, funds — liquid portion)" value={form.investments} type="number" onChange={(v) => setForm((f) => ({ ...f, investments: v }))} />
+                            <Field label="Investments (stocks, funds, liquid portion)" value={form.investments} type="number" onChange={(v) => setForm((f) => ({ ...f, investments: v }))} />
                             <Field label="Business inventory at resale value" value={form.business_inventory} type="number" onChange={(v) => setForm((f) => ({ ...f, business_inventory: v }))} />
                             <Field label="Receivables (expected to be paid)" value={form.receivables} type="number" onChange={(v) => setForm((f) => ({ ...f, receivables: v }))} />
                             <Field label="Liabilities / debts due within year" value={form.liabilities} type="number" onChange={(v) => setForm((f) => ({ ...f, liabilities: v }))} />
@@ -318,7 +318,7 @@ export default function Zakat() {
                             <Stat label={`Nisab (${snapshot.nisab_basis})`} value={fmt(snapshot.nisab_threshold)} />
                             <Stat
                                 label="Zakat due (2.5%)"
-                                value={snapshot.meets_nisab ? fmt(snapshot.zakat_due) : "—"}
+                                value={snapshot.meets_nisab ? fmt(snapshot.zakat_due) : ", "}
                                 highlight={snapshot.meets_nisab}
                             />
                         </div>
@@ -340,7 +340,7 @@ export default function Zakat() {
                         </div>
                         {!user && (
                             <p className="text-xs text-slate-500">
-                                Not signed in? Your form stays in this browser via localStorage — return anytime.
+                                Not signed in? Your form stays in this browser via localStorage, return anytime.
                             </p>
                         )}
                         {!isSupabaseConfigured() && user && (
@@ -395,7 +395,7 @@ export default function Zakat() {
                             <li>Personal residence, car, clothing, and household items are NOT zakatable.</li>
                             <li>For stocks and mutual funds, scholars differ; common practice is to pay zakat on market value at year-end for trading portfolios and on the zakatable portion (cash + receivables) for long-term holdings.</li>
                             <li>For business inventory, use the retail resale value, not cost.</li>
-                            <li>Most contemporary scholars prefer the silver nisab — lower threshold, more recipients benefit.</li>
+                            <li>Most contemporary scholars prefer the silver nisab, lower threshold, more recipients benefit.</li>
                             <li>Pay zakat at the same Hijri date each year to keep the hawl consistent.</li>
                         </ul>
                         <p className="pt-2">

@@ -23,7 +23,7 @@ import {
     type PushSubscriptionRow,
 } from "@/lib/queries/push-subscription";
 
-// VAPID public key — baked in via env at build time. Used only for client subscription.
+// VAPID public key, baked in via env at build time. Used only for client subscription.
 // If not set, the push card becomes read-only with a helpful message.
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined;
 
@@ -60,7 +60,7 @@ export default function Daily() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-white dark:from-slate-950 dark:to-slate-900 py-10 px-4">
             <SEO
-                title="Daily Reminders — Mastering Quran"
+                title="Daily Reminders, Mastering Quran"
                 description="Get a verse a day via email or push notification. Pick your timezone and delivery time."
             />
             <div className="max-w-3xl mx-auto space-y-6">
@@ -71,7 +71,7 @@ export default function Daily() {
                     </div>
                     <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">A verse a day</h1>
                     <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                        One Quran verse delivered every day at the time you choose — by email, push notification, or both.
+                        One Quran verse delivered every day at the time you choose, by email, push notification, or both.
                     </p>
                 </div>
 
@@ -107,7 +107,7 @@ export default function Daily() {
                 <Card className="border-slate-100 dark:border-slate-800">
                     <CardContent className="p-4 text-xs text-slate-500 space-y-1">
                         <p>
-                            <strong>Privacy:</strong> Your email, timezone, and delivery time are stored in our Supabase project with row-level security — only you can read or change them. We never share your contact info.
+                            <strong>Privacy:</strong> Your email, timezone, and delivery time are stored in our Supabase project with row-level security, only you can read or change them. We never share your contact info.
                         </p>
                         <p>
                             <strong>How it works:</strong> A scheduled job runs every hour; if it's your chosen hour in your timezone, we send a verse. You can unsubscribe anytime.
@@ -165,7 +165,7 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
                 active: true,
             });
             setSub(s);
-            toast.success("Subscribed — your first verse will arrive within a day.");
+            toast.success("Subscribed, your first verse will arrive within a day.");
         } catch (e: any) {
             toast.error(e?.message ?? "Couldn't save subscription");
         } finally {
@@ -192,7 +192,7 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
                 <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2">
                         <Mail className="h-5 w-5 text-emerald-600" />
-                        <h2 className="font-semibold text-slate-900 dark:text-white">Email — a verse a day</h2>
+                        <h2 className="font-semibold text-slate-900 dark:text-white">Email, a verse a day</h2>
                     </div>
                     {sub?.active && (
                         <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
@@ -372,7 +372,7 @@ function PushSubscriptionCard({ userId }: { userId: string }) {
                 <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2">
                         <Bell className="h-5 w-5 text-indigo-600" />
-                        <h2 className="font-semibold text-slate-900 dark:text-white">Push — a verse a day</h2>
+                        <h2 className="font-semibold text-slate-900 dark:text-white">Push, a verse a day</h2>
                     </div>
                     {subs.some((s) => s.endpoint === currentEndpoint && s.active) && (
                         <span className="inline-flex items-center gap-1 text-xs text-indigo-600">

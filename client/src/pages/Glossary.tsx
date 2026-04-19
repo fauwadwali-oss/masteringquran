@@ -45,8 +45,8 @@ export default function Glossary() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-white dark:from-slate-950 dark:to-slate-900 py-10 px-4">
             <SEO
-                title="Islamic Glossary — Mastering Quran"
-                description="A searchable glossary of over 120 Islamic terms — from Shahadah to Zakat, Tawhid to Tashahhud — with Arabic, transliteration, and clear definitions."
+                title="Islamic Glossary, Mastering Quran"
+                description="A searchable glossary of over 120 Islamic terms, from Shahadah to Zakat, Tawhid to Tashahhud, with Arabic, transliteration, and clear definitions."
             />
             <div className="max-w-5xl mx-auto space-y-6">
                 <div className="text-center space-y-2">
