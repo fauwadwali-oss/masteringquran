@@ -13,6 +13,7 @@ import Names from "./pages/Names";
 import Duas from "./pages/Duas";
 import Ramadan from "./pages/Ramadan";
 import CalendarPage from "./pages/Calendar";
+import Topics from "./pages/Topics";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -50,6 +51,7 @@ function App() {
                 <Route path="/duas" element={<Duas />} />
                 <Route path="/ramadan" element={<Ramadan />} />
                 <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/topics" element={<Topics />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="*" element={<NotFound />} />

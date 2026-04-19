@@ -143,10 +143,17 @@ export default function Quran() {
     const [secondaryTranslation, setSecondaryTranslation] = useState("57");
 
     // Navigation state
-    const [viewMode, setViewMode] = useState<"surah" | "juz" | "hizb" | "page">("surah");
+    const [viewMode, setViewMode] = useState<"surah" | "juz" | "hizb" | "rub" | "manzil" | "page">("surah");
     const [currentJuz, setCurrentJuz] = useState(1);
     const [currentHizb, setCurrentHizb] = useState(1);
+    const [currentRub, setCurrentRub] = useState(1);
+    const [currentManzil, setCurrentManzil] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
+
+    // Full-surah audio
+    const [fullSurahPlaying, setFullSurahPlaying] = useState(false);
+    const [fullSurahLoading, setFullSurahLoading] = useState(false);
+    const fullSurahAudioRef = useRef<HTMLAudioElement | null>(null);
 
     // Bookmarks state
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -248,10 +255,14 @@ export default function Quran() {
             fetchJuzVerses();
         } else if (viewMode === "hizb") {
             fetchHizbVerses();
+        } else if (viewMode === "rub") {
+            fetchRubVerses();
+        } else if (viewMode === "manzil") {
+            fetchManzilVerses();
         } else if (viewMode === "page") {
             fetchPageVerses();
         }
-    }, [currentSurah, viewMode, currentJuz, currentHizb, currentPage, selectedReciter, selectedTranslation, secondaryTranslation]);
+    }, [currentSurah, viewMode, currentJuz, currentHizb, currentRub, currentManzil, currentPage, selectedReciter, selectedTranslation, secondaryTranslation]);
 
     // Map Quran.com verses payload to our VerseData shape
     const mapQuranComVerses = (verses: any[]): VerseData[] =>
@@ -359,6 +370,91 @@ export default function Quran() {
             setLoading(false);
         }
     };
+
+    const fetchRubVerses = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(
+                `https://api.quran.com/api/v4/verses/by_rub/${currentRub}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
+            );
+            const data = await response.json();
+            if (Array.isArray(data.verses)) setVerses(mapQuranComVerses(data.verses));
+            else setError("Failed to fetch Rub");
+        } catch (err) {
+            setError("An error occurred while fetching Rub");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchManzilVerses = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(
+                `https://api.quran.com/api/v4/verses/by_manzil/${currentManzil}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=700`
+            );
+            const data = await response.json();
+            if (Array.isArray(data.verses)) setVerses(mapQuranComVerses(data.verses));
+            else setError("Failed to fetch Manzil");
+        } catch (err) {
+            setError("An error occurred while fetching Manzil");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Full-surah audio playback
+    const toggleFullSurahAudio = async () => {
+        if (!currentSurah) return;
+        // If already playing, pause/stop
+        if (fullSurahAudioRef.current && fullSurahPlaying) {
+            fullSurahAudioRef.current.pause();
+            setFullSurahPlaying(false);
+            return;
+        }
+        // If we have an instance already queued, just play
+        if (fullSurahAudioRef.current) {
+            fullSurahAudioRef.current.play().catch(() => setFullSurahPlaying(false));
+            setFullSurahPlaying(true);
+            return;
+        }
+        // Fetch the full-surah audio URL
+        setFullSurahLoading(true);
+        try {
+            const r = await fetch(`https://api.quran.com/api/v4/chapter_recitations/${selectedReciter}/${currentSurah.number}`);
+            const d: any = await r.json();
+            const url = d.audio_file?.audio_url;
+            if (!url) throw new Error("no url");
+            const audio = new Audio(url);
+            audio.onended = () => {
+                setFullSurahPlaying(false);
+                fullSurahAudioRef.current = null;
+            };
+            audio.onerror = () => {
+                setFullSurahPlaying(false);
+                fullSurahAudioRef.current = null;
+                setError("Failed to play full surah audio");
+            };
+            fullSurahAudioRef.current = audio;
+            audio.play();
+            setFullSurahPlaying(true);
+        } catch {
+            setError("Could not load full surah audio");
+        } finally {
+            setFullSurahLoading(false);
+        }
+    };
+
+    // Stop full-surah audio when surah or reciter changes
+    useEffect(() => {
+        if (fullSurahAudioRef.current) {
+            fullSurahAudioRef.current.pause();
+            fullSurahAudioRef.current = null;
+            setFullSurahPlaying(false);
+        }
+    }, [currentSurah, selectedReciter]);
 
     // Search functionality
     const handleSearch = async (e: React.FormEvent) => {
@@ -710,20 +806,14 @@ export default function Quran() {
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/80 dark:border-slate-800 p-6 mb-8">
 
                     {/* View Mode Tabs */}
-                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "surah" | "juz" | "hizb" | "page")} className="w-full mb-6">
-                        <TabsList className="grid w-full grid-cols-4 max-w-md mx-auto bg-emerald-50 dark:bg-emerald-950/30 p-1 rounded-xl">
-                            <TabsTrigger value="surah" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-xs md:text-sm">
-                                <BookOpen className="w-4 h-4 mr-1" /> Surah
-                            </TabsTrigger>
-                            <TabsTrigger value="juz" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-xs md:text-sm">
-                                <Layers className="w-4 h-4 mr-1" /> Juz
-                            </TabsTrigger>
-                            <TabsTrigger value="hizb" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-xs md:text-sm">
-                                <Layers className="w-4 h-4 mr-1" /> Hizb
-                            </TabsTrigger>
-                            <TabsTrigger value="page" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-xs md:text-sm">
-                                <BookOpen className="w-4 h-4 mr-1" /> Page
-                            </TabsTrigger>
+                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-full mb-6">
+                        <TabsList className="grid w-full grid-cols-6 max-w-2xl mx-auto bg-emerald-50 dark:bg-emerald-950/30 p-1 rounded-xl">
+                            <TabsTrigger value="surah" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Surah</TabsTrigger>
+                            <TabsTrigger value="juz" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Juz</TabsTrigger>
+                            <TabsTrigger value="hizb" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Hizb</TabsTrigger>
+                            <TabsTrigger value="rub" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Rub</TabsTrigger>
+                            <TabsTrigger value="manzil" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Manzil</TabsTrigger>
+                            <TabsTrigger value="page" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Page</TabsTrigger>
                         </TabsList>
                     </Tabs>
 
@@ -792,32 +882,56 @@ export default function Quran() {
 
                         {viewMode === "hizb" && (
                             <div className="flex items-center gap-3">
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={() => setCurrentHizb(Math.max(1, currentHizb - 1))}
-                                    disabled={currentHizb === 1}
-                                    className="h-12 w-12 rounded-xl shadow-sm"
-                                >
+                                <Button variant="outline" size="icon" onClick={() => setCurrentHizb(Math.max(1, currentHizb - 1))} disabled={currentHizb === 1} className="h-12 w-12 rounded-xl shadow-sm">
                                     <ChevronLeft className="h-5 w-5" />
                                 </Button>
                                 <Select value={currentHizb.toString()} onValueChange={(v) => setCurrentHizb(parseInt(v))}>
-                                    <SelectTrigger className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm">
-                                        <SelectValue />
-                                    </SelectTrigger>
+                                    <SelectTrigger className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm"><SelectValue /></SelectTrigger>
                                     <SelectContent className="max-h-[300px]">
                                         {Array.from({ length: 60 }, (_, i) => i + 1).map((hizb) => (
                                             <SelectItem key={hizb} value={hizb.toString()}>Hizb {hizb}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={() => setCurrentHizb(Math.min(60, currentHizb + 1))}
-                                    disabled={currentHizb === 60}
-                                    className="h-12 w-12 rounded-xl shadow-sm"
-                                >
+                                <Button variant="outline" size="icon" onClick={() => setCurrentHizb(Math.min(60, currentHizb + 1))} disabled={currentHizb === 60} className="h-12 w-12 rounded-xl shadow-sm">
+                                    <ChevronRight className="h-5 w-5" />
+                                </Button>
+                            </div>
+                        )}
+
+                        {viewMode === "rub" && (
+                            <div className="flex items-center gap-3">
+                                <Button variant="outline" size="icon" onClick={() => setCurrentRub(Math.max(1, currentRub - 1))} disabled={currentRub === 1} className="h-12 w-12 rounded-xl shadow-sm">
+                                    <ChevronLeft className="h-5 w-5" />
+                                </Button>
+                                <Select value={currentRub.toString()} onValueChange={(v) => setCurrentRub(parseInt(v))}>
+                                    <SelectTrigger className="w-[200px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm"><SelectValue /></SelectTrigger>
+                                    <SelectContent className="max-h-[300px]">
+                                        {Array.from({ length: 240 }, (_, i) => i + 1).map((rub) => (
+                                            <SelectItem key={rub} value={rub.toString()}>Rub al-Hizb {rub}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Button variant="outline" size="icon" onClick={() => setCurrentRub(Math.min(240, currentRub + 1))} disabled={currentRub === 240} className="h-12 w-12 rounded-xl shadow-sm">
+                                    <ChevronRight className="h-5 w-5" />
+                                </Button>
+                            </div>
+                        )}
+
+                        {viewMode === "manzil" && (
+                            <div className="flex items-center gap-3">
+                                <Button variant="outline" size="icon" onClick={() => setCurrentManzil(Math.max(1, currentManzil - 1))} disabled={currentManzil === 1} className="h-12 w-12 rounded-xl shadow-sm">
+                                    <ChevronLeft className="h-5 w-5" />
+                                </Button>
+                                <Select value={currentManzil.toString()} onValueChange={(v) => setCurrentManzil(parseInt(v))}>
+                                    <SelectTrigger className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {Array.from({ length: 7 }, (_, i) => i + 1).map((manzil) => (
+                                            <SelectItem key={manzil} value={manzil.toString()}>Manzil {manzil}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Button variant="outline" size="icon" onClick={() => setCurrentManzil(Math.min(7, currentManzil + 1))} disabled={currentManzil === 7} className="h-12 w-12 rounded-xl shadow-sm">
                                     <ChevronRight className="h-5 w-5" />
                                 </Button>
                             </div>
@@ -1025,6 +1139,19 @@ export default function Quran() {
                                     {currentSurah.numberOfAyahs} Verses
                                 </Badge>
                             </div>
+                            <Button
+                                onClick={toggleFullSurahAudio}
+                                disabled={fullSurahLoading}
+                                className="mt-5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded-xl shadow-md"
+                            >
+                                {fullSurahLoading ? (
+                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading…</>
+                                ) : fullSurahPlaying ? (
+                                    <><Pause className="mr-2 h-4 w-4" /> Pause full surah</>
+                                ) : (
+                                    <><Play className="mr-2 h-4 w-4" /> Play whole surah</>
+                                )}
+                            </Button>
                         </div>
                     </div>
                 )}
@@ -1048,6 +1175,28 @@ export default function Quran() {
                                 Hizb {currentHizb}
                             </h2>
                             <p className="text-slate-500 mt-1">{verses.length} verses</p>
+                        </div>
+                    </div>
+                )}
+
+                {viewMode === "rub" && (
+                    <div className="text-center mb-10">
+                        <div className="inline-block bg-white dark:bg-slate-900 rounded-2xl px-10 py-6 shadow-xl shadow-emerald-500/5 border border-emerald-100 dark:border-slate-800">
+                            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
+                                Rub al-Hizb {currentRub}
+                            </h2>
+                            <p className="text-slate-500 mt-1">{verses.length} verses · quarter of Hizb {Math.ceil(currentRub / 4)}</p>
+                        </div>
+                    </div>
+                )}
+
+                {viewMode === "manzil" && (
+                    <div className="text-center mb-10">
+                        <div className="inline-block bg-white dark:bg-slate-900 rounded-2xl px-10 py-6 shadow-xl shadow-emerald-500/5 border border-emerald-100 dark:border-slate-800">
+                            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
+                                Manzil {currentManzil}
+                            </h2>
+                            <p className="text-slate-500 mt-1">{verses.length} verses · weekly reading day {currentManzil} of 7</p>
                         </div>
                     </div>
                 )}
