@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Send, Sparkles, Loader2, AlertCircle, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
+import RequireAuth from "@/components/RequireAuth";
 
 interface Message {
     role: "user" | "assistant";
@@ -25,7 +26,7 @@ const TOOL_LABELS: Record<string, string> = {
     search_hadith_collection: "searching hadith",
 };
 
-export default function Ask() {
+function AskInner() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
@@ -241,5 +242,13 @@ export default function Ask() {
                 </p>
             </section>
         </div>
+    );
+}
+
+export default function Ask() {
+    return (
+        <RequireAuth reason="Sign in to use the Ask AI assistant. Free forever — no password needed.">
+            <AskInner />
+        </RequireAuth>
     );
 }

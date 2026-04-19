@@ -14,6 +14,9 @@ import TajweedText, { TajweedLegend } from "@/components/TajweedText";
 import ChapterInfoPanel from "@/components/ChapterInfoPanel";
 import SimilarVersesPanel from "@/components/SimilarVersesPanel";
 import CompareTranslationsModal from "@/components/CompareTranslationsModal";
+import VerseActionsModal from "@/components/VerseActionsModal";
+import { useAuth } from "@/contexts/AuthContext";
+import * as bmQuery from "@/lib/queries/bookmarks";
 
 // Types
 interface Surah {
@@ -177,6 +180,37 @@ export default function Quran() {
 
     // Compare-translations modal — stores the verse_key currently being compared
     const [compareKey, setCompareKey] = useState<string | null>(null);
+
+    // Notes + memorization modal
+    const [actionsVerse, setActionsVerse] = useState<{ surah: number; ayah: number } | null>(null);
+
+    // Auth-aware bookmark sync
+    const { user } = useAuth();
+    useEffect(() => {
+        if (!user) return;
+        // Migrate any localStorage bookmarks to Supabase once per session
+        const migrated = sessionStorage.getItem("mq_bookmarks_migrated");
+        if (migrated) return;
+        const raw = localStorage.getItem("quranBookmarks");
+        if (!raw) {
+            sessionStorage.setItem("mq_bookmarks_migrated", "1");
+            return;
+        }
+        try {
+            const local: Array<{ surahNumber: number; verseNumber: number; surahName?: string }> = JSON.parse(raw);
+            Promise.all(
+                local.map((b) =>
+                    bmQuery.addBookmark(user.id, b.surahNumber, b.verseNumber, b.surahName).catch(() => null),
+                ),
+            ).then(() => {
+                sessionStorage.setItem("mq_bookmarks_migrated", "1");
+                localStorage.removeItem("quranBookmarks");
+                toast.success(`Synced ${local.length} bookmark${local.length === 1 ? "" : "s"} to your account`);
+            });
+        } catch {
+            sessionStorage.setItem("mq_bookmarks_migrated", "1");
+        }
+    }, [user]);
     const toggleSimilar = (verseKey: string) => {
         setExpandedSimilar((prev) => {
             const next = new Set(prev);
@@ -1434,6 +1468,15 @@ export default function Quran() {
                                             <Languages className="h-4 w-4" />
                                             Compare all 17
                                         </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setActionsVerse({ surah: verse.surahNumber, ayah: verse.number })}
+                                            className="text-xs rounded-lg text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/30 gap-2"
+                                        >
+                                            <Star className="h-4 w-4" />
+                                            Note / Hifz
+                                        </Button>
                                     </div>
 
                                     {/* Similar verses panel (lazy-loaded per verse) */}
@@ -1449,6 +1492,15 @@ export default function Quran() {
 
             {/* Compare translations modal */}
             {compareKey && <CompareTranslationsModal verseKey={compareKey} onClose={() => setCompareKey(null)} />}
+
+            {/* Verse actions modal: note + hifz status */}
+            {actionsVerse && (
+                <VerseActionsModal
+                    surah={actionsVerse.surah}
+                    ayah={actionsVerse.ayah}
+                    onClose={() => setActionsVerse(null)}
+                />
+            )}
 
             {/* Floating Audio Player */}
             <div className="fixed bottom-0 left-0 right-0 z-50">

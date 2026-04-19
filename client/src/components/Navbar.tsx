@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SettingsMenu from "@/components/SettingsMenu";
+import AuthButton from "@/components/AuthButton";
 
 export default function Navbar() {
     const location = useLocation();
@@ -121,10 +122,12 @@ export default function Navbar() {
                         Ask AI
                     </Link>
                     <SettingsMenu />
+                    <AuthButton />
                 </div>
 
                 <div className="flex items-center gap-1 md:hidden">
                     <SettingsMenu />
+                    <AuthButton />
                 </div>
 
                 <button

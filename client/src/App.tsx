@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import Quran from "./pages/Quran";
 import Hadith from "./pages/Hadith";
@@ -16,6 +17,10 @@ import CalendarPage from "./pages/Calendar";
 import Topics from "./pages/Topics";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
+import AuthCallback from "./pages/AuthCallback";
+import Bookmarks from "./pages/Bookmarks";
+import Notes from "./pages/Notes";
+import Memorize from "./pages/Memorize";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -40,33 +45,39 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light" switchable>
         <UserPreferences>
-          <TooltipProvider>
-            <Toaster />
-            <BrowserRouter>
-              <ScrollToTop />
-              <KeyboardShortcutsProvider />
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/quran" element={<Quran />} />
-                  <Route path="/hadith" element={<Hadith />} />
-                  <Route path="/ask" element={<Ask />} />
-                  <Route path="/prayer-times" element={<PrayerTimes />} />
-                  <Route path="/qibla" element={<Qibla />} />
-                  <Route path="/names" element={<Names />} />
-                  <Route path="/duas" element={<Duas />} />
-                  <Route path="/ramadan" element={<Ramadan />} />
-                  <Route path="/calendar" element={<CalendarPage />} />
-                  <Route path="/topics" element={<Topics />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/faq" element={<FAQ />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Layout>
-            </BrowserRouter>
-          </TooltipProvider>
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <BrowserRouter>
+                <ScrollToTop />
+                <KeyboardShortcutsProvider />
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/quran" element={<Quran />} />
+                    <Route path="/hadith" element={<Hadith />} />
+                    <Route path="/ask" element={<Ask />} />
+                    <Route path="/prayer-times" element={<PrayerTimes />} />
+                    <Route path="/qibla" element={<Qibla />} />
+                    <Route path="/names" element={<Names />} />
+                    <Route path="/duas" element={<Duas />} />
+                    <Route path="/ramadan" element={<Ramadan />} />
+                    <Route path="/calendar" element={<CalendarPage />} />
+                    <Route path="/topics" element={<Topics />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/auth/callback" element={<AuthCallback />} />
+                    <Route path="/bookmarks" element={<Bookmarks />} />
+                    <Route path="/notes" element={<Notes />} />
+                    <Route path="/memorize" element={<Memorize />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Layout>
+              </BrowserRouter>
+            </TooltipProvider>
+          </AuthProvider>
         </UserPreferences>
       </ThemeProvider>
     </ErrorBoundary>
