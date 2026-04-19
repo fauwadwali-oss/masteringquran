@@ -30,6 +30,7 @@ const MORE_GROUPS: Array<{ label: string; items: Array<{ to: string; label: stri
     {
         label: "Learn",
         items: [
+            { to: "/learn-arabic", label: "Learn Arabic", emoji: "🔤" },
             { to: "/prophets", label: "Stories of Prophets", emoji: "🕯️" },
             { to: "/seerah", label: "Seerah", emoji: "📜" },
             { to: "/hajj", label: "Hajj & Umrah", emoji: "🕋" },

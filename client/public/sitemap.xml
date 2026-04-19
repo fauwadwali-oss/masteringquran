@@ -111,6 +111,41 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://masteringquran.com/learn-arabic</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/learn-arabic/letters</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/learn-arabic/shapes</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/learn-arabic/harakat</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/learn-arabic/tanween-madd</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/learn-arabic/tajweed</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/learn-arabic/first-surah</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://masteringquran.com/ask</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
