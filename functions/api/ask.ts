@@ -4,6 +4,7 @@
 
 interface Env {
     ANTHROPIC_API_KEY: string;
+    UMMAH_API_KEY?: string;
 }
 
 interface ChatMessage {
@@ -19,6 +20,7 @@ interface RequestBody {
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-haiku-4-5-20251001";
 const DATA_BASE = "https://cdn.jsdelivr.net/gh/fauwadwali-oss/nwv-islamic-data@main";
+const UMMAH_BASE = "https://ummahapi.com/api";
 const MAX_ITERATIONS = 6;
 const MAX_TOKENS = 1500;
 
@@ -42,6 +44,12 @@ Available English tafsir editions (for the get_tafsir tool):
 
 Available hadith collections (for get_hadith and search_hadith_collection):
 - bukhari, muslim, abudawud, tirmidhi, nasai, ibnmajah, malik, nawawi, qudsi, dehlawi
+
+Additional tools (Islamic practice — use when user asks about daily religious routine):
+- get_prayer_times: salah timings for a lat/lng (needs Hanafi/Shafi madhab; defaults to MuslimWorldLeague calculation method)
+- get_hijri_today: today's Hijri date and any Islamic event that falls on it
+- get_duas_by_category: supplications from Quran and Sunnah (27 categories like morning, evening, wudu, travel, food, sleep, etc.)
+- get_99_names: the Asma ul-Husna (fetch a specific name by number 1–99 or search by English meaning)
 
 Always call tools before making claims. If you can't find good sources, say so honestly.`;
 
@@ -115,11 +123,62 @@ const TOOLS = [
             required: ["collection", "query"],
         },
     },
+    {
+        name: "get_prayer_times",
+        description: "Fetch the five daily prayer times (plus imsak and sunrise) for a given latitude/longitude. Returns times in the local timezone of the coordinates.",
+        input_schema: {
+            type: "object",
+            properties: {
+                latitude: { type: "number", description: "Latitude between -90 and 90" },
+                longitude: { type: "number", description: "Longitude between -180 and 180" },
+                madhab: { type: "string", description: "Hanafi (later Asr) or Shafi (earlier Asr). Default: Shafi.", enum: ["Hanafi", "Shafi"] },
+                method: { type: "string", description: "Calculation method. Common: MuslimWorldLeague, ISNA, Egyptian, Karachi, UmmAlQura. Default: MuslimWorldLeague." },
+            },
+            required: ["latitude", "longitude"],
+        },
+    },
+    {
+        name: "get_hijri_today",
+        description: "Get today's Hijri date and any Islamic event or holy day that falls on it.",
+        input_schema: {
+            type: "object",
+            properties: {},
+        },
+    },
+    {
+        name: "get_duas_by_category",
+        description: "Fetch authentic supplications (duas) from Quran and Sunnah for a specific category. Returns Arabic, transliteration, translation, and source references.",
+        input_schema: {
+            type: "object",
+            properties: {
+                category: {
+                    type: "string",
+                    description: "Category ID. Examples: morning, evening, wudu, prayer, after_prayer, sleep, food, travel, home, rain, distress, forgiveness, protection, healing.",
+                },
+                limit: { type: "integer", description: "Max duas to return (default 3, max 10)", minimum: 1, maximum: 10 },
+            },
+            required: ["category"],
+        },
+    },
+    {
+        name: "get_99_names",
+        description: "Fetch the Asma ul-Husna (99 Names of Allah). Pass 'number' for a specific name by position (1-99), or pass 'search' for English-meaning keyword lookup. Returns Arabic, transliteration, English, and meaning.",
+        input_schema: {
+            type: "object",
+            properties: {
+                number: { type: "integer", description: "Position of the name (1-99)", minimum: 1, maximum: 99 },
+                search: { type: "string", description: "Search the Arabic transliteration or English meaning" },
+            },
+        },
+    },
 ];
 
 // ──────────────────────────── Tool implementations ────────────────────────────
 
-async function executeTool(name: string, input: Record<string, unknown>): Promise<unknown> {
+const ummahHeaders = (env: Env): HeadersInit =>
+    env.UMMAH_API_KEY ? { "X-API-Key": env.UMMAH_API_KEY } : {};
+
+async function executeTool(name: string, input: Record<string, unknown>, env: Env): Promise<unknown> {
     try {
         if (name === "get_verse") {
             const { surah, ayah } = input as { surah: number; ayah: number };
@@ -196,6 +255,75 @@ async function executeTool(name: string, input: Record<string, unknown>): Promis
                     text: String(h.text).slice(0, 800),
                 }));
             return { collection: d.metadata?.name || collection, matches_count: matches.length, matches };
+        }
+
+        if (name === "get_prayer_times") {
+            const { latitude, longitude, madhab = "Shafi", method = "MuslimWorldLeague" } = input as {
+                latitude: number; longitude: number; madhab?: string; method?: string;
+            };
+            const url = `${UMMAH_BASE}/prayer-times?latitude=${latitude}&longitude=${longitude}&madhab=${encodeURIComponent(madhab)}&method=${encodeURIComponent(method)}`;
+            const r = await fetch(url, { headers: ummahHeaders(env) });
+            if (!r.ok) return { error: `Prayer times lookup failed (${r.status})` };
+            const d = (await r.json()) as any;
+            const data = d.data || d;
+            return {
+                date: data.date,
+                timezone: data.timezone,
+                location: data.location,
+                calculation_method: data.calculation_method,
+                madhab: data.madhab,
+                prayer_times: data.prayer_times,
+            };
+        }
+
+        if (name === "get_hijri_today") {
+            const r = await fetch(`${UMMAH_BASE}/today-hijri`, { headers: ummahHeaders(env) });
+            if (!r.ok) return { error: `Hijri date lookup failed (${r.status})` };
+            const d = (await r.json()) as any;
+            return d.data || d;
+        }
+
+        if (name === "get_duas_by_category") {
+            const { category, limit = 3 } = input as { category: string; limit?: number };
+            const url = `${UMMAH_BASE}/duas/category/${encodeURIComponent(category)}?limit=${Math.min(limit, 10)}`;
+            const r = await fetch(url, { headers: ummahHeaders(env) });
+            if (!r.ok) return { error: `Dua category '${category}' not found` };
+            const d = (await r.json()) as any;
+            const data = d.data || d;
+            return {
+                category: data.category,
+                total: data.total,
+                duas: (data.duas || []).map((du: any) => ({
+                    title: du.title,
+                    arabic: du.arabic,
+                    transliteration: du.transliteration,
+                    translation: du.translation,
+                    source: du.source,
+                    repeat: du.repeat,
+                })),
+            };
+        }
+
+        if (name === "get_99_names") {
+            const { number, search } = input as { number?: number; search?: string };
+            if (typeof number === "number") {
+                const r = await fetch(`${UMMAH_BASE}/asma-ul-husna/${number}`, { headers: ummahHeaders(env) });
+                if (!r.ok) return { error: `Name #${number} not found` };
+                const d = (await r.json()) as any;
+                return d.data?.name || d.data || d;
+            }
+            if (search) {
+                const r = await fetch(`${UMMAH_BASE}/asma-ul-husna/search?q=${encodeURIComponent(search)}`, { headers: ummahHeaders(env) });
+                if (!r.ok) return { error: `Name search failed (${r.status})` };
+                const d = (await r.json()) as any;
+                return d.data || d;
+            }
+            // Neither number nor search — return all 99 names (brief)
+            const r = await fetch(`${UMMAH_BASE}/asma-ul-husna`, { headers: ummahHeaders(env) });
+            if (!r.ok) return { error: `Names list failed (${r.status})` };
+            const d = (await r.json()) as any;
+            const names = Array.isArray(d.data) ? d.data : d.data?.names || [];
+            return { count: names.length, names };
         }
 
         return { error: `Unknown tool: ${name}` };
@@ -372,7 +500,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
                         toolUses.map(async (t) => ({
                             type: "tool_result",
                             tool_use_id: t.id!,
-                            content: JSON.stringify(await executeTool(t.name!, t.input || {})),
+                            content: JSON.stringify(await executeTool(t.name!, t.input || {}, env)),
                         })),
                     );
 

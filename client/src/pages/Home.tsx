@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, Library, Sparkles, ArrowDown, Volume2, Layers, Languages, Search } from "lucide-react";
+import { BookOpen, Library, Sparkles, ArrowDown, Volume2, Layers, Languages, Search, Clock, Compass, Star, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
@@ -127,6 +127,71 @@ export default function Home() {
                                         A scholarly assistant grounded in verified sources. Every answer is backed by a tool call to the Quran, hadith, or tafsir — no hallucinated citations, ever.
                                     </p>
                                     <p className="text-blue-600 dark:text-blue-400 font-semibold text-sm">Start asking →</p>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* Daily Companions */}
+            <section className="py-16 px-6 bg-gradient-to-b from-white via-amber-50/20 to-white dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950 border-t border-slate-100 dark:border-slate-800">
+                <div className="max-w-6xl mx-auto">
+                    <div className="text-center mb-12 space-y-3">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-950/30 rounded-full border border-amber-200 dark:border-amber-800">
+                            <Heart className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                            <span className="text-sm font-medium text-amber-700 dark:text-amber-300">Daily Companions</span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
+                            For every part of the day
+                        </h2>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <Link to="/prayer-times" className="group">
+                            <Card className="h-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-xl transition-all hover:-translate-y-1">
+                                <CardContent className="p-6 space-y-3">
+                                    <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/40 rounded-xl flex items-center justify-center">
+                                        <Clock className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                    </div>
+                                    <h3 className="font-semibold text-slate-900 dark:text-white">Prayer Times</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Accurate salah timings for your location, 22 calculation methods.</p>
+                                </CardContent>
+                            </Card>
+                        </Link>
+
+                        <Link to="/qibla" className="group">
+                            <Card className="h-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-purple-400 dark:hover:border-purple-500 hover:shadow-xl transition-all hover:-translate-y-1">
+                                <CardContent className="p-6 space-y-3">
+                                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 rounded-xl flex items-center justify-center">
+                                        <Compass className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                                    </div>
+                                    <h3 className="font-semibold text-slate-900 dark:text-white">Qibla Direction</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Precise bearing to the Kaaba from wherever you are in the world.</p>
+                                </CardContent>
+                            </Card>
+                        </Link>
+
+                        <Link to="/names" className="group">
+                            <Card className="h-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-amber-400 dark:hover:border-amber-500 hover:shadow-xl transition-all hover:-translate-y-1">
+                                <CardContent className="p-6 space-y-3">
+                                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 rounded-xl flex items-center justify-center">
+                                        <Star className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                                    </div>
+                                    <h3 className="font-semibold text-slate-900 dark:text-white">99 Names of Allah</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">The Asma ul-Husna with Arabic, transliteration, and reflection.</p>
+                                </CardContent>
+                            </Card>
+                        </Link>
+
+                        <Link to="/duas" className="group">
+                            <Card className="h-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-teal-400 dark:hover:border-teal-500 hover:shadow-xl transition-all hover:-translate-y-1">
+                                <CardContent className="p-6 space-y-3">
+                                    <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/40 rounded-xl flex items-center justify-center">
+                                        <Heart className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+                                    </div>
+                                    <h3 className="font-semibold text-slate-900 dark:text-white">Duas</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">126 authentic supplications across 27 categories — morning, travel, and more.</p>
                                 </CardContent>
                             </Card>
                         </Link>

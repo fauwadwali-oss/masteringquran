@@ -7,6 +7,10 @@ import Home from "./pages/Home";
 import Quran from "./pages/Quran";
 import Hadith from "./pages/Hadith";
 import Ask from "./pages/Ask";
+import PrayerTimes from "./pages/PrayerTimes";
+import Qibla from "./pages/Qibla";
+import Names from "./pages/Names";
+import Duas from "./pages/Duas";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -38,6 +42,10 @@ function App() {
                 <Route path="/quran" element={<Quran />} />
                 <Route path="/hadith" element={<Hadith />} />
                 <Route path="/ask" element={<Ask />} />
+                <Route path="/prayer-times" element={<PrayerTimes />} />
+                <Route path="/qibla" element={<Qibla />} />
+                <Route path="/names" element={<Names />} />
+                <Route path="/duas" element={<Duas />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="*" element={<NotFound />} />

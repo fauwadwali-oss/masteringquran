@@ -47,6 +47,24 @@ export default function Navbar() {
                         Hadith
                     </Link>
                     <Link
+                        to="/prayer-times"
+                        className={cn(
+                            "hover:opacity-80 transition-opacity",
+                            location.pathname === "/prayer-times" && "opacity-100"
+                        )}
+                    >
+                        Prayers
+                    </Link>
+                    <Link
+                        to="/duas"
+                        className={cn(
+                            "hover:opacity-80 transition-opacity",
+                            location.pathname === "/duas" && "opacity-100"
+                        )}
+                    >
+                        Duas
+                    </Link>
+                    <Link
                         to="/ask"
                         className={cn(
                             "inline-flex items-center gap-1 hover:opacity-80 transition-opacity",
@@ -72,6 +90,10 @@ export default function Navbar() {
                     <Link to="/" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Home</Link>
                     <Link to="/quran" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Quran</Link>
                     <Link to="/hadith" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Hadith</Link>
+                    <Link to="/prayer-times" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Prayer Times</Link>
+                    <Link to="/qibla" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Qibla</Link>
+                    <Link to="/names" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>99 Names</Link>
+                    <Link to="/duas" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Duas</Link>
                     <Link to="/ask" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>
                         <Sparkles className="h-4 w-4 text-emerald-500" /> Ask AI
                     </Link>
