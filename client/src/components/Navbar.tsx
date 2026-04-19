@@ -1,13 +1,45 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, Sparkles, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import SettingsMenu from "@/components/SettingsMenu";
 import AuthButton from "@/components/AuthButton";
+
+// Items reachable via the desktop "More" dropdown, grouped.
+const MORE_GROUPS: Array<{ label: string; items: Array<{ to: string; label: string; emoji?: string }> }> = [
+    {
+        label: "Daily practice",
+        items: [
+            { to: "/prayer-times", label: "Prayer Times", emoji: "🕌" },
+            { to: "/qibla", label: "Qibla Direction", emoji: "🧭" },
+            { to: "/duas", label: "Duas", emoji: "🤲" },
+            { to: "/ramadan", label: "Ramadan", emoji: "🌙" },
+        ],
+    },
+    {
+        label: "Reference",
+        items: [
+            { to: "/names", label: "99 Names", emoji: "✨" },
+            { to: "/calendar", label: "Calendar", emoji: "📅" },
+            { to: "/topics", label: "Topics", emoji: "💡" },
+        ],
+    },
+    {
+        label: "Practice",
+        items: [
+            { to: "/plans", label: "Reading Plans", emoji: "📖" },
+            { to: "/quiz", label: "Quiz", emoji: "🏆" },
+            { to: "/flashcards", label: "Flash Cards", emoji: "🎴" },
+        ],
+    },
+];
 
 export default function Navbar() {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
+
+    const isInMore = MORE_GROUPS.some((g) => g.items.some((i) => location.pathname === i.to));
 
     return (
         <nav className="w-full py-4 px-6 sticky top-0 z-50 backdrop-blur-sm border-b transition-colors duration-300 bg-white/80 border-slate-200 text-slate-900 dark:bg-slate-950/80 dark:border-slate-800 dark:text-slate-100">
@@ -20,102 +52,74 @@ export default function Navbar() {
                 </div>
 
                 {/* Desktop Menu */}
-                <div className="hidden md:flex gap-3 lg:gap-4 text-sm font-medium items-center">
+                <div className="hidden md:flex gap-3 lg:gap-5 text-sm font-medium items-center">
                     <Link
                         to="/"
-                        className={cn(
-                            "hover:opacity-80 transition-opacity",
-                            location.pathname === "/" && "opacity-100"
-                        )}
+                        className={cn("hover:opacity-80 transition-opacity", location.pathname === "/" && "opacity-100")}
                     >
                         Home
                     </Link>
                     <Link
                         to="/quran"
-                        className={cn(
-                            "hover:opacity-80 transition-opacity",
-                            location.pathname === "/quran" && "opacity-100"
-                        )}
+                        className={cn("hover:opacity-80 transition-opacity", location.pathname === "/quran" && "opacity-100")}
                     >
                         Quran
                     </Link>
                     <Link
                         to="/hadith"
-                        className={cn(
-                            "hover:opacity-80 transition-opacity",
-                            location.pathname === "/hadith" && "opacity-100"
-                        )}
+                        className={cn("hover:opacity-80 transition-opacity", location.pathname === "/hadith" && "opacity-100")}
                     >
                         Hadith
                     </Link>
-                    <Link
-                        to="/prayer-times"
-                        className={cn(
-                            "hover:opacity-80 transition-opacity",
-                            location.pathname === "/prayer-times" && "opacity-100"
-                        )}
-                    >
-                        Prayers
-                    </Link>
-                    <Link
-                        to="/qibla"
-                        className={cn(
-                            "hover:opacity-80 transition-opacity",
-                            location.pathname === "/qibla" && "opacity-100"
-                        )}
-                    >
-                        Qibla
-                    </Link>
-                    <Link
-                        to="/names"
-                        className={cn(
-                            "hover:opacity-80 transition-opacity",
-                            location.pathname === "/names" && "opacity-100"
-                        )}
-                    >
-                        Names
-                    </Link>
-                    <Link
-                        to="/duas"
-                        className={cn(
-                            "hover:opacity-80 transition-opacity",
-                            location.pathname === "/duas" && "opacity-100"
-                        )}
-                    >
-                        Duas
-                    </Link>
-                    <Link
-                        to="/ramadan"
-                        className={cn(
-                            "hover:opacity-80 transition-opacity",
-                            location.pathname === "/ramadan" && "opacity-100"
-                        )}
-                    >
-                        Ramadan
-                    </Link>
-                    <Link
-                        to="/calendar"
-                        className={cn(
-                            "hover:opacity-80 transition-opacity",
-                            location.pathname === "/calendar" && "opacity-100"
-                        )}
-                    >
-                        Calendar
-                    </Link>
-                    <Link
-                        to="/topics"
-                        className={cn(
-                            "hover:opacity-80 transition-opacity",
-                            location.pathname === "/topics" && "opacity-100"
-                        )}
-                    >
-                        Topics
-                    </Link>
+
+                    {/* More dropdown */}
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <button
+                                className={cn(
+                                    "inline-flex items-center gap-1 hover:opacity-80 transition-opacity",
+                                    isInMore && "opacity-100 text-emerald-700 dark:text-emerald-400",
+                                )}
+                            >
+                                More <ChevronDown className="h-3.5 w-3.5" />
+                            </button>
+                        </PopoverTrigger>
+                        <PopoverContent align="end" sideOffset={10} className="w-[480px] p-0">
+                            <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800">
+                                {MORE_GROUPS.map((group) => (
+                                    <div key={group.label} className="p-3 space-y-1">
+                                        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 px-2 pb-1">
+                                            {group.label}
+                                        </p>
+                                        {group.items.map((item) => {
+                                            const active = location.pathname === item.to;
+                                            return (
+                                                <Link
+                                                    key={item.to}
+                                                    to={item.to}
+                                                    className={cn(
+                                                        "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors",
+                                                        active
+                                                            ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-medium"
+                                                            : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800",
+                                                    )}
+                                                >
+                                                    <span className="text-base leading-none">{item.emoji}</span>
+                                                    <span>{item.label}</span>
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
+                                ))}
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+
                     <Link
                         to="/ask"
                         className={cn(
                             "inline-flex items-center gap-1 hover:opacity-80 transition-opacity",
-                            location.pathname === "/ask" && "opacity-100"
+                            location.pathname === "/ask" && "opacity-100",
                         )}
                     >
                         <Sparkles className="h-3.5 w-3.5 text-emerald-500" />
@@ -140,23 +144,29 @@ export default function Navbar() {
             </div>
 
             {isOpen && (
-                <div className="md:hidden pt-4 pb-2 space-y-2 animate-in slide-in-from-top-5 fade-in duration-200">
+                <div className="md:hidden pt-4 pb-2 space-y-1 animate-in slide-in-from-top-5 fade-in duration-200 max-h-[80vh] overflow-y-auto">
                     <Link to="/" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Home</Link>
                     <Link to="/quran" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Quran</Link>
                     <Link to="/hadith" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Hadith</Link>
-                    <Link to="/prayer-times" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Prayer Times</Link>
-                    <Link to="/qibla" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Qibla</Link>
-                    <Link to="/names" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>99 Names</Link>
-                    <Link to="/duas" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Duas</Link>
-                    <Link to="/ramadan" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Ramadan</Link>
-                    <Link to="/calendar" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Calendar</Link>
-                    <Link to="/topics" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Topics</Link>
-                    <Link to="/plans" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Reading Plans</Link>
-                    <Link to="/quiz" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Quiz</Link>
-                    <Link to="/flashcards" className="block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>Flashcards</Link>
                     <Link to="/ask" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsOpen(false)}>
                         <Sparkles className="h-4 w-4 text-emerald-500" /> Ask AI
                     </Link>
+                    {MORE_GROUPS.map((group) => (
+                        <div key={group.label} className="pt-2">
+                            <p className="px-4 text-[10px] font-semibold uppercase tracking-wider text-slate-400">{group.label}</p>
+                            {group.items.map((item) => (
+                                <Link
+                                    key={item.to}
+                                    to={item.to}
+                                    onClick={() => setIsOpen(false)}
+                                    className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                                >
+                                    <span className="leading-none">{item.emoji}</span>
+                                    <span>{item.label}</span>
+                                </Link>
+                            ))}
+                        </div>
+                    ))}
                 </div>
             )}
         </nav>
