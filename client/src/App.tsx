@@ -42,6 +42,8 @@ import LearnVocabulary from "./pages/learn/Vocabulary";
 import LearnGrammar from "./pages/learn/Grammar";
 import LearnNumbersPhrases from "./pages/learn/NumbersPhrases";
 import LearnRoots from "./pages/learn/Roots";
+import LearnWriting from "./pages/learn/Writing";
+import LearnGraduation from "./pages/learn/Graduation";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -112,6 +114,8 @@ function App() {
                     <Route path="/learn-arabic/grammar" element={<LearnGrammar />} />
                     <Route path="/learn-arabic/numbers-phrases" element={<LearnNumbersPhrases />} />
                     <Route path="/learn-arabic/roots" element={<LearnRoots />} />
+                    <Route path="/learn-arabic/writing" element={<LearnWriting />} />
+                    <Route path="/learn-arabic/graduation" element={<LearnGraduation />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="*" element={<NotFound />} />

@@ -143,15 +143,21 @@ export default function LearnArabic() {
                     })}
                 </div>
 
-                {/* What's next */}
-                <Card className="border-slate-100 dark:border-slate-800">
+                {/* Journey map */}
+                <Card className="border border-emerald-100 dark:border-emerald-900/40">
                     <CardContent className="p-5 text-sm text-slate-600 dark:text-slate-400 space-y-2">
                         <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-semibold">
-                            <BookOpen className="h-4 w-4" /> Coming next, beyond the current 10 lessons
+                            <BookOpen className="h-4 w-4" /> The full curriculum at a glance
                         </div>
                         <p className="text-xs leading-relaxed">
-                            <strong>Milestone 6:</strong> Interactive letter tracing (writing practice).<br/>
-                            <strong>Milestone 7:</strong> Reading graduation, full tap-to-read of Al-Fatiha, An-Nas, Al-Falaq, Al-Ikhlas, Al-Kawthar.
+                            Twelve lessons across seven milestones, from zero Arabic to reading five full surahs of the Quran.
+                            Lessons 1-6 are Noorani Qaida foundations (letters, shapes, harakat, tanween & madd, tajweed, first surah).
+                            Lesson 7 is the 175 most common Quranic words across 11 themes.
+                            Lesson 8 is grammar, pronouns, verb tenses, noun cases.
+                            Lesson 9 is everyday Arabic, numbers, days, greetings, du'as.
+                            Lesson 10 is the root system with 30 foundational Quranic roots and 200+ derivations.
+                            Lesson 11 is writing practice with an interactive tracing canvas.
+                            Lesson 12 is your graduation, all five short surahs fully tap-to-read, culminating in a certificate when every lesson is complete.
                         </p>
                     </CardContent>
                 </Card>

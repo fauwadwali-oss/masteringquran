@@ -381,4 +381,8 @@ export const LESSONS: Lesson[] = [
     { id: "numbers-phrases", number: 9, slug: "numbers-phrases", title: "Numbers, Time & Everyday Phrases", subtitle: "Numbers 1-100, days, Hijri months, common greetings, and daily du'as.", estimatedMinutes: 20, emoji: "🗓️" },
     // Milestone 5, root system
     { id: "roots", number: 10, slug: "roots", title: "The Root System", subtitle: "The 3-letter skeleton behind every Arabic word. 30 key Quranic roots, 200+ derivations.", estimatedMinutes: 25, emoji: "🌳" },
+    // Milestone 6, writing practice
+    { id: "writing", number: 11, slug: "writing", title: "Writing Practice", subtitle: "Trace each Arabic letter with your finger or mouse. Cursive letterforms through muscle memory.", estimatedMinutes: 30, emoji: "✏️" },
+    // Milestone 7, graduation, 5 full surahs
+    { id: "graduation", number: 12, slug: "graduation", title: "Reading Graduation, Five Surahs", subtitle: "Al-Fatiha, Al-Kawthar, Al-Ikhlas, Al-Falaq, and An-Nas, fully tap-to-read, word by word.", estimatedMinutes: 40, emoji: "🎓" },
 ];
