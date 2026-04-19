@@ -156,6 +156,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://masteringquran.com/learn-arabic/numbers-phrases</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://masteringquran.com/learn-arabic/roots</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://masteringquran.com/ask</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

@@ -147,11 +147,9 @@ export default function LearnArabic() {
                 <Card className="border-slate-100 dark:border-slate-800">
                     <CardContent className="p-5 text-sm text-slate-600 dark:text-slate-400 space-y-2">
                         <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-semibold">
-                            <BookOpen className="h-4 w-4" /> Coming next, beyond the current 8 lessons
+                            <BookOpen className="h-4 w-4" /> Coming next, beyond the current 10 lessons
                         </div>
                         <p className="text-xs leading-relaxed">
-                            <strong>Milestone 4:</strong> Numbers, days, greetings, common phrases.<br/>
-                            <strong>Milestone 5:</strong> The root system, one root, all the words derived from it across the Quran.<br/>
                             <strong>Milestone 6:</strong> Interactive letter tracing (writing practice).<br/>
                             <strong>Milestone 7:</strong> Reading graduation, full tap-to-read of Al-Fatiha, An-Nas, Al-Falaq, Al-Ikhlas, Al-Kawthar.
                         </p>

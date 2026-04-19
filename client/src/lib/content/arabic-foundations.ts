@@ -377,4 +377,8 @@ export const LESSONS: Lesson[] = [
     { id: "vocabulary", number: 7, slug: "vocabulary", title: "Quranic Vocabulary", subtitle: "175 most common Quranic words in 11 themes, covering ~70% of what you'll read.", estimatedMinutes: 30, emoji: "📚" },
     // Milestone 3, grammar
     { id: "grammar", number: 8, slug: "grammar", title: "Grammar Basics", subtitle: "Pronouns, the definite article, verb tenses, noun cases, possessive suffixes.", estimatedMinutes: 25, emoji: "🧩" },
+    // Milestone 4, everyday Arabic
+    { id: "numbers-phrases", number: 9, slug: "numbers-phrases", title: "Numbers, Time & Everyday Phrases", subtitle: "Numbers 1-100, days, Hijri months, common greetings, and daily du'as.", estimatedMinutes: 20, emoji: "🗓️" },
+    // Milestone 5, root system
+    { id: "roots", number: 10, slug: "roots", title: "The Root System", subtitle: "The 3-letter skeleton behind every Arabic word. 30 key Quranic roots, 200+ derivations.", estimatedMinutes: 25, emoji: "🌳" },
 ];
