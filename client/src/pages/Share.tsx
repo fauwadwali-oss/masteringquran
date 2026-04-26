@@ -592,32 +592,36 @@ const VersePoster = forwardRef<HTMLDivElement, { verse: VerseData; template: Tem
         const isStory = format === "story";
         const longArabic = verse.arabic.length > 190;
         const longTranslation = verse.translation.length > 250;
+        const compactSquare = !isStory && showTranslation && (verse.arabic.length > 240 || verse.translation.length > 420);
+        const displayTranslation = compactSquare && verse.translation.length > 430
+            ? `${verse.translation.slice(0, 430).replace(/\s+\S*$/, "")}...`
+            : verse.translation;
 
         return (
             <div
                 ref={ref}
-                className={cn("relative flex w-full flex-col overflow-hidden", template.bgClass, isStory ? "aspect-[9/16] p-7" : "aspect-square p-7 md:p-9")}
+                className={cn("relative flex w-full flex-col overflow-hidden", template.bgClass, isStory ? "aspect-[9/16] p-7" : "aspect-square p-5 md:p-7")}
                 style={{ aspectRatio: isStory ? "9 / 16" : "1 / 1" }}
             >
                 <div className="absolute inset-0 opacity-[0.13] [background-image:linear-gradient(30deg,currentColor_1px,transparent_1px),linear-gradient(150deg,currentColor_1px,transparent_1px)] [background-size:38px_38px] text-white" />
-                <div className={cn("relative flex h-full flex-col rounded-[1.75rem] border p-6 shadow-2xl backdrop-blur-sm", template.surfaceClass, isStory ? "p-6" : "md:p-7")}>
+                <div className={cn("relative grid h-full min-h-0 grid-rows-[auto_1fr_auto] rounded-[1.75rem] border shadow-2xl backdrop-blur-sm", template.surfaceClass, compactSquare ? "p-4 md:p-5" : isStory ? "p-6" : "p-5 md:p-7")}>
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <img src="/mq-logo-mark.svg" alt="" crossOrigin="anonymous" className="h-9 w-auto drop-shadow-md" />
+                            <img src="/mq-logo-mark.svg" alt="" crossOrigin="anonymous" className={cn("w-auto drop-shadow-md", compactSquare ? "h-7" : "h-9")} />
                             <div>
-                                <p className={cn("text-sm font-bold leading-none", template.refColor)}>Mastering Quran</p>
-                                <p className={cn("mt-1 text-[10px] uppercase tracking-[0.22em]", template.mutedColor)}>Share a verse</p>
+                                <p className={cn("font-bold leading-none", template.refColor, compactSquare ? "text-xs" : "text-sm")}>Mastering Quran</p>
+                                {!compactSquare && <p className={cn("mt-1 text-[10px] uppercase tracking-[0.22em]", template.mutedColor)}>Share a verse</p>}
                             </div>
                         </div>
-                        <div className={cn("rounded-full border px-3 py-1 text-xs font-bold", template.refColor, "border-current/25")}>
+                        <div className={cn("rounded-full border font-bold", template.refColor, "border-current/25", compactSquare ? "px-2 py-0.5 text-[10px]" : "px-3 py-1 text-xs")}>
                             {verse.verseKey}
                         </div>
                     </div>
 
-                    <div className={cn("flex flex-1 flex-col items-center justify-center text-center", isStory ? "gap-7 py-8" : "gap-5 py-6")}>
+                    <div className={cn("flex min-h-0 flex-col items-center justify-center overflow-hidden text-center", compactSquare ? "gap-2 py-2" : isStory ? "gap-7 py-8" : "gap-5 py-5")}>
                         <div className="flex w-full items-center gap-3">
                             <span className={cn("h-px flex-1", template.accent, "opacity-55")} />
-                            <span className={cn("font-amiri text-xl", template.refColor)}>﷽</span>
+                            <span className={cn("font-amiri", template.refColor, compactSquare ? "text-base" : "text-xl")}>﷽</span>
                             <span className={cn("h-px flex-1", template.accent, "opacity-55")} />
                         </div>
 
@@ -625,10 +629,12 @@ const VersePoster = forwardRef<HTMLDivElement, { verse: VerseData; template: Tem
                             className={cn("w-full text-right font-amiri font-normal", template.arabicColor)}
                             dir="rtl"
                             style={{
-                                lineHeight: isStory ? 2.05 : 2,
-                                fontSize: isStory
-                                    ? longArabic ? "1.75rem" : "2.25rem"
-                                    : longArabic ? "1.55rem" : "2.15rem",
+                                lineHeight: compactSquare ? 1.75 : isStory ? 2.05 : 2,
+                                fontSize: compactSquare
+                                    ? "1.18rem"
+                                    : isStory
+                                        ? longArabic ? "1.75rem" : "2.25rem"
+                                        : longArabic ? "1.45rem" : "2.15rem",
                             }}
                         >
                             {verse.arabic}
@@ -636,27 +642,32 @@ const VersePoster = forwardRef<HTMLDivElement, { verse: VerseData; template: Tem
 
                         {showTranslation && (
                             <>
-                                <div className={cn("h-1 w-14 rounded-full", template.accent, "opacity-75")} />
+                                <div className={cn("rounded-full", template.accent, "opacity-75", compactSquare ? "h-0.5 w-10" : "h-1 w-14")} />
                                 <p
-                                    className={cn("max-w-[92%] font-medium leading-relaxed", template.translationColor)}
+                                    className={cn("font-medium", template.translationColor, compactSquare ? "max-w-[96%] leading-[1.45]" : "max-w-[92%] leading-relaxed")}
                                     style={{
-                                        fontSize: longTranslation ? "0.95rem" : "1.08rem",
+                                        fontSize: compactSquare ? "0.68rem" : longTranslation ? "0.95rem" : "1.08rem",
                                     }}
                                 >
-                                    &ldquo;{verse.translation}&rdquo;
+                                    &ldquo;{displayTranslation}&rdquo;
                                 </p>
+                                {compactSquare && verse.translation.length > 430 && (
+                                    <p className={cn("text-[9px] font-semibold uppercase tracking-[0.18em]", template.mutedColor)}>
+                                        Full translation on Mastering Quran
+                                    </p>
+                                )}
                             </>
                         )}
                     </div>
 
                     <div className="flex items-end justify-between gap-4">
                         <div>
-                            <p className={cn("font-amiri text-xl", template.refColor)} dir="rtl">{verse.surahName}</p>
-                            <p className={cn("mt-1 text-xs font-semibold", template.mutedColor)}>{verse.surahEnglish}</p>
+                            <p className={cn("font-amiri", template.refColor, compactSquare ? "text-base" : "text-xl")} dir="rtl">{verse.surahName}</p>
+                            <p className={cn("mt-1 font-semibold", template.mutedColor, compactSquare ? "text-[10px]" : "text-xs")}>{verse.surahEnglish}</p>
                         </div>
                         <div className="text-right">
-                            <p className={cn("text-[10px] uppercase tracking-[0.22em]", template.mutedColor)}>masteringquran.com</p>
-                            <p className={cn("mt-1 text-xs", template.mutedColor)}>{verse.translator}</p>
+                            <p className={cn("uppercase tracking-[0.22em]", template.mutedColor, compactSquare ? "text-[8px]" : "text-[10px]")}>masteringquran.com</p>
+                            <p className={cn("mt-1", template.mutedColor, compactSquare ? "text-[10px]" : "text-xs")}>{verse.translator}</p>
                         </div>
                     </div>
                 </div>
