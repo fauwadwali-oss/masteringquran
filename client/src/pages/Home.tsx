@@ -21,31 +21,31 @@ export default function Home() {
             {/* ════════════════════════════════════════════════════════
                 HERO
             ════════════════════════════════════════════════════════ */}
-            <section className="relative overflow-hidden bg-[#081a2f] px-6 py-16 text-white md:py-24">
+            <section className="relative overflow-hidden bg-[#081a2f] px-4 py-10 text-white sm:px-6 md:py-20">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(16,185,129,0.24),transparent_32%),radial-gradient(circle_at_82%_8%,rgba(244,208,111,0.16),transparent_30%),linear-gradient(135deg,#07182b_0%,#0b2545_52%,#06251c_100%)]" />
                 <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(8,26,47,0.18),rgba(8,26,47,0.84))]" />
-                <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.02fr_0.98fr]">
-                    <div className="max-w-3xl space-y-7 text-center lg:text-left">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-emerald-50 shadow-lg shadow-black/10 backdrop-blur-md">
+                <div className="relative mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12">
+                    <div className="max-w-3xl space-y-5 text-center md:space-y-7 lg:text-left">
+                        <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-emerald-50 shadow-lg shadow-black/10 backdrop-blur-md">
                             <span className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_16px_rgba(110,231,183,0.9)]" />
                             Free, authentic, and grounded in verified sources
                         </div>
 
                         <div className="space-y-4">
-                            <h1 className="text-5xl font-bold leading-[0.95] tracking-tight md:text-7xl lg:text-8xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+                            <h1 className="text-4xl font-bold leading-[0.95] tracking-tight sm:text-5xl md:text-7xl lg:text-8xl" style={{ fontFamily: "'Playfair Display', serif" }}>
                                 Mastering Quran
                             </h1>
 
-                            <p className="font-amiri text-3xl text-emerald-200/95 md:text-4xl" dir="rtl">
+                            <p className="font-amiri text-2xl text-emerald-200/95 md:text-4xl" dir="rtl">
                                 القرآن الكريم
                             </p>
                         </div>
 
-                        <p className="mx-auto max-w-2xl text-xl font-medium leading-relaxed text-emerald-50 md:text-2xl lg:mx-0">
+                        <p className="mx-auto max-w-2xl text-lg font-medium leading-relaxed text-emerald-50 md:text-2xl lg:mx-0">
                             Read the Quran, learn Arabic from zero, study hadith, and build a daily practice in one calm place.
                         </p>
 
-                        <p className="mx-auto max-w-2xl text-base leading-8 text-slate-300 lg:mx-0">
+                        <p className="mx-auto max-w-2xl text-sm leading-7 text-slate-300 md:text-base md:leading-8 lg:mx-0">
                             A complete Islamic study platform with the full Quran, 17 translations, 10 tafsirs, 15,000+ hadiths, a 12-lesson Arabic curriculum, and an AI assistant that cites every source.
                         </p>
 
@@ -64,7 +64,7 @@ export default function Home() {
                             </Button>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3 pt-6 text-left sm:grid-cols-4">
+                        <div className="grid grid-cols-2 gap-2 pt-3 text-left sm:grid-cols-4 md:gap-3 md:pt-6">
                             <StatPill value="6,236" label="verses" />
                             <StatPill value="17" label="translations" />
                             <StatPill value="10" label="tafsirs" />
@@ -73,7 +73,7 @@ export default function Home() {
                     </div>
 
                     <div className="relative mx-auto w-full max-w-xl">
-                        <div className="rounded-[2rem] border border-white/12 bg-white/[0.08] p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
+                        <div className="rounded-[1.5rem] border border-white/12 bg-white/[0.08] p-3 shadow-2xl shadow-black/30 backdrop-blur-xl md:rounded-[2rem] md:p-4">
                             <div className="rounded-[1.5rem] border border-white/10 bg-slate-950/62 p-5">
                                 <div className="flex items-center justify-between border-b border-white/10 pb-4">
                                     <div>

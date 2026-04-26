@@ -3,6 +3,7 @@ import { Loader2, AlertCircle, MapPin, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
+import PageHero from "@/components/PageHero";
 
 interface Location {
     latitude: number;
@@ -69,11 +70,14 @@ export default function Qibla() {
             />
             <section className="py-12 px-6">
                 <div className="max-w-3xl mx-auto">
-                    <div className="text-center mb-8 space-y-2">
-                        <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            Qibla Direction
-                        </h1>
-                        <p className="text-slate-600 dark:text-slate-300">Precise compass bearing to the Kaaba in Makkah.</p>
+                    <div className="mb-8">
+                        <PageHero
+                            eyebrow="Prayer direction"
+                            title="Qibla Direction"
+                            description="Precise compass bearing to the Kaaba in Makkah."
+                            icon={Compass}
+                            accent="purple"
+                        />
                     </div>
 
                     {!location && (

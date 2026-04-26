@@ -3,6 +3,7 @@ import { Loader2, AlertCircle, MapPin, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
+import PageHero from "@/components/PageHero";
 
 interface Location { latitude: number; longitude: number }
 interface RamadanDay {
@@ -96,15 +97,14 @@ export default function Ramadan() {
             />
             <section className="py-12 px-6">
                 <div className="max-w-5xl mx-auto">
-                    <div className="text-center mb-8 space-y-2">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-950/30 rounded-full border border-amber-200 dark:border-amber-800">
-                            <Moon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                            <span className="text-sm font-medium text-amber-700 dark:text-amber-300">Blessed month</span>
-                        </div>
-                        <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            Ramadan Timetable
-                        </h1>
-                        <p className="text-slate-600 dark:text-slate-300">Suhoor and Iftar times for every day of Ramadan {year}, calculated for your location.</p>
+                    <div className="mb-8">
+                        <PageHero
+                            eyebrow="Blessed month"
+                            title="Ramadan Timetable"
+                            description={`Suhoor and Iftar times for every day of Ramadan ${year}, calculated for your location.`}
+                            icon={Moon}
+                            accent="amber"
+                        />
                     </div>
 
                     {!location && (

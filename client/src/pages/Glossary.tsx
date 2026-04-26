@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import SEO from "@/components/SEO";
+import PageHero from "@/components/PageHero";
 import { GLOSSARY, type GlossaryCategory, type GlossaryTerm } from "@/lib/content/glossary";
 
 const CATEGORIES: (GlossaryCategory | "All")[] = [
@@ -49,16 +50,12 @@ export default function Glossary() {
                 description="A searchable glossary of over 120 Islamic terms, from Shahadah to Zakat, Tawhid to Tashahhud, with Arabic, transliteration, and clear definitions."
             />
             <div className="max-w-5xl mx-auto space-y-6">
-                <div className="text-center space-y-2">
-                    <div className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
-                        <BookMarked className="h-4 w-4" />
-                        <span className="text-xs uppercase tracking-wider font-semibold">Glossary</span>
-                    </div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Islamic Glossary</h1>
-                    <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                        {GLOSSARY.length} terms covering worship, theology, fiqh, ethics, and daily practice.
-                    </p>
-                </div>
+                <PageHero
+                    eyebrow="Glossary"
+                    title="Islamic Glossary"
+                    description={`${GLOSSARY.length} terms covering worship, theology, fiqh, ethics, and daily practice.`}
+                    icon={BookMarked}
+                />
 
                 <div className="space-y-3">
                     <div className="relative max-w-lg mx-auto">

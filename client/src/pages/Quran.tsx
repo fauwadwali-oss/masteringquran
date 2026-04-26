@@ -711,8 +711,8 @@ export default function Quran() {
                 description="Read and listen to the Holy Quran with Arabic text, multiple translations, and audio recitations from renowned reciters."
             />
 
-            {/* Hero Section with Islamic Pattern */}
-            <div className="relative bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 text-white overflow-hidden">
+            {/* Reader hero */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-[#0B2545] to-teal-950 text-white">
                 {/* Decorative Islamic geometric pattern overlay */}
                 <div className="absolute inset-0">
                     <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -726,13 +726,8 @@ export default function Quran() {
                     </svg>
                 </div>
 
-                {/* Glowing orbs */}
-                <div className="absolute top-10 left-10 w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-10 right-10 w-80 h-80 bg-teal-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-300/10 rounded-full blur-3xl"></div>
-
-                <div className="relative z-10 py-12 md:py-20 px-6">
-                    <div className="max-w-4xl mx-auto text-center space-y-8">
+                <div className="relative z-10 px-4 py-10 sm:px-6 md:py-16">
+                    <div className="mx-auto max-w-4xl space-y-6 text-center">
                         {/* Arabic Badge */}
                         <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 shadow-lg">
                             <Moon className="w-5 h-5 text-emerald-300" />
@@ -740,20 +735,20 @@ export default function Quran() {
                             <BookOpen className="w-5 h-5 text-emerald-300" />
                         </div>
 
-                        <h1 className="text-5xl md:text-7xl font-bold font-serif tracking-tight bg-gradient-to-r from-white via-emerald-100 to-teal-200 bg-clip-text text-transparent">
+                        <h1 className="text-4xl font-bold tracking-tight text-white md:text-6xl" style={{ fontFamily: "'Playfair Display', serif" }}>
                             The Holy Quran
                         </h1>
 
-                        <p className="text-lg md:text-xl text-emerald-200/90 font-light max-w-2xl mx-auto leading-relaxed">
+                        <p className="mx-auto max-w-2xl text-base font-light leading-relaxed text-emerald-100/90 md:text-xl">
                             "This is the Book about which there is no doubt, a guidance for those conscious of Allah."
                             <span className="block mt-2 text-sm text-emerald-300/70">— Surah Al-Baqarah 2:2</span>
                         </p>
 
                         {/* Search Bar */}
-                        <form onSubmit={handleSearch} className="max-w-2xl mx-auto mt-10">
+                        <form onSubmit={handleSearch} className="mx-auto mt-8 max-w-2xl">
                             <div className="relative group">
                                 <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-500"></div>
-                                <div className="relative flex gap-2 bg-white/10 backdrop-blur-xl rounded-xl p-2 border border-white/20">
+                                <div className="relative flex gap-2 rounded-2xl border border-white/20 bg-white/10 p-2 shadow-2xl shadow-black/10 backdrop-blur-xl">
                                     <Input
                                         type="text"
                                         placeholder="Search the Quran in English..."
@@ -784,7 +779,7 @@ export default function Quran() {
                         </form>
 
                         {/* Quick Stats */}
-                        <div className="flex flex-wrap justify-center gap-3 pt-6">
+                        <div className="flex flex-wrap justify-center gap-2 pt-2 md:gap-3 md:pt-5">
                             {[
                                 { label: "114 Surahs", icon: BookOpen },
                                 { label: "30 Juz", icon: Layers },
@@ -793,7 +788,7 @@ export default function Quran() {
                             ].map((stat, i) => (
                                 <div
                                     key={i}
-                                    className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/10 text-sm hover:bg-white/20 transition-colors cursor-default"
+                                    className="flex cursor-default items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs backdrop-blur-sm transition-colors hover:bg-white/20 md:px-4 md:text-sm"
                                 >
                                     <stat.icon className="w-4 h-4 text-emerald-300" />
                                     <span>{stat.label}</span>
@@ -803,17 +798,11 @@ export default function Quran() {
                     </div>
                 </div>
 
-                {/* Bottom wave decoration */}
-                <div className="absolute bottom-0 left-0 right-0">
-                    <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-                        <path d="M0 50L48 45.7C96 41.3 192 32.7 288 35.8C384 39 480 54 576 57.2C672 60.3 768 51.7 864 48.5C960 45.3 1056 47.7 1152 50C1248 52.3 1344 54.7 1392 55.8L1440 57V100H1392C1344 100 1248 100 1152 100C1056 100 960 100 864 100C768 100 672 100 576 100C480 100 384 100 288 100C192 100 96 100 48 100H0V50Z"
-                            className="fill-emerald-50 dark:fill-slate-950"/>
-                    </svg>
-                </div>
+                <div className="absolute inset-x-0 bottom-0 h-px bg-white/10" />
             </div>
 
             {/* Main Content */}
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6 relative z-10">
+            <div className="relative z-10 mx-auto max-w-6xl px-4 pt-6 sm:px-6">
 
                 {/* Search Results Modal */}
                 {showSearchResults && (
@@ -898,11 +887,15 @@ export default function Quran() {
                 )}
 
                 {/* Controls Section */}
-                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/80 dark:border-slate-800 p-6 mb-8">
+                <div className="mb-8 rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-4 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 md:p-6">
+                    <div className="mb-5 flex flex-col gap-1 text-center">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Reader controls</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Choose a reading section, reciter, translations, and study layers.</p>
+                    </div>
 
                     {/* View Mode Tabs */}
                     <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-full mb-6">
-                        <TabsList className="grid w-full grid-cols-6 max-w-2xl mx-auto bg-emerald-50 dark:bg-emerald-950/30 p-1 rounded-xl">
+                        <TabsList className="mx-auto grid w-full max-w-2xl grid-cols-3 rounded-xl bg-emerald-50 p-1 dark:bg-emerald-950/30 sm:grid-cols-6">
                             <TabsTrigger value="surah" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Surah</TabsTrigger>
                             <TabsTrigger value="juz" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Juz</TabsTrigger>
                             <TabsTrigger value="hizb" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Hizb</TabsTrigger>
@@ -913,7 +906,7 @@ export default function Quran() {
                     </Tabs>
 
                     {/* Navigation Controls */}
-                    <div className="flex flex-wrap items-center gap-4 justify-center mb-6">
+                    <div className="mb-6 flex flex-wrap items-center justify-center gap-3 md:gap-4">
                         {viewMode === "surah" && (
                             <Select value={currentSurah?.number.toString()} onValueChange={handleSurahChange}>
                                 <SelectTrigger className="w-full md:w-[320px] h-12 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
@@ -1215,8 +1208,8 @@ export default function Quran() {
 
                 {/* Surah Info Card */}
                 {viewMode === "surah" && currentSurah && (
-                    <div className="text-center mb-10 animate-in fade-in duration-500">
-                        <div className="inline-block bg-white dark:bg-slate-900 rounded-2xl px-10 py-8 shadow-xl shadow-emerald-500/5 border border-emerald-100 dark:border-slate-800">
+                    <div className="mb-8 text-center animate-in fade-in duration-500">
+                        <div className="inline-block rounded-[1.5rem] border border-emerald-100 bg-white/90 px-6 py-6 shadow-xl shadow-emerald-900/5 dark:border-slate-800 dark:bg-slate-900 md:px-10 md:py-8">
                             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 font-serif mb-2">
                                 {currentSurah.englishName}
                             </h2>
@@ -1561,13 +1554,13 @@ export default function Quran() {
 
             {/* Floating Audio Player */}
             <div className="fixed bottom-0 left-0 right-0 z-50">
-                <div className="bg-gradient-to-t from-white via-white to-white/95 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 shadow-2xl shadow-slate-900/10">
-                    <div className="max-w-4xl mx-auto px-4 py-4">
+                <div className="border-t border-slate-200 bg-white/95 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
+                    <div className="mx-auto max-w-4xl px-3 py-3 md:px-4 md:py-4">
                         <div className="flex items-center justify-between gap-4">
                             {/* Now Playing Info */}
                             <div className="flex items-center gap-3 min-w-0 flex-1">
-                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 shrink-0">
-                                    <Volume2 className="h-6 w-6 text-white" />
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/30 md:h-12 md:w-12">
+                                    <Volume2 className="h-5 w-5 text-white md:h-6 md:w-6" />
                                 </div>
                                 <div className="min-w-0">
                                     <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
@@ -1589,7 +1582,7 @@ export default function Quran() {
                                     size="icon"
                                     onClick={playPrevious}
                                     disabled={currentPlayingVerse === null || currentPlayingVerse === 0}
-                                    className="h-10 w-10 rounded-xl"
+                                    className="hidden h-10 w-10 rounded-xl sm:inline-flex"
                                 >
                                     <SkipBack className="h-5 w-5" />
                                 </Button>
@@ -1597,7 +1590,7 @@ export default function Quran() {
                                 <Button
                                     size="icon"
                                     onClick={togglePlayPause}
-                                    className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/40 hover:shadow-emerald-600/50 transition-all hover:scale-105"
+                                    className="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/40 transition-all hover:scale-105 hover:from-emerald-600 hover:to-teal-700 hover:shadow-emerald-600/50 md:h-14 md:w-14"
                                 >
                                     {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
                                 </Button>
@@ -1607,7 +1600,7 @@ export default function Quran() {
                                     size="icon"
                                     onClick={playNext}
                                     disabled={currentPlayingVerse === null || currentPlayingVerse >= verses.length - 1}
-                                    className="h-10 w-10 rounded-xl"
+                                    className="hidden h-10 w-10 rounded-xl sm:inline-flex"
                                 >
                                     <SkipForward className="h-5 w-5" />
                                 </Button>

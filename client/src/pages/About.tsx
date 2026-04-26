@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { BookOpen, Heart, Sparkles, Library } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
+import PageHero from "@/components/PageHero";
 
 export default function About() {
     return (
@@ -10,20 +11,14 @@ export default function About() {
                 title="About - Mastering Quran"
                 description="Mastering Quran is a free, ad-free Islamic study platform offering the Quran, hadith, tafsir, and an AI assistant grounded in verified sources."
             />
-            <section className="py-16 px-6">
+            <section className="py-10 px-6 md:py-16">
                 <div className="max-w-3xl mx-auto space-y-10">
-                    <div className="text-center space-y-4">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-full border border-emerald-200 dark:border-emerald-800">
-                            <Heart className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                            <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Sadaqah Jariyah</span>
-                        </div>
-                        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            About Mastering Quran
-                        </h1>
-                        <p className="text-lg text-slate-600 dark:text-slate-300">
-                            A free and ad-free home for Quranic study, carried by the Mastering family.
-                        </p>
-                    </div>
+                    <PageHero
+                        eyebrow="Sadaqah Jariyah"
+                        title="About Mastering Quran"
+                        description="A free and ad-free home for Quranic study, carried by the Mastering family."
+                        icon={Heart}
+                    />
 
                     <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                         <CardContent className="p-6 md:p-8 space-y-4">

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import SEO from "@/components/SEO";
+import PageHero from "@/components/PageHero";
 
 interface Category {
     id: string;
@@ -128,17 +129,14 @@ export default function Duas() {
                         </Button>
                     )}
 
-                    <div className="text-center mb-8 space-y-2">
-                        <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            {selected ? selected.name : "Duas & Supplications"}
-                        </h1>
-                        {selected ? (
-                            <p className="text-slate-600 dark:text-slate-300">{selected.description}</p>
-                        ) : (
-                            <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-                                126 authentic supplications from the Quran and Sunnah across 27 categories.
-                            </p>
-                        )}
+                    <div className="mb-8">
+                        <PageHero
+                            eyebrow={selected ? "Dua category" : "Daily supplications"}
+                            title={selected ? selected.name : "Duas & Supplications"}
+                            description={selected ? selected.description : "126 authentic supplications from the Quran and Sunnah across 27 categories."}
+                            icon={BookOpen}
+                            accent="teal"
+                        />
                     </div>
 
                     {/* Search */}

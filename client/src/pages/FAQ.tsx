@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { HelpCircle, ChevronDown } from "lucide-react";
 import SEO from "@/components/SEO";
+import PageHero from "@/components/PageHero";
 
 interface QA {
     q: string;
@@ -86,17 +87,14 @@ export default function FAQ() {
                 title="FAQ - Mastering Quran"
                 description="Frequently asked questions about Mastering Quran: translations, tafsirs, hadith collections, the AI assistant, privacy, and more."
             />
-            <section className="py-16 px-6">
+            <section className="py-10 px-6 md:py-16">
                 <div className="max-w-3xl mx-auto space-y-8">
-                    <div className="text-center space-y-3">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-full border border-emerald-200 dark:border-emerald-800">
-                            <HelpCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                            <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Frequently asked</span>
-                        </div>
-                        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            FAQ
-                        </h1>
-                    </div>
+                    <PageHero
+                        eyebrow="Frequently asked"
+                        title="FAQ"
+                        description="Answers about translations, tafsir, hadith collections, AI citations, privacy, and the sources behind the project."
+                        icon={HelpCircle}
+                    />
 
                     <div className="space-y-2">
                         {FAQS.map((item, i) => (
