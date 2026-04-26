@@ -4,9 +4,14 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 // Shared with nusratwaliventures (same project, different tables prefixed mq_).
 // Future iOS/Android/React Native apps should use the same URL + anon key + RLS.
 
-const url = (import.meta.env.VITE_SUPABASE_URL as string | undefined) ||
-    "https://hlhtvstvblvdixygchil.supabase.co";
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const DEFAULT_SUPABASE_URL = "https://hlhtvstvblvdixygchil.supabase.co";
+// Supabase anon keys are public browser keys protected by Row Level Security.
+// Keep env override support for future rotations, but provide the shared project
+// key so direct-upload and local builds do not accidentally disable auth.
+const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsaHR2c3R2Ymx2ZGl4eWdjaGlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzMzU2MjAsImV4cCI6MjA3ODkxMTYyMH0.XCf-2149qp6UBXt8sOeuK-pHilBB3sBKApsphBUcGhE";
+
+const url = (import.meta.env.VITE_SUPABASE_URL as string | undefined) || DEFAULT_SUPABASE_URL;
+const anonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined) || DEFAULT_SUPABASE_ANON_KEY;
 
 // Placeholder used if the real key is missing, so createClient() does not
 // throw synchronously at module load and crash the whole React tree.
