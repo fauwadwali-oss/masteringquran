@@ -1,0 +1,49 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Mastering Quran mark</title>
+  <desc id="desc">A refined shield mark with a Quran book, crescent, and MQ monogram.</desc>
+  <defs>
+    <linearGradient id="shield" x1="88" y1="58" x2="430" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0D3B4C"/>
+      <stop offset="0.46" stop-color="#0B2545"/>
+      <stop offset="1" stop-color="#042F2E"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="151" y1="77" x2="365" y2="441" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE8A3"/>
+      <stop offset="0.48" stop-color="#D4AF37"/>
+      <stop offset="1" stop-color="#8A6720"/>
+    </linearGradient>
+    <linearGradient id="page" x1="166" y1="239" x2="353" y2="339" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8DB"/>
+      <stop offset="1" stop-color="#E9D992"/>
+    </linearGradient>
+    <filter id="softShadow" x="38" y="42" width="438" height="446" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity="0.26"/>
+    </filter>
+  </defs>
+
+  <circle cx="256" cy="256" r="236" fill="#ECFDF5"/>
+  <circle cx="256" cy="256" r="216" fill="#FFFFFF"/>
+
+  <g filter="url(#softShadow)">
+    <path d="M256 58C302 93 360 103 418 98V261C418 347 354 420 256 459C158 420 94 347 94 261V98C152 103 210 93 256 58Z" fill="url(#shield)"/>
+    <path d="M256 58C302 93 360 103 418 98V261C418 347 354 420 256 459C158 420 94 347 94 261V98C152 103 210 93 256 58Z" stroke="url(#gold)" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M256 92C294 120 344 130 390 128V260C390 330 340 386 256 424C172 386 122 330 122 260V128C168 130 218 120 256 92Z" stroke="#F8E7A1" stroke-opacity="0.52" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+
+  <path d="M307 134C285 139 269 158 269 181C269 208 291 230 318 230C331 230 343 225 352 216C344 236 325 250 302 250C271 250 246 225 246 194C246 165 268 141 297 138C300 136 303 135 307 134Z" fill="url(#gold)"/>
+  <path d="M357 160L364 177L382 181L367 192L369 211L354 201L337 209L342 190L329 177L348 176L357 160Z" fill="#FFE8A3"/>
+
+  <g>
+    <path d="M154 251C187 237 221 239 256 261V357C220 334 187 329 154 341V251Z" fill="url(#page)" stroke="#9A7428" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M358 251C325 237 291 239 256 261V357C292 334 325 329 358 341V251Z" fill="url(#page)" stroke="#9A7428" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M256 261V358" stroke="#8A6720" stroke-width="7" stroke-linecap="round"/>
+    <path d="M176 281C199 274 218 277 239 289" stroke="#B8943C" stroke-width="5" stroke-linecap="round"/>
+    <path d="M176 305C199 298 218 301 239 313" stroke="#B8943C" stroke-width="5" stroke-linecap="round"/>
+    <path d="M336 281C313 274 294 277 273 289" stroke="#B8943C" stroke-width="5" stroke-linecap="round"/>
+    <path d="M336 305C313 298 294 301 273 313" stroke="#B8943C" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <path d="M170 377C215 405 297 405 342 377" stroke="url(#gold)" stroke-width="12" stroke-linecap="round"/>
+  <text x="256" y="225" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="78" font-weight="700" fill="#F8E7A1" letter-spacing="-5">MQ</text>
+  <circle cx="256" cy="256" r="184" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="2"/>
+</svg>

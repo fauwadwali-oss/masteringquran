@@ -25,27 +25,66 @@ export default function LearnArabic() {
     const percent = Math.round((doneCount / LESSONS.length) * 100);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-white dark:from-slate-950 dark:to-slate-900 py-10 px-4">
+        <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_34%),linear-gradient(180deg,#ecfdf5_0%,#ffffff_42%,#f8fafc_100%)] px-4 py-10 dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.16),transparent_30%),linear-gradient(180deg,#020617_0%,#0f172a_58%,#020617_100%)]">
             <SEO
                 title="Learn Arabic from Zero, Mastering Quran"
                 description="Learn to read Arabic and recite the Quran from zero. Noorani Qaida curriculum, 28 letters, harakat, tajweed, and your first surah."
             />
-            <div className="max-w-3xl mx-auto space-y-6">
+            <div className="mx-auto max-w-5xl space-y-8">
                 {/* Header */}
-                <div className="text-center space-y-2">
-                    <div className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
-                        <Sparkles className="h-4 w-4" />
-                        <span className="text-xs uppercase tracking-wider font-semibold">Milestone 1, Foundations</span>
+                <div className="overflow-hidden rounded-[2rem] border border-emerald-200/70 bg-white/80 shadow-2xl shadow-emerald-900/10 backdrop-blur dark:border-emerald-900/40 dark:bg-slate-950/70">
+                    <div className="grid gap-8 p-6 md:grid-cols-[1.1fr_0.9fr] md:p-8">
+                        <div className="space-y-4 text-center md:text-left">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
+                                <Sparkles className="h-4 w-4" />
+                                <span className="text-xs font-semibold uppercase tracking-wider">Milestone 1, Foundations</span>
+                            </div>
+                            <h1 className="text-4xl font-bold leading-tight text-slate-950 dark:text-white md:text-6xl">
+                                Learn Arabic from Zero
+                            </h1>
+                            <p className="mx-auto max-w-2xl text-base leading-8 text-slate-600 dark:text-slate-300 md:mx-0">
+                                The path from never having seen an Arabic letter to reading your first full surah of the Quran, taught the way Muslims have learned for centuries.
+                            </p>
+                            <div className="flex flex-wrap justify-center gap-2 pt-2 text-xs font-semibold text-slate-600 dark:text-slate-300 md:justify-start">
+                                <span className="rounded-full bg-slate-100 px-3 py-1.5 dark:bg-slate-800">12 lessons</span>
+                                <span className="rounded-full bg-slate-100 px-3 py-1.5 dark:bg-slate-800">Noorani Qaida</span>
+                                <span className="rounded-full bg-slate-100 px-3 py-1.5 dark:bg-slate-800">Quran-first practice</span>
+                            </div>
+                        </div>
+
+                        <div className="rounded-[1.5rem] border border-emerald-200/70 bg-gradient-to-br from-emerald-900 via-[#0B2545] to-slate-950 p-5 text-white shadow-xl">
+                            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                                <div>
+                                    <p className="text-xs uppercase tracking-wider text-emerald-200/80">Lesson preview</p>
+                                    <p className="mt-1 font-semibold">Letters to recitation</p>
+                                </div>
+                                <GraduationCap className="h-8 w-8 text-amber-200" />
+                            </div>
+                            <div className="py-6 text-center">
+                                <p className="font-amiri text-8xl leading-none text-amber-200" dir="rtl">ا</p>
+                                <p className="mt-3 text-sm text-emerald-100">Alif · the first step</p>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                                <div className="rounded-2xl bg-white/10 p-3">
+                                    <p className="text-lg font-bold">28</p>
+                                    <p className="text-slate-300">letters</p>
+                                </div>
+                                <div className="rounded-2xl bg-white/10 p-3">
+                                    <p className="text-lg font-bold">175</p>
+                                    <p className="text-slate-300">words</p>
+                                </div>
+                                <div className="rounded-2xl bg-white/10 p-3">
+                                    <p className="text-lg font-bold">5</p>
+                                    <p className="text-slate-300">surahs</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Learn Arabic from Zero</h1>
-                    <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                        The path from never having seen an Arabic letter to reading your first full surah of the Quran, taught the way Muslims have learned for centuries.
-                    </p>
                 </div>
 
                 {/* Progress / Sign-in prompt */}
                 {user ? (
-                    <Card className="border border-emerald-200 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/50 to-white dark:from-emerald-950/20 dark:to-slate-900">
+                    <Card className="border border-emerald-200 bg-gradient-to-br from-emerald-50/70 to-white dark:border-emerald-900/40 dark:from-emerald-950/20 dark:to-slate-900">
                         <CardContent className="p-5 space-y-3">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -75,7 +114,7 @@ export default function LearnArabic() {
                         </CardContent>
                     </Card>
                 ) : (
-                    <Card className="border border-amber-200 dark:border-amber-900/40 bg-gradient-to-br from-amber-50/50 to-white dark:from-amber-950/20 dark:to-slate-900">
+                    <Card className="border border-amber-200 bg-gradient-to-br from-amber-50/70 to-white dark:border-amber-900/40 dark:from-amber-950/20 dark:to-slate-900">
                         <CardContent className="p-5 space-y-2">
                             <p className="text-sm font-semibold text-slate-900 dark:text-white">
                                 Sign in to track your progress
@@ -96,7 +135,7 @@ export default function LearnArabic() {
                 )}
 
                 {/* Lesson list */}
-                <div className="space-y-3">
+                <div className="grid gap-3 md:grid-cols-2">
                     {LESSONS.map((lesson) => {
                         const done = !!completed[lesson.id];
                         // Sequential unlocking: lesson N is unlocked if lesson N-1 is done, or if it's lesson 1
@@ -108,11 +147,11 @@ export default function LearnArabic() {
                                 className={`block group ${!prevDone && !done ? "opacity-60" : ""}`}
                             >
                                 <Card
-                                    className={`border transition-all ${
+                                    className={`border transition-all hover:-translate-y-0.5 ${
                                         done
-                                            ? "border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20"
+                                            ? "border-emerald-300 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-950/20"
                                             : prevDone
-                                            ? "border-slate-200 dark:border-slate-800 hover:border-emerald-300 hover:shadow-md"
+                                            ? "border-slate-200 hover:border-emerald-300 hover:shadow-md dark:border-slate-800"
                                             : "border-slate-200 dark:border-slate-800"
                                     }`}
                                 >

@@ -21,75 +21,83 @@ export default function Home() {
             {/* ════════════════════════════════════════════════════════
                 HERO
             ════════════════════════════════════════════════════════ */}
-            <section className="relative py-24 md:py-32 px-6 bg-gradient-to-br from-slate-900 via-[#0B2545] to-emerald-950 text-white overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <img
-                        src="/MQ_shield_logo.png"
-                        alt=""
-                        aria-hidden="true"
-                        className="w-[min(90vw,900px)] h-auto opacity-[0.08] md:opacity-[0.10] drop-shadow-2xl select-none"
-                    />
+            <section className="relative overflow-hidden bg-[#081a2f] px-6 py-16 text-white md:py-24">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(16,185,129,0.24),transparent_32%),radial-gradient(circle_at_82%_8%,rgba(244,208,111,0.16),transparent_30%),linear-gradient(135deg,#07182b_0%,#0b2545_52%,#06251c_100%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(8,26,47,0.18),rgba(8,26,47,0.84))]" />
+                <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.02fr_0.98fr]">
+                    <div className="max-w-3xl space-y-7 text-center lg:text-left">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-emerald-50 shadow-lg shadow-black/10 backdrop-blur-md">
+                            <span className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_16px_rgba(110,231,183,0.9)]" />
+                            Free, authentic, and grounded in verified sources
+                        </div>
+
+                        <div className="space-y-4">
+                            <h1 className="text-5xl font-bold leading-[0.95] tracking-tight md:text-7xl lg:text-8xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                Mastering Quran
+                            </h1>
+
+                            <p className="font-amiri text-3xl text-emerald-200/95 md:text-4xl" dir="rtl">
+                                القرآن الكريم
+                            </p>
+                        </div>
+
+                        <p className="mx-auto max-w-2xl text-xl font-medium leading-relaxed text-emerald-50 md:text-2xl lg:mx-0">
+                            Read the Quran, learn Arabic from zero, study hadith, and build a daily practice in one calm place.
+                        </p>
+
+                        <p className="mx-auto max-w-2xl text-base leading-8 text-slate-300 lg:mx-0">
+                            A complete Islamic study platform with the full Quran, 17 translations, 10 tafsirs, 15,000+ hadiths, a 12-lesson Arabic curriculum, and an AI assistant that cites every source.
+                        </p>
+
+                        <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row lg:justify-start">
+                            <Button asChild size="lg" className="h-12 rounded-full bg-white px-7 text-base font-semibold text-emerald-950 shadow-xl shadow-black/20 hover:bg-emerald-50">
+                                <Link to="/quran">
+                                    <BookOpen className="mr-2 h-5 w-5" />
+                                    Read the Quran
+                                </Link>
+                            </Button>
+                            <Button asChild size="lg" variant="outline" className="h-12 rounded-full border-white/30 bg-white/5 px-7 text-base font-semibold text-white backdrop-blur-sm hover:border-white/60 hover:bg-white/10">
+                                <Link to="/learn-arabic">
+                                    <GraduationCap className="mr-2 h-5 w-5" />
+                                    Learn Arabic
+                                </Link>
+                            </Button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 pt-6 text-left sm:grid-cols-4">
+                            <StatPill value="6,236" label="verses" />
+                            <StatPill value="17" label="translations" />
+                            <StatPill value="10" label="tafsirs" />
+                            <StatPill value="15k+" label="hadiths" />
+                        </div>
+                    </div>
+
+                    <div className="relative mx-auto w-full max-w-xl">
+                        <div className="rounded-[2rem] border border-white/12 bg-white/[0.08] p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
+                            <div className="rounded-[1.5rem] border border-white/10 bg-slate-950/62 p-5">
+                                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                                    <div>
+                                        <p className="text-xs uppercase text-slate-400">Today in study</p>
+                                        <p className="mt-1 font-semibold text-white">Continue your path</p>
+                                    </div>
+                                    <img src="/mq-logo-mark.svg" alt="" aria-hidden="true" className="h-12 w-auto opacity-90" />
+                                </div>
+                                <div className="space-y-3 py-5">
+                                    <HeroFeature icon={BookOpen} title="Quran reader" detail="Al-Fatihah · word-by-word" progress="68%" />
+                                    <HeroFeature icon={GraduationCap} title="Arabic lesson" detail="Letters and sounds" progress="32%" />
+                                    <HeroFeature icon={Library} title="Hadith library" detail="Sahih al-Bukhari" progress="46%" />
+                                </div>
+                                <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-4">
+                                    <p className="font-amiri text-3xl text-emerald-100" dir="rtl">رَبِّ زِدْنِي عِلْمًا</p>
+                                    <p className="mt-2 text-sm text-emerald-50/80">My Lord, increase me in knowledge.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-slate-900/60"></div>
-                <div className="absolute top-20 left-10 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "0.5s" }}></div>
 
-                <div className="relative max-w-5xl mx-auto text-center space-y-8">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-sm text-emerald-100 border border-white/20">
-                        <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                        Free, authentic, and grounded in verified sources
-                    </div>
-
-                    <h1 className="text-5xl md:text-8xl font-bold tracking-tight bg-gradient-to-r from-white via-emerald-100 to-amber-200 bg-clip-text text-transparent drop-shadow-lg" style={{ fontFamily: "'Playfair Display', serif" }}>
-                        Mastering Quran
-                    </h1>
-
-                    <p className="font-amiri text-3xl md:text-4xl text-emerald-200 opacity-90" dir="rtl">
-                        القرآن الكريم
-                    </p>
-
-                    <p className="text-xl md:text-2xl text-emerald-100 font-medium max-w-3xl mx-auto">
-                        Read the Quran. Learn Arabic from zero. Study hadith. Live the deen.
-                    </p>
-
-                    <p className="max-w-2xl mx-auto text-slate-300 text-base leading-relaxed">
-                        A complete Islamic study platform: full Quran with 17 translations and 10 tafsirs,
-                        15,000+ hadiths, a 12-lesson Learn Arabic curriculum, an AI assistant that cites every source,
-                        and daily companions for every part of the day.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-                        <Button asChild size="lg" className="bg-white text-emerald-900 hover:bg-emerald-50 font-semibold px-8 py-3 text-base shadow-lg hover:shadow-xl transition-all hover:scale-105">
-                            <Link to="/quran">
-                                <BookOpen className="mr-2 h-5 w-5" />
-                                Read the Quran
-                            </Link>
-                        </Button>
-                        <Button asChild size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10 font-semibold px-8 py-3 text-base backdrop-blur-sm transition-all hover:border-white/60 hover:scale-105">
-                            <Link to="/learn-arabic">
-                                <GraduationCap className="mr-2 h-5 w-5" />
-                                Learn Arabic from Zero
-                            </Link>
-                        </Button>
-                    </div>
-
-                    {/* Stats pills */}
-                    <div className="pt-8 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-300">
-                        <StatPill label="6,236 verses" />
-                        <StatPill label="17 translations" />
-                        <StatPill label="10 English tafsirs" />
-                        <StatPill label="8 reciters" />
-                        <StatPill label="15,000+ hadiths" />
-                        <StatPill label="25 prophets" />
-                        <StatPill label="AI that cites sources" />
-                    </div>
-                </div>
-
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-                    <div className="flex flex-col items-center gap-2">
-                        <p className="text-xs text-slate-400">Explore</p>
-                        <ArrowDown className="h-5 w-5 text-slate-300" />
-                    </div>
+                <div className="absolute bottom-5 left-1/2 hidden -translate-x-1/2 animate-bounce md:block">
+                    <ArrowDown className="h-5 w-5 text-slate-300" />
                 </div>
             </section>
 
@@ -141,7 +149,7 @@ export default function Home() {
                         <div className="relative">
                             <div className="relative rounded-3xl bg-gradient-to-br from-[#0B2545] via-[#102a50] to-[#0B2545] p-10 shadow-2xl overflow-hidden">
                                 <div className="absolute top-4 right-4 opacity-20">
-                                    <img src="/MQ_shield_logo.png" alt="" className="w-20 h-auto" />
+                                    <img src="/mq-logo-mark.svg" alt="" className="w-20 h-auto" />
                                 </div>
                                 <div className="relative space-y-4">
                                     <div className="flex items-center gap-2 text-emerald-300 text-xs font-semibold uppercase tracking-wider">
@@ -280,7 +288,7 @@ export default function Home() {
             ════════════════════════════════════════════════════════ */}
             <section className="py-20 px-6 bg-gradient-to-br from-[#0B2545] via-emerald-950 to-[#0B2545] text-white">
                 <div className="max-w-4xl mx-auto text-center space-y-6">
-                    <img src="/MQ_shield_logo.png" alt="Mastering Quran" className="h-20 w-auto mx-auto drop-shadow-xl" />
+                    <img src="/mq-logo-mark.svg" alt="Mastering Quran" className="h-20 w-auto mx-auto drop-shadow-xl" />
                     <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
                         Everything you need, always free
                     </h2>
@@ -322,18 +330,49 @@ export default function Home() {
 // Sub-components
 // ────────────────────────────────────────────────────────────────────────
 
-function StatPill({ label }: { label: string }) {
+function StatPill({ value, label }: { value: string; label: string }) {
     return (
-        <span className="inline-flex items-center px-3 py-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-sm">
-            {label}
-        </span>
+        <div className="rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 backdrop-blur-sm">
+            <p className="text-2xl font-bold leading-none text-white">{value}</p>
+            <p className="mt-1 text-xs font-medium uppercase tracking-wide text-slate-300">{label}</p>
+        </div>
+    );
+}
+
+function HeroFeature({
+    icon: Icon,
+    title,
+    detail,
+    progress,
+}: {
+    icon: React.ComponentType<{ className?: string }>;
+    title: string;
+    detail: string;
+    progress: string;
+}) {
+    return (
+        <div className="rounded-2xl border border-white/10 bg-white/[0.045] p-3">
+            <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-emerald-200">
+                    <Icon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-white">{title}</p>
+                    <p className="truncate text-xs text-slate-400">{detail}</p>
+                </div>
+                <span className="text-xs font-semibold text-emerald-200">{progress}</span>
+            </div>
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full rounded-full bg-gradient-to-r from-emerald-300 to-amber-200" style={{ width: progress }} />
+            </div>
+        </div>
     );
 }
 
 function LearnRow({ number, label, desc }: { number: string; label: string; desc: string }) {
     return (
         <div className="flex items-start gap-3 text-sm">
-            <span className="flex-shrink-0 w-12 h-7 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 font-bold text-xs flex items-center justify-center">
+            <span className="flex h-7 w-12 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
                 {number}
             </span>
             <div>
@@ -363,12 +402,12 @@ function SectionHeader({
         indigo: "text-indigo-600 dark:text-indigo-400",
     };
     return (
-        <div className="text-center mb-12 space-y-3">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${accentMap[accent]}`}>
+        <div className="mb-12 space-y-3 text-center">
+            <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 ${accentMap[accent]}`}>
                 <Icon className={`h-4 w-4 ${iconColor[accent]}`} />
                 <span className="text-sm font-medium">{pill}</span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <h2 className="mx-auto max-w-3xl text-3xl font-bold leading-tight text-slate-900 dark:text-white md:text-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>
                 {title}
             </h2>
         </div>
@@ -411,9 +450,9 @@ function CoreStudyTile({
     const c = map[accent];
     return (
         <Link to={to} className="group">
-            <Card className={`h-full border-2 border-slate-200 dark:border-slate-700 bg-gradient-to-br ${c.bg} ${c.border} transition-all duration-300 hover:shadow-2xl hover:-translate-y-2`}>
+            <Card className={`h-full border border-slate-200/80 bg-gradient-to-br shadow-sm shadow-slate-900/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-700 ${c.bg} ${c.border}`}>
                 <CardContent className="p-8 space-y-4">
-                    <div className={`w-14 h-14 bg-gradient-to-br ${c.iconBg} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                    <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br shadow-sm transition-transform group-hover:scale-105 ${c.iconBg}`}>
                         <Icon className={`h-7 w-7 ${c.iconColor}`} />
                     </div>
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h3>
@@ -467,9 +506,9 @@ function Tile({
     };
     return (
         <Link to={to} className="group">
-            <Card className={`h-full border bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:-translate-y-1 ${
+            <Card className={`h-full border bg-white shadow-sm shadow-slate-900/5 transition-all hover:-translate-y-1 hover:shadow-lg dark:bg-slate-900 ${
                 featured
-                    ? "border-emerald-300 dark:border-emerald-800 ring-2 ring-emerald-100 dark:ring-emerald-900/40"
+                    ? "border-emerald-300 ring-2 ring-emerald-100 dark:border-emerald-800 dark:ring-emerald-900/40"
                     : `border-slate-200 dark:border-slate-700 ${hoverBorder[color]}`
             }`}>
                 <CardContent className="p-6 space-y-3">
@@ -500,23 +539,28 @@ function FeatureHighlight({
     desc: string;
 }) {
     const map = {
-        emerald: "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400",
-        amber: "bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400",
-        blue: "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400",
-        indigo: "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400",
-    };
-    const [bg, text] = map[color].split(" ").reduce<[string[], string[]]>(
-        (acc, cls) => {
-            if (cls.startsWith("text-")) acc[1].push(cls);
-            else acc[0].push(cls);
-            return acc;
+        emerald: {
+            bg: "bg-emerald-100 dark:bg-emerald-900/40",
+            text: "text-emerald-600 dark:text-emerald-400",
         },
-        [[], []],
-    );
+        amber: {
+            bg: "bg-amber-100 dark:bg-amber-900/40",
+            text: "text-amber-600 dark:text-amber-400",
+        },
+        blue: {
+            bg: "bg-blue-100 dark:bg-blue-900/40",
+            text: "text-blue-600 dark:text-blue-400",
+        },
+        indigo: {
+            bg: "bg-indigo-100 dark:bg-indigo-900/40",
+            text: "text-indigo-600 dark:text-indigo-400",
+        },
+    };
+    const c = map[color];
     return (
         <div className="text-center space-y-2">
-            <div className={`w-12 h-12 mx-auto ${bg.join(" ")} rounded-xl flex items-center justify-center`}>
-                <Icon className={`h-6 w-6 ${text.join(" ")}`} />
+            <div className={`mx-auto flex h-12 w-12 items-center justify-center rounded-xl ${c.bg}`}>
+                <Icon className={`h-6 w-6 ${c.text}`} />
             </div>
             <h3 className="font-semibold text-slate-900 dark:text-white">{title}</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{desc}</p>

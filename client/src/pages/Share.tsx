@@ -461,7 +461,7 @@ const VersePoster = forwardRef<HTMLDivElement, { verse: VerseData; template: Tem
                 <div className="flex items-end justify-between gap-3">
                     <div className="flex items-center gap-2">
                         <img
-                            src="/MQ_shield_logo.png"
+                            src="/mq-logo-mark.svg"
                             alt=""
                             crossOrigin="anonymous"
                             className="h-10 w-auto drop-shadow-md"
