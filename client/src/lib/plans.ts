@@ -71,6 +71,54 @@ const ramadanPlan: ReadingPlan = {
     })),
 };
 
+const yasinWeekPlan: ReadingPlan = {
+    id: "yasin-week",
+    name: "Surah Ya-Sin week",
+    duration_days: 7,
+    blurb: "A calm seven-day path through Surah Ya-Sin with smaller sections for reflection.",
+    emoji: "🌿",
+    days: [
+        { kind: "range", from: "36:1", to: "36:12", label: "Day 1: The wise Quran" },
+        { kind: "range", from: "36:13", to: "36:29", label: "Day 2: The people of the town" },
+        { kind: "range", from: "36:30", to: "36:40", label: "Day 3: Signs in creation" },
+        { kind: "range", from: "36:41", to: "36:50", label: "Day 4: Ships, mercy, and warnings" },
+        { kind: "range", from: "36:51", to: "36:60", label: "Day 5: Resurrection and accountability" },
+        { kind: "range", from: "36:61", to: "36:70", label: "Day 6: Worship the straight path" },
+        { kind: "range", from: "36:71", to: "36:83", label: "Day 7: Dominion belongs to Allah" },
+    ],
+};
+
+const juzAmmaBeginnerPlan: ReadingPlan = {
+    id: "juz-amma-beginner",
+    name: "Juz Amma beginner plan",
+    duration_days: 21,
+    blurb: "Read the shortest surahs first, then move steadily through Juz Amma.",
+    emoji: "🌱",
+    days: [
+        { kind: "surah", surah: 114, label: "An-Nas" },
+        { kind: "surah", surah: 113, label: "Al-Falaq" },
+        { kind: "surah", surah: 112, label: "Al-Ikhlas" },
+        { kind: "surah", surah: 111, label: "Al-Masad" },
+        { kind: "surah", surah: 110, label: "An-Nasr" },
+        { kind: "surah", surah: 109, label: "Al-Kafirun" },
+        { kind: "surah", surah: 108, label: "Al-Kawthar" },
+        { kind: "surah", surah: 107, label: "Al-Ma'un" },
+        { kind: "surah", surah: 106, label: "Quraysh" },
+        { kind: "surah", surah: 105, label: "Al-Fil" },
+        { kind: "range", from: "102:1", to: "104:9", label: "At-Takathur through Al-Humazah" },
+        { kind: "range", from: "99:1", to: "101:11", label: "Az-Zalzalah through Al-Qari'ah" },
+        { kind: "range", from: "96:1", to: "98:8", label: "Al-'Alaq through Al-Bayyinah" },
+        { kind: "range", from: "93:1", to: "95:8", label: "Ad-Duha through At-Tin" },
+        { kind: "range", from: "90:1", to: "92:21", label: "Al-Balad through Al-Layl" },
+        { kind: "range", from: "87:1", to: "89:30", label: "Al-A'la through Al-Fajr" },
+        { kind: "range", from: "84:1", to: "86:17", label: "Al-Inshiqaq through At-Tariq" },
+        { kind: "range", from: "81:1", to: "83:36", label: "At-Takwir through Al-Mutaffifin" },
+        { kind: "range", from: "78:1", to: "80:42", label: "An-Naba through Abasa" },
+        { kind: "range", from: "78:1", to: "114:6", label: "Review Juz Amma" },
+        { kind: "range", from: "112:1", to: "114:6", label: "Close with the protecting surahs" },
+    ],
+};
+
 // Half-Quran in a week — 7 days of 4 Juz each (intensive)
 const sevenDayHalfPlan: ReadingPlan = {
     id: "7-day-half",
@@ -145,6 +193,8 @@ export const READING_PLANS: ReadingPlan[] = [
     thirtyWeekJuzPlan,
     shortSurahsPlan,
     ramadanPlan,
+    yasinWeekPlan,
+    juzAmmaBeginnerPlan,
     sevenDayHalfPlan,
     fortyGreatestPlan,
 ];

@@ -9,6 +9,7 @@ import {
     Heart,
     Library,
     Menu,
+    Search,
     ScrollText,
     Sparkles,
     Trophy,
@@ -37,6 +38,7 @@ const MORE_GROUPS: Array<{
     {
         label: "Reference",
         items: [
+            { to: "/search", label: "Global Search", icon: Search, description: "Search everything" },
             { to: "/names", label: "99 Names", icon: Sparkles, description: "Names and meanings" },
             { to: "/calendar", label: "Calendar", icon: Calendar, description: "Hijri calendar" },
             { to: "/topics", label: "Topics", icon: BookOpen, description: "Curated verses" },

@@ -134,6 +134,26 @@ export default function LearnArabic() {
                     </Card>
                 )}
 
+                <Card className="overflow-hidden border-sky-200 bg-sky-50/80 dark:border-sky-900/40 dark:bg-sky-950/20">
+                    <CardContent className="grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center">
+                        <div>
+                            <p className="text-xs font-semibold uppercase tracking-wider text-sky-700 dark:text-sky-300">Kids and beginner mode</p>
+                            <h2 className="mt-1 text-xl font-bold text-slate-950 dark:text-white">Start with audio-first Arabic practice</h2>
+                            <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                                Bigger letters, simpler steps, and a gentle path from Alif to your first short surahs.
+                            </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            <Link to="/learn-arabic/letters" className="rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">
+                                Start letters
+                            </Link>
+                            <Link to="/quran" className="rounded-full border border-sky-300 px-4 py-2 text-sm font-semibold text-sky-800 hover:bg-white/70 dark:border-sky-800 dark:text-sky-200">
+                                Open reader mode
+                            </Link>
+                        </div>
+                    </CardContent>
+                </Card>
+
                 {/* Lesson list */}
                 <div className="grid gap-3 md:grid-cols-2">
                     {LESSONS.map((lesson) => {

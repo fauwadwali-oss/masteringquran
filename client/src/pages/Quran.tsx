@@ -19,6 +19,7 @@ import VerseActionsModal from "@/components/VerseActionsModal";
 import { useAuth } from "@/contexts/AuthContext";
 import * as bmQuery from "@/lib/queries/bookmarks";
 import { recordReading } from "@/lib/queries/streak";
+import { cn } from "@/lib/utils";
 
 // Types
 interface Surah {
@@ -188,6 +189,7 @@ export default function Quran() {
 
     // Tajweed mode (color-coded tajweed rules)
     const [showTajweed, setShowTajweed] = useState(false);
+    const [beginnerMode, setBeginnerMode] = useState(false);
 
     // Per-verse "show similar" toggle
     const [expandedSimilar, setExpandedSimilar] = useState<Set<string>>(new Set());
@@ -1071,6 +1073,24 @@ export default function Quran() {
                             <span className="hidden sm:inline">Tajweed</span>
                         </Button>
                         <Button
+                            variant={beginnerMode ? "default" : "outline"}
+                            onClick={() => {
+                                const next = !beginnerMode;
+                                setBeginnerMode(next);
+                                if (next) {
+                                    setShowWordByWord(true);
+                                    setShowTajweed(true);
+                                    setShowTafsir(false);
+                                }
+                            }}
+                            className={`h-12 px-5 rounded-xl gap-2 transition-all ${
+                                beginnerMode ? 'bg-sky-500 hover:bg-sky-600 text-white shadow-lg shadow-sky-500/30' : 'hover:bg-sky-50 dark:hover:bg-sky-900/20'
+                            }`}
+                        >
+                            <Sparkles className="h-5 w-5" />
+                            <span className="hidden sm:inline">Beginner</span>
+                        </Button>
+                        <Button
                             variant={showWordByWord ? "default" : "outline"}
                             onClick={() => setShowWordByWord(!showWordByWord)}
                             className={`h-12 px-5 rounded-xl gap-2 transition-all ${
@@ -1336,6 +1356,15 @@ export default function Quran() {
                             </div>
                         )}
 
+                        {beginnerMode && (
+                            <div className="rounded-2xl border border-sky-200 bg-sky-50/80 p-4 dark:border-sky-900/40 dark:bg-sky-950/20">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-sky-700 dark:text-sky-300">Beginner mode</p>
+                                <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-300">
+                                    Larger Arabic text, word-by-word practice, tajweed colors, and fewer study distractions. Tap the play button on each verse to listen first, then read along slowly.
+                                </p>
+                            </div>
+                        )}
+
                         {/* Bismillah */}
                         {viewMode === "surah" && currentSurah?.number !== 1 && currentSurah?.number !== 9 && (
                             <div className="text-center py-10 mb-4">
@@ -1423,11 +1452,17 @@ export default function Quran() {
                                         ) : showTajweed && verse.arabicTajweed ? (
                                             <TajweedText
                                                 html={verse.arabicTajweed}
-                                                className="font-amiri text-3xl md:text-4xl lg:text-[2.75rem] leading-[2.8] text-slate-900 dark:text-slate-100 selection:bg-emerald-200 dark:selection:bg-emerald-800"
+                                                className={cn(
+                                                    "font-amiri leading-[2.8] text-slate-900 selection:bg-emerald-200 dark:text-slate-100 dark:selection:bg-emerald-800",
+                                                    beginnerMode ? "text-4xl md:text-5xl lg:text-[3.25rem]" : "text-3xl md:text-4xl lg:text-[2.75rem]",
+                                                )}
                                             />
                                         ) : (
                                             <p
-                                                className="font-amiri text-3xl md:text-4xl lg:text-[2.75rem] leading-[2.8] text-slate-900 dark:text-slate-100 selection:bg-emerald-200 dark:selection:bg-emerald-800"
+                                                className={cn(
+                                                    "font-amiri leading-[2.8] text-slate-900 selection:bg-emerald-200 dark:text-slate-100 dark:selection:bg-emerald-800",
+                                                    beginnerMode ? "text-4xl md:text-5xl lg:text-[3.25rem]" : "text-3xl md:text-4xl lg:text-[2.75rem]",
+                                                )}
                                                 dir="rtl"
                                             >
                                                 {verse.arabic}

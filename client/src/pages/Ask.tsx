@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, Loader2, AlertCircle, Wrench } from "lucide-react";
+import { Send, Sparkles, Loader2, AlertCircle, Wrench, BookOpen, ScrollText, Search, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import RequireAuth from "@/components/RequireAuth";
@@ -11,11 +11,11 @@ interface Message {
 }
 
 const SUGGESTIONS = [
-    "Explain Ayat al-Kursi (Quran 2:255) with Ibn Kathir's commentary",
-    "What does the Quran say about mercy?",
-    "Summarize Surah al-Fatiha",
-    "Find a hadith about the value of intentions",
-    "What is the Asbab al-Nuzul of Surah al-Ikhlas?",
+    { label: "Explain a verse", prompt: "Explain Ayat al-Kursi (Quran 2:255) with Ibn Kathir's commentary", icon: BookOpen },
+    { label: "Search a theme", prompt: "What does the Quran say about mercy?", icon: Search },
+    { label: "Summarize a surah", prompt: "Summarize Surah al-Fatiha with key lessons", icon: Sparkles },
+    { label: "Find a hadith", prompt: "Find a hadith about the value of intentions", icon: ScrollText },
+    { label: "Study context", prompt: "What is the Asbab al-Nuzul of Surah al-Ikhlas?", icon: Lightbulb },
 ];
 
 const TOOL_LABELS: Record<string, string> = {
@@ -147,17 +147,32 @@ function AskInner() {
                     <div className="space-y-3 mb-8">
                         <p className="text-sm text-slate-500 dark:text-slate-400 text-center">Try one of these:</p>
                         <div className="grid sm:grid-cols-2 gap-2">
-                            {SUGGESTIONS.map((s) => (
+                            {SUGGESTIONS.map((s) => {
+                                const Icon = s.icon;
+                                return (
                                 <button
-                                    key={s}
-                                    onClick={() => submit(s)}
+                                    key={s.prompt}
+                                    onClick={() => submit(s.prompt)}
                                     disabled={loading}
                                     className="text-left p-3 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20 transition-all disabled:opacity-50"
                                 >
-                                    {s}
+                                    <span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                                        <Icon className="h-3.5 w-3.5" />
+                                        {s.label}
+                                    </span>
+                                    {s.prompt}
                                 </button>
-                            ))}
+                                );
+                            })}
                         </div>
+                    </div>
+                )}
+
+                {messages.length === 0 && (
+                    <div className="mb-8 grid gap-3 sm:grid-cols-3">
+                        <SourceCard title="Source cards" body="Tool calls show when Quran, tafsir, or hadith sources are being read." />
+                        <SourceCard title="Continue studying" body="Every answer can lead into Quran reading, related topics, or share cards." />
+                        <SourceCard title="Scope guard" body="Designed for Quran, hadith, and tafsir study rather than fatwa decisions." />
                     </div>
                 )}
 
@@ -189,6 +204,13 @@ function AskInner() {
                                         </span>
                                     ) : "")}
                                 </p>
+                                {m.role === "assistant" && m.content && (
+                                    <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
+                                        <LinkButton to="/quran" label="Continue in Quran" />
+                                        <LinkButton to="/topics" label="Related topics" />
+                                        <LinkButton to="/share" label="Make a verse card" />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -242,6 +264,23 @@ function AskInner() {
                 </p>
             </section>
         </div>
+    );
+}
+
+function SourceCard({ title, body }: { title: string; body: string }) {
+    return (
+        <div className="rounded-2xl border border-emerald-100 bg-white/80 p-4 text-sm dark:border-emerald-900/40 dark:bg-slate-900/70">
+            <p className="font-semibold text-slate-900 dark:text-white">{title}</p>
+            <p className="mt-1 leading-6 text-slate-600 dark:text-slate-400">{body}</p>
+        </div>
+    );
+}
+
+function LinkButton({ to, label }: { to: string; label: string }) {
+    return (
+        <a href={to} className="rounded-full border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 dark:border-emerald-900 dark:text-emerald-300 dark:hover:bg-emerald-950/40">
+            {label}
+        </a>
     );
 }
 

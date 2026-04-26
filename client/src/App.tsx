@@ -13,6 +13,7 @@ import ScrollToTop from "./components/ScrollToTop";
 
 const Home = lazy(() => import("./pages/Home"));
 const Quran = lazy(() => import("./pages/Quran"));
+const SearchPage = lazy(() => import("./pages/Search"));
 const Hadith = lazy(() => import("./pages/Hadith"));
 const Ask = lazy(() => import("./pages/Ask"));
 const PrayerTimes = lazy(() => import("./pages/PrayerTimes"));
@@ -93,6 +94,7 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Home />} />
                       <Route path="/quran" element={<Quran />} />
+                      <Route path="/search" element={<SearchPage />} />
                       <Route path="/hadith" element={<Hadith />} />
                       <Route path="/ask" element={<Ask />} />
                       <Route path="/prayer-times" element={<PrayerTimes />} />

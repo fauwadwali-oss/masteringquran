@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Bell, BellOff, Loader2, Check, AlertCircle, Clock, Trash2 } from "lucide-react";
+import { Mail, Bell, BellOff, Loader2, Check, AlertCircle, Clock, Trash2, BookOpen, Heart, Quote, GraduationCap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,31 @@ import {
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined;
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
+
+const DAILY_VERSES = [
+    { key: "1:5", arabic: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", text: "You alone we worship and You alone we ask for help." },
+    { key: "13:28", arabic: "أَلَا بِذِكْرِ ٱللَّهِ تَطْمَئِنُّ ٱلْقُلُوبُ", text: "Surely in the remembrance of Allah do hearts find comfort." },
+    { key: "20:114", arabic: "رَّبِّ زِدْنِي عِلْمًا", text: "My Lord, increase me in knowledge." },
+    { key: "94:5", arabic: "فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا", text: "So, surely with hardship comes ease." },
+];
+
+const DAILY_DUAS = [
+    { title: "Increase in knowledge", arabic: "رَّبِّ زِدْنِي عِلْمًا", text: "My Lord, increase me in knowledge." },
+    { title: "Steadfast heart", arabic: "رَبَّنَا لَا تُزِغْ قُلُوبَنَا", text: "Our Lord, do not let our hearts deviate after You have guided us." },
+    { title: "Good in both worlds", arabic: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً", text: "Our Lord, grant us good in this world and good in the Hereafter." },
+];
+
+const DAILY_HADITHS = [
+    { source: "Bukhari and Muslim", text: "Actions are only by intentions, and every person will have only what they intended." },
+    { source: "Tirmidhi", text: "The best of you are those who learn the Quran and teach it." },
+    { source: "Muslim", text: "Purity is half of faith." },
+];
+
+function dailyIndex(length: number, offset = 0): number {
+    const start = new Date(new Date().getFullYear(), 0, 0);
+    const day = Math.floor((Date.now() - start.getTime()) / 86400000);
+    return (day + offset) % length;
+}
 
 function localTz(): string {
     try {
@@ -75,6 +100,8 @@ export default function Daily() {
                     </p>
                 </div>
 
+                <TodayHabitDashboard />
+
                 {!isSupabaseConfigured() && (
                     <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
                         <CardContent className="p-4 flex items-start gap-2 text-sm text-amber-800 dark:text-amber-200">
@@ -116,6 +143,50 @@ export default function Daily() {
                 </Card>
             </div>
         </div>
+    );
+}
+
+function TodayHabitDashboard() {
+    const verse = DAILY_VERSES[dailyIndex(DAILY_VERSES.length)];
+    const dua = DAILY_DUAS[dailyIndex(DAILY_DUAS.length, 1)];
+    const hadith = DAILY_HADITHS[dailyIndex(DAILY_HADITHS.length, 2)];
+
+    return (
+        <Card className="overflow-hidden border-emerald-200/80 bg-white/90 shadow-xl shadow-emerald-900/5 dark:border-emerald-900/40 dark:bg-slate-900/90">
+            <CardContent className="p-0">
+                <div className="bg-gradient-to-br from-emerald-950 via-[#0B2545] to-teal-950 p-5 text-white">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-200">Today in practice</p>
+                            <h2 className="mt-1 text-2xl font-bold">One calm daily rhythm</h2>
+                        </div>
+                        <Link to={`/share?verse=${verse.key}`} className="rounded-full border border-white/15 px-3 py-1.5 text-xs font-semibold text-emerald-50 hover:bg-white/10">
+                            Share verse
+                        </Link>
+                    </div>
+                    <p className="mt-5 text-right font-amiri text-3xl leading-loose text-emerald-100" dir="rtl">{verse.arabic}</p>
+                    <p className="mt-2 text-sm leading-7 text-slate-200">"{verse.text}" <span className="text-emerald-200">Quran {verse.key}</span></p>
+                </div>
+                <div className="grid gap-3 p-4 md:grid-cols-3">
+                    <DailyTile icon={Heart} label="Dua" title={dua.title} body={dua.text} to="/duas" />
+                    <DailyTile icon={Quote} label="Hadith" title={hadith.source} body={hadith.text} to="/hadith" />
+                    <DailyTile icon={GraduationCap} label="Lesson" title="Arabic foundations" body="Continue letters, harakat, and recitation practice." to="/learn-arabic" />
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+function DailyTile({ icon: Icon, label, title, body, to }: { icon: typeof BookOpen; label: string; title: string; body: string; to: string }) {
+    return (
+        <Link to={to} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition-colors hover:border-emerald-300 hover:bg-emerald-50/50 dark:border-slate-800 dark:bg-slate-950/40 dark:hover:border-emerald-800">
+            <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                <Icon className="h-4 w-4" />
+                {label}
+            </div>
+            <p className="font-semibold text-slate-900 dark:text-white">{title}</p>
+            <p className="mt-1 line-clamp-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{body}</p>
+        </Link>
     );
 }
 
