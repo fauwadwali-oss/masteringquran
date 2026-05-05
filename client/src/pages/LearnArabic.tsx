@@ -27,8 +27,9 @@ export default function LearnArabic() {
     return (
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_34%),linear-gradient(180deg,#ecfdf5_0%,#ffffff_42%,#f8fafc_100%)] px-4 py-10 dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.16),transparent_30%),linear-gradient(180deg,#020617_0%,#0f172a_58%,#020617_100%)]">
             <SEO
-                title="Learn Arabic from Zero, Mastering Quran"
-                description="Learn to read Arabic and recite the Quran from zero. Noorani Qaida curriculum, 28 letters, harakat, tajweed, and your first surah."
+                title="Learn Quranic Arabic from Zero | Mastering Quran"
+                description="Learn Quranic Arabic from zero with a 12-lesson path: letters, shapes, harakat, tajweed, common Quranic words, grammar, roots, writing, and five full surahs."
+                canonicalPath="/learn-arabic"
             />
             <div className="mx-auto max-w-5xl space-y-8">
                 {/* Header */}

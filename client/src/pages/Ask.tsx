@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, Loader2, AlertCircle, Wrench, BookOpen, ScrollText, Search, Lightbulb } from "lucide-react";
+import { Send, Sparkles, Loader2, AlertCircle, Wrench, BookOpen, ScrollText, Search, Lightbulb, Lock, Library, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
-import RequireAuth from "@/components/RequireAuth";
+import LoginModal from "@/components/LoginModal";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Message {
     role: "user" | "assistant";
@@ -285,9 +286,116 @@ function LinkButton({ to, label }: { to: string; label: string }) {
 }
 
 export default function Ask() {
+    const { user, loading, configured } = useAuth();
+    const [showLogin, setShowLogin] = useState(false);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 font-sans">
+                <SEO
+                    title="Ask Quran AI with Cited Sources | Mastering Quran"
+                    description="Preview the Mastering Quran AI assistant. Ask about Quran verses, hadith, and classical tafsir with answers grounded in verified sources."
+                    canonicalPath="/ask"
+                />
+                <section className="max-w-5xl mx-auto px-6 py-14 md:py-20">
+                    <div className="text-center space-y-4 mb-10">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-full border border-emerald-200 dark:border-emerald-800">
+                            <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Grounded in Quran, hadith, and tafsir</span>
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
+                            Ask AI with cited sources
+                        </h1>
+                        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                            Explore questions with an assistant designed to use verified Islamic sources, show what it checked, and avoid unsupported citations.
+                        </p>
+                    </div>
+
+                    <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-6 items-start">
+                        <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-white dark:bg-slate-900 shadow-xl shadow-emerald-500/5 p-6 md:p-8 space-y-5">
+                            <p className="text-sm font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Example questions</p>
+                            <div className="grid gap-3">
+                                {SUGGESTIONS.map((suggestion) => {
+                                    const Icon = suggestion.icon;
+                                    return (
+                                        <button
+                                            key={suggestion.prompt}
+                                            type="button"
+                                            onClick={() => setShowLogin(true)}
+                                            className="text-left rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-3 text-sm text-slate-700 dark:text-slate-300 transition-colors hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20"
+                                        >
+                                            <span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                                                <Icon className="h-3.5 w-3.5" />
+                                                {suggestion.label}
+                                            </span>
+                                            {suggestion.prompt}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <div className="rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 p-4 text-sm text-amber-800 dark:text-amber-300 flex gap-3">
+                                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                                <p>
+                                    The assistant is for study support. It declines fatwas and sensitive rulings, and points you back to scholars for religious guidance.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/20 dark:to-slate-900 p-6 md:p-8 space-y-5">
+                            <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/40 rounded-2xl flex items-center justify-center">
+                                <Lock className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                    Free sign-in unlocks Ask AI
+                                </h2>
+                                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                                    No password needed. Sign in with a magic link so your questions can run through the protected source-checking tools.
+                                </p>
+                            </div>
+                            <div className="grid gap-3 text-sm">
+                                <TrustRow icon={BookOpen} text="Checks Quran verses and tafsir before answering" />
+                                <TrustRow icon={Library} text="Searches hadith collections when needed" />
+                                <TrustRow icon={MessageCircle} text="Shows the source tools used in each answer" />
+                            </div>
+                            <Button
+                                onClick={() => setShowLogin(true)}
+                                disabled={!configured}
+                                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-11"
+                            >
+                                Sign in to ask
+                            </Button>
+                            {!configured && (
+                                <p className="text-xs text-amber-700 dark:text-amber-400">Auth is not configured yet. Please try again later.</p>
+                            )}
+                        </div>
+                    </div>
+                </section>
+                <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to use the Ask AI assistant. Free forever — no password needed." />
+            </div>
+        );
+    }
+
     return (
-        <RequireAuth reason="Sign in to use the Ask AI assistant. Free forever — no password needed.">
-            <AskInner />
-        </RequireAuth>
+        <AskInner />
+    );
+}
+
+function TrustRow({ icon: Icon, text }: { icon: React.ComponentType<{ className?: string }>; text: string }) {
+    return (
+        <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-slate-950 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/40">
+                <Icon className="h-4 w-4" />
+            </span>
+            <span>{text}</span>
+        </div>
     );
 }

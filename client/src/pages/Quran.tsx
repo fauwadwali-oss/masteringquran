@@ -709,8 +709,9 @@ export default function Quran() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/20 pb-32">
             <SEO
-                title={currentSurah ? `${currentSurah.englishName} - The Holy Quran` : "The Holy Quran - Mastering Quran"}
-                description="Read and listen to the Holy Quran with Arabic text, multiple translations, and audio recitations from renowned reciters."
+                title={currentSurah ? `${currentSurah.englishName} - Quran Reader with Translation and Tafsir` : "Quran Reader | Word-by-Word Translation and Tafsir"}
+                description="Read the Holy Quran in Uthmani script with word-by-word study, tajweed, audio recitation, 17 translations, bookmarks, notes, and 10 English tafsirs."
+                canonicalPath="/quran"
             />
 
             {/* Reader hero */}
@@ -1226,6 +1227,12 @@ export default function Quran() {
                     )}
                 </div>
 
+                <div className="mb-8 grid md:grid-cols-3 gap-3">
+                    <ReaderTip icon={Layers} title="Tap a word" text="Turn on Word by Word, then tap Arabic words for meaning, transliteration, and audio." />
+                    <ReaderTip icon={BookOpen} title="Open tafsir" text="Use Tafsir when you want explanation beyond the translation." />
+                    <ReaderTip icon={Star} title="Use study layers" text="Tajweed, bookmarks, notes, and audio can be mixed as you read." />
+                </div>
+
                 {/* Surah Info Card */}
                 {viewMode === "surah" && currentSurah && (
                     <div className="mb-8 text-center animate-in fade-in duration-500">
@@ -1670,6 +1677,28 @@ export default function Quran() {
                 onPlay={() => setIsPlaying(true)}
                 className="hidden"
             />
+        </div>
+    );
+}
+
+function ReaderTip({
+    icon: Icon, title, text,
+}: {
+    icon: React.ComponentType<{ className?: string }>;
+    title: string;
+    text: string;
+}) {
+    return (
+        <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/80 p-4 shadow-sm">
+            <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">
+                    <Icon className="h-5 w-5" />
+                </span>
+                <span>
+                    <span className="block text-sm font-semibold text-slate-900 dark:text-white">{title}</span>
+                    <span className="mt-1 block text-sm leading-relaxed text-slate-600 dark:text-slate-400">{text}</span>
+                </span>
+            </div>
         </div>
     );
 }

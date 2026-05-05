@@ -55,6 +55,14 @@ coverage/
 # Dependency directories
 jspm_packages/
 
+# Native mobile build caches
+.gradle/
+android/.gradle/
+android/local.properties
+android/**/build/
+ios/**/xcuserdata/
+ios/**/DerivedData/
+
 # TypeScript cache
 *.tsbuildinfo
 

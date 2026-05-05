@@ -61,6 +61,11 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://masteringquran.com/sources</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://masteringquran.com/plans</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

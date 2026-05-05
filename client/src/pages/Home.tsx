@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import {
     BookOpen, Library, Sparkles, ArrowDown, ArrowRight, Volume2, Layers, Languages, Clock, Compass,
     Star, Heart, Calendar, Target, Trophy, GraduationCap, ScrollText, BookMarked, Calculator,
-    Share2, Mail, MapPin, Flame, CheckCircle2,
+    Share2, Mail, MapPin, Flame, CheckCircle2, HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -105,6 +105,23 @@ export default function Home() {
             <div className="max-w-6xl mx-auto px-6 pt-10">
                 <ReadingPaceWidget />
             </div>
+
+            <section className="py-14 px-6 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
+                <div className="max-w-6xl mx-auto">
+                    <div className="text-center mb-8 space-y-2">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Start here</p>
+                        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
+                            Choose the path that fits today
+                        </h2>
+                    </div>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <StartPath to="/learn-arabic" icon={GraduationCap} title="New to Quran?" desc="Start with letters, sounds, and guided Arabic foundations." />
+                        <StartPath to="/quran" icon={BookOpen} title="Want to read?" desc="Open the Quran reader with translation, audio, and tafsir." />
+                        <StartPath to="/ask" icon={HelpCircle} title="Have a question?" desc="Ask from Quran, hadith, and tafsir with cited sources." />
+                        <StartPath to="/daily" icon={Mail} title="Build a habit?" desc="Get a daily verse and keep a steady study rhythm." />
+                    </div>
+                </div>
+            </section>
 
             {/* Today strip */}
             <TodayStrip />
@@ -366,6 +383,35 @@ function HeroFeature({
                 <div className="h-full rounded-full bg-gradient-to-r from-emerald-300 to-amber-200" style={{ width: progress }} />
             </div>
         </div>
+    );
+}
+
+function StartPath({
+    to, icon: Icon, title, desc,
+}: {
+    to: string;
+    icon: React.ComponentType<{ className?: string }>;
+    title: string;
+    desc: string;
+}) {
+    return (
+        <Link
+            to={to}
+            className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900 p-5 transition-all hover:-translate-y-1 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-lg"
+        >
+            <div className="flex items-start gap-4">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">
+                    <Icon className="h-5 w-5" />
+                </span>
+                <span>
+                    <span className="block font-semibold text-slate-900 dark:text-white">{title}</span>
+                    <span className="mt-1 block text-sm leading-relaxed text-slate-600 dark:text-slate-400">{desc}</span>
+                    <span className="mt-3 inline-flex items-center text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                        Begin <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                </span>
+            </div>
+        </Link>
     );
 }
 

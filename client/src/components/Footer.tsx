@@ -44,6 +44,7 @@ export default function Footer() {
                     <div className="flex flex-col gap-3 text-sm">
                         <FooterLink to="/about" label="About" />
                         <FooterLink to="/faq" label="FAQ" />
+                        <FooterLink to="/sources" label="Sources" />
                         <FooterLink to="/in-loving-memory" label="In Loving Memory" />
                         <a href="mailto:fauwad@nusratwaliventures.com" className="transition-colors hover:text-white">
                             Contact

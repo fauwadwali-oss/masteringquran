@@ -43,6 +43,7 @@ const MORE_GROUPS: Array<{
             { to: "/calendar", label: "Calendar", icon: Calendar, description: "Hijri calendar" },
             { to: "/topics", label: "Topics", icon: BookOpen, description: "Curated verses" },
             { to: "/glossary", label: "Glossary", icon: Library, description: "Islamic terms" },
+            { to: "/sources", label: "Sources", icon: Library, description: "Trust and methods" },
         ],
     },
     {

@@ -120,8 +120,9 @@ export default function Hadith() {
         return (
             <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 font-sans">
                 <SEO
-                    title="Hadith Collections - Mastering Quran"
-                    description="Browse authentic English hadith collections including Sahih al-Bukhari, Sahih Muslim, Sunan Abi Dawud, and more."
+                    title="Hadith Library | Sahih Bukhari, Muslim, and More"
+                    description="Browse ten English hadith collections including Sahih al-Bukhari, Sahih Muslim, Abu Dawud, Tirmidhi, Nasa'i, Ibn Majah, Muwatta Malik, and Forty Hadith compilations."
+                    canonicalPath="/hadith"
                 />
                 <section className="py-16 px-6">
                     <div className="max-w-6xl mx-auto">
