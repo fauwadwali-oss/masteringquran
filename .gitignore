@@ -59,6 +59,8 @@ jspm_packages/
 .gradle/
 android/.gradle/
 android/local.properties
+android/keystore.properties
+android/keystores/
 android/**/build/
 ios/**/xcuserdata/
 ios/**/DerivedData/
