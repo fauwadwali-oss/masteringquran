@@ -9,46 +9,30 @@ Wires two live services into a repeatable 1080x1920 Short:
 Slides are rendered by headless Chrome (perfect Arabic shaping) and muxed with ffmpeg.
 Slide durations are derived from the actual audio segment lengths, so audio/visual stay in sync.
 
-Usage: edit CONFIG below, then `python3 ayah_short.py`
+Usage: python3 ayah_short.py <slug>      # loads verses/<slug>.json  (e.g. 13-28)
+Each verses/<slug>.json carries the verse text, translit, translation, hook, and a
+tafsir-sourced explanation with its `source` citation (required — see build()).
 """
-import json, os, subprocess, time, urllib.request, html, ssl
+import json, os, subprocess, time, urllib.request, html, ssl, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+VERSES = os.path.join(HERE, "verses")
 VB = "http://127.0.0.1:17493"
+VOICEBOX_PROFILE = "f8be227d-8a76-4491-b9fc-2a34c907e4d9"  # MHAMBA Narrator (en) — swap for a dedicated MQ voice
 try:
     import certifi
     SSL_CTX = ssl.create_default_context(cafile=certifi.where())
 except Exception:
     SSL_CTX = ssl._create_unverified_context()   # public Quran audio GETs only
 
-# ----------------------------------------------------------------------------- CONFIG
-CFG = {
-    "slug": "94-5-6",
-    "surah": 94, "ayahs": [5, 6],
-    "reciter_edition": "ar.abdurrahmaansudais",     # alquran.cloud edition id
-    "reciter_name": "Sheikh ʿAbdur-Raḥmān As-Sudais",
-    "surah_label": "Surah Ash-Sharḥ · 94 : 5-6",
-    # Arabic verse block (with ornate ayah end-marks) shown on the recitation slide:
-    "arabic_html": ("فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا "
-                    "<span class='endmark'>&#1757;</span><br>"
-                    "إِنَّ مَعَ ٱلْعُسْرِ يُسْرًا "
-                    "<span class='endmark'>&#1758;</span>"),
-    "translit": "Fa-inna maʿa al-ʿusri yusrā.<br>Inna maʿa al-ʿusri yusrā.",
-    "hook": "Read this when<br>life feels heavy.",
-    "translation": "So, surely with hardship comes ease.",
-    "exp_h": "One hardship, two eases",
-    # Sourced from the site's own tafsir data (Maʿārif-ul-Qurʾān; corroborated by Ibn Kathīr):
-    "explanation_html": ("Both times, <b>hardship</b> keeps the word <i>the</i> — one and the same hardship. "
-                         "But <b>ease</b> comes with no <i>the</i>, and it comes <b>twice</b>. "
-                         "So the scholars read it as <b>one hardship, a twofold ease</b>. "
-                         "As the Prophet ﷺ said: “One hardship cannot overcome twofold ease.”"),
-    "explanation_vo": ("Look closely. Both times, the word for hardship keeps its the. "
-                       "One and the same hardship. But ease appears with no the, and it appears twice. "
-                       "So the scholars read it this way. One hardship, but a twofold ease. "
-                       "As the Prophet, peace be upon him, said: one hardship cannot overcome twofold ease."),
-    "source": "Source: Tafsīr Maʿārif-ul-Qurʾān, 94:5–6 · corroborated by Tafsīr Ibn Kathīr",
-    "voicebox_profile": "f8be227d-8a76-4491-b9fc-2a34c907e4d9",  # MHAMBA Narrator (en)
-}
+def load_cfg(slug):
+    cfg = json.load(open(os.path.join(VERSES, f"{slug}.json")))
+    cfg.setdefault("reciter_edition", "ar.abdurrahmaansudais")
+    cfg.setdefault("reciter_name", "Sheikh ʿAbdur-Raḥmān As-Sudais")
+    cfg.setdefault("voicebox_profile", VOICEBOX_PROFILE)
+    cfg.setdefault("ayah_font_size", 132)                 # px; drop for longer verses
+    cfg.setdefault("translation_vo", cfg["translation"])  # spoken VO may be fuller than on-screen line
+    return cfg
 # ----------------------------------------------------------------------------- helpers
 def run(cmd): subprocess.run(cmd, check=True)
 def dur(path):
@@ -61,8 +45,7 @@ def http_get(url, timeout=20):
 
 def fetch_recitation(surah, ayah, edition, out):
     meta = json.loads(http_get(f"https://api.alquran.cloud/v1/ayah/{surah}:{ayah}/{edition}"))
-    audio_url = meta["data"]["audio"]
-    open(out, "wb").write(http_get(audio_url))
+    open(out, "wb").write(http_get(meta["data"]["audio"]))
     return out
 
 def voicebox_tts(text, profile, out_wav):
@@ -84,6 +67,7 @@ def render_slides(cfg, out_dir):
     tpl = open(os.path.join(HERE, "template.html")).read()
     tpl = (tpl.replace("{{HOOK}}", cfg["hook"])
               .replace("{{ARABIC}}", cfg["arabic_html"])
+              .replace("{{AYAH_SIZE}}", str(cfg["ayah_font_size"]))
               .replace("{{TRANSLIT}}", cfg["translit"])
               .replace("{{RECITER}}", html.escape(cfg["reciter_name"]))
               .replace("{{SURAHREF}}", html.escape(cfg["surah_label"]))
@@ -113,7 +97,7 @@ def build(cfg):
         fetch_recitation(cfg["surah"], a, cfg["reciter_edition"], p)
         rec.append(p); print(f"  recitation {cfg['surah']}:{a} -> {dur(p):.2f}s")
     # 2. English VO (local Voicebox) — two clips for precise slide sync
-    vo_tr = voicebox_tts(cfg["translation"], cfg["voicebox_profile"], os.path.join(OUT,"vo_trans.wav"))
+    vo_tr = voicebox_tts(cfg["translation_vo"], cfg["voicebox_profile"], os.path.join(OUT,"vo_trans.wav"))
     vo_ex = voicebox_tts(cfg["explanation_vo"], cfg["voicebox_profile"], os.path.join(OUT,"vo_exp.wav"))
     print(f"  VO translation {dur(vo_tr):.2f}s | explanation {dur(vo_ex):.2f}s")
     # 3. segment timings
@@ -122,7 +106,7 @@ def build(cfg):
     d = {"s1":HOOK, "s2":rec_total+0.3, "s3":GAP_VO+dur(vo_tr)+0.3,
          "s4":MIDGAP+dur(vo_ex), "s5":TAIL}
     # 4. combined audio
-    inputs, filt, n = [], "", 0
+    inputs, n = [], 0
     def sil(t):
         nonlocal n; inputs.extend(["-f","lavfi","-t",str(t),"-i","anullsrc=r=44100:cl=stereo"]); n+=1
     def clip(p):
@@ -153,4 +137,5 @@ def build(cfg):
     return out
 
 if __name__ == "__main__":
-    build(CFG)
+    slug = sys.argv[1] if len(sys.argv) > 1 else "94-5-6"
+    build(load_cfg(slug))
