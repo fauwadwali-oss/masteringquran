@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1080px; height:1920px; overflow:hidden; }
+  body {
+    background:
+      radial-gradient(1200px 900px at 50% 12%, rgba(52,211,153,0.16), transparent 60%),
+      radial-gradient(900px 700px at 50% 100%, rgba(20,120,110,0.18), transparent 55%),
+      linear-gradient(180deg, #061211 0%, #08201d 55%, #05100f 100%);
+    color:#eef4f0; font-family:-apple-system,"Helvetica Neue",sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  .stage { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center; padding:120px 110px; }
+  .slide { display:none; } .slide.on { display:flex; }
+  .kicker { font-size:34px; letter-spacing:10px; text-transform:uppercase; color:#5eead4; font-weight:600; margin-bottom:48px; }
+  .serif { font-family:Georgia,"Times New Roman",serif; }
+  .hook-h { font-size:104px; line-height:1.12; font-weight:600; color:#f4f9f6; letter-spacing:-1px; }
+  .chev { margin-top:90px; font-size:64px; color:#34d399; }
+  .ayah { font-family:"Al Bayan","Baghdad","Geeza Pro",serif; font-size:132px; line-height:2.05; color:#f6fbf8;
+    direction:rtl; text-shadow:0 6px 40px rgba(52,211,153,0.18); }
+  .endmark { color:#34d399; font-size:74px; }
+  .translit { margin-top:70px; font-size:44px; color:#a7cfc4; font-style:italic; line-height:1.6; letter-spacing:1px; }
+  .reciter { margin-top:120px; font-size:38px; color:#6fae9f; letter-spacing:2px; }
+  .surahref { margin-top:20px; font-size:34px; color:#4d7a70; letter-spacing:4px; text-transform:uppercase; }
+  .trans-h { font-size:96px; line-height:1.25; font-weight:500; color:#f4f9f6; }
+  .quote-mark { font-size:150px; color:#34d399; opacity:.6; line-height:0; margin-bottom:40px; }
+  .exp-h { font-size:46px; color:#5eead4; letter-spacing:6px; text-transform:uppercase; font-weight:600; margin-bottom:60px; }
+  .exp-body { font-size:58px; line-height:1.5; color:#e4efe9; max-width:920px; }
+  .exp-body b { color:#6ee7c7; font-weight:600; }
+  .source { margin-top:76px; font-size:34px; color:#5b8a7f; letter-spacing:1px; font-style:italic; max-width:900px; line-height:1.4; }
+  .cta-small { font-size:44px; color:#9ec6bb; margin-bottom:44px; }
+  .cta-url { font-size:96px; font-weight:700; color:#34d399; letter-spacing:-1px; }
+  .cta-stats { margin-top:60px; font-size:40px; color:#7fb3a6; letter-spacing:3px; }
+  .wm { position:absolute; bottom:80px; left:0; right:0; display:flex; align-items:center; justify-content:center;
+    gap:22px; font-size:40px; color:#7fb3a6; letter-spacing:2px; font-weight:600; }
+  .wm .dot { width:16px; height:16px; border-radius:50%; background:#34d399; box-shadow:0 0 22px #34d399; }
+</style></head><body>
+  <div class="stage slide" id="s1"><div class="kicker">Ayah of the Day</div>
+    <div class="hook-h serif">{{HOOK}}</div><div class="chev">&#8964;</div></div>
+  <div class="stage slide" id="s2"><div class="ayah">{{ARABIC}}</div>
+    <div class="translit">{{TRANSLIT}}</div><div class="reciter">Recited by {{RECITER}}</div>
+    <div class="surahref">{{SURAHREF}}</div></div>
+  <div class="stage slide" id="s3"><div class="quote-mark serif">&ldquo;</div>
+    <div class="trans-h serif">{{TRANSLATION}}</div>
+    <div class="surahref" style="margin-top:70px;">{{SURAHREF}}</div></div>
+  <div class="stage slide" id="s4"><div class="exp-h">{{EXP_H}}</div>
+    <div class="exp-body">{{EXPLANATION}}</div>
+    <div class="source">{{SOURCE}}</div></div>
+  <div class="stage slide" id="s5"><div class="cta-small">Read the full tafsir &amp; word-by-word</div>
+    <div class="cta-url">masteringquran.com</div><div class="cta-stats">17 translations · 10 tafsirs · free</div></div>
+  <div class="wm"><span class="dot"></span> Mastering Quran</div>
+<script>
+  var p=new URLSearchParams(location.search).get('s')||'1';
+  var el=document.getElementById('s'+p); if(el)el.classList.add('on');
+  if(p==='5')document.querySelector('.wm').style.display='none';
+</script></body></html>
