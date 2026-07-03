@@ -64,12 +64,25 @@ def voicebox_tts(text, profile, out_wav):
     open(out_wav, "wb").write(http_get(f"{VB}/audio/{gid}", timeout=30))
     return out_wav
 # ----------------------------------------------------------------------------- slides
-def render_slides(cfg, out_dir):
+def find_split(rec_path, target):
+    """Find a natural pause (waqf/breath) in the recitation nearest to `target` seconds,
+    so a two-frame Arabic display switches on the reciter's own pause, not mid-word."""
+    r = subprocess.run(["ffmpeg","-i",rec_path,"-af","silencedetect=noise=-30dB:d=0.12","-f","null","-"],
+                       capture_output=True, text=True)
+    starts, ends = [], []
+    for line in r.stderr.splitlines():
+        if "silence_start" in line: starts.append(float(line.split("silence_start:")[1].strip()))
+        elif "silence_end" in line: ends.append(float(line.split("silence_end:")[1].split("|")[0].strip()))
+    centers = [(s+e)/2 for s, e in zip(starts, ends)]
+    return min(centers, key=lambda c: abs(c-target)) if centers else target
+
+def render_slides(cfg, out_dir, queries):
     tpl = open(os.path.join(HERE, "template.html")).read()
     logo = "file://" + os.path.join(HERE, "assets", "mq_shield_transparent.png")
     tpl = (tpl.replace("{{LOGO}}", logo)
               .replace("{{HOOK}}", cfg["hook"])
               .replace("{{ARABIC}}", cfg["arabic_html"])
+              .replace("{{ARABIC2}}", cfg.get("arabic_html_2", ""))
               .replace("{{AYAH_SIZE}}", str(cfg["ayah_font_size"]))
               .replace("{{TRANSLIT}}", cfg["translit"])
               .replace("{{RECITER}}", html.escape(cfg["reciter_name"]))
@@ -82,10 +95,10 @@ def render_slides(cfg, out_dir):
     build_html = os.path.join(out_dir, "build.html")
     open(build_html, "w").write(tpl)
     chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-    for s in range(1, 6):
+    for i, q in enumerate(queries, 1):   # q = the ?s= value (e.g. "1","2","2b","3"...)
         run([chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars",
              "--force-device-scale-factor=1", "--window-size=1080,1920",
-             f"--screenshot={out_dir}/slide{s}.png", f"file://{build_html}?s={s}"])
+             f"--screenshot={out_dir}/slide{i}.png", f"file://{build_html}?s={q}"])
 # ----------------------------------------------------------------------------- main
 def build(cfg):
     # RULE: any explanation drawn from tafsir must carry a reference on the slide.
@@ -107,8 +120,21 @@ def build(cfg):
     # 3. segment timings
     HOOK, GAP_REC, GAP_VO, MIDGAP, TAIL = 2.0, 0.4, 0.7, 0.5, 2.0
     rec_total = sum(dur(r) for r in rec) + GAP_REC*(len(rec)-1)
-    d = {"s1":HOOK, "s2":rec_total+0.3, "s3":GAP_VO+dur(vo_tr)+0.3,
-         "s4":MIDGAP+dur(vo_ex), "s5":TAIL}
+    arabic_disp = rec_total + 0.3
+    hook_q = {"1": HOOK}
+    tail_q = {"3": GAP_VO+dur(vo_tr)+0.3, "4": MIDGAP+dur(vo_ex), "5": TAIL}
+    if cfg.get("arabic_html_2"):
+        # two Arabic frames: switch on a natural pause in the recitation, audio plays straight through
+        import re as _re
+        strip = lambda s: _re.sub(r"<[^>]+>|&#\d+;|\s", "", s)
+        frac = len(strip(cfg["arabic_html"])) / max(1, len(strip(cfg["arabic_html"])) + len(strip(cfg["arabic_html_2"])))
+        split_t = find_split(rec[0], rec_total*frac)
+        print(f"  two-frame Arabic: switch at {split_t:.2f}s of {rec_total:.1f}s recitation")
+        queries = ["1","2","2b","3","4","5"]
+        durs    = [HOOK, split_t, arabic_disp-split_t, tail_q["3"], tail_q["4"], TAIL]
+    else:
+        queries = ["1","2","3","4","5"]
+        durs    = [HOOK, arabic_disp, tail_q["3"], tail_q["4"], TAIL]
     # 4. combined audio
     inputs, n = [], 0
     def sil(t):
@@ -125,12 +151,12 @@ def build(cfg):
          "-filter_complex", filt, "-map","[out]","-ar","44100","-ac","2", audio])
     total = dur(audio); print(f"  combined audio {total:.2f}s")
     # 5. slides + video
-    render_slides(cfg, OUT)
+    render_slides(cfg, OUT, queries)
     concat = os.path.join(OUT, "concat.txt")
     with open(concat,"w") as f:
-        for s in ["s1","s2","s3","s4","s5"]:
-            f.write(f"file '{OUT}/slide{s[1]}.png'\nduration {d[s]:.3f}\n")
-        f.write(f"file '{OUT}/slide5.png'\n")
+        for i, dd in enumerate(durs, 1):
+            f.write(f"file '{OUT}/slide{i}.png'\nduration {dd:.3f}\n")
+        f.write(f"file '{OUT}/slide{len(durs)}.png'\n")
     out = os.path.join(OUT, f"masteringquran_{cfg['slug']}.mp4")
     run(["ffmpeg","-y","-loglevel","error","-f","concat","-safe","0","-i",concat,
          "-i",audio,
