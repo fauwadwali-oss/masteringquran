@@ -31,6 +31,7 @@ def load_cfg(slug):
     cfg.setdefault("reciter_name", "Sheikh ʿAbdur-Raḥmān As-Sudais")
     cfg.setdefault("voicebox_profile", VOICEBOX_PROFILE)
     cfg.setdefault("ayah_font_size", 132)                 # px; drop for longer verses
+    cfg.setdefault("trans_font_size", 96)                 # px; drop for longer translations
     cfg.setdefault("translation_vo", cfg["translation"])  # spoken VO may be fuller than on-screen line
     return cfg
 # ----------------------------------------------------------------------------- helpers
@@ -72,6 +73,7 @@ def render_slides(cfg, out_dir):
               .replace("{{RECITER}}", html.escape(cfg["reciter_name"]))
               .replace("{{SURAHREF}}", html.escape(cfg["surah_label"]))
               .replace("{{TRANSLATION}}", html.escape(cfg["translation"]))
+              .replace("{{TRANS_SIZE}}", str(cfg["trans_font_size"]))
               .replace("{{EXP_H}}", html.escape(cfg["exp_h"]))
               .replace("{{EXPLANATION}}", cfg["explanation_html"])
               .replace("{{SOURCE}}", html.escape(cfg["source"])))
