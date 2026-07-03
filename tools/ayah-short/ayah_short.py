@@ -13,7 +13,7 @@ Usage: python3 ayah_short.py <slug>      # loads verses/<slug>.json  (e.g. 13-28
 Each verses/<slug>.json carries the verse text, translit, translation, hook, and a
 tafsir-sourced explanation with its `source` citation (required — see build()).
 """
-import json, os, subprocess, time, urllib.request, html, ssl, sys
+import json, os, subprocess, time, urllib.request, html, ssl, sys, re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 VERSES = os.path.join(HERE, "verses")
@@ -33,7 +33,13 @@ def load_cfg(slug):
     cfg.setdefault("ayah_font_size", 132)                 # px; drop for longer verses
     cfg.setdefault("trans_font_size", 96)                 # px; drop for longer translations
     cfg.setdefault("translation_vo", cfg["translation"])  # spoken VO may be fuller than on-screen line
+    cfg.setdefault("trans_credit", "Translation based on Saheeh International")
     return cfg
+
+def wrap_lines(arabic_html):
+    """Wrap each <br>-separated display line in a .aline span for line-by-line highlighting."""
+    parts = re.split(r"<br\s*/?>", arabic_html)
+    return "<br>".join(f"<span class='aline'>{p.strip()}</span>" for p in parts if p.strip())
 # ----------------------------------------------------------------------------- helpers
 def run(cmd): subprocess.run(cmd, check=True)
 def dur(path):
@@ -64,24 +70,42 @@ def voicebox_tts(text, profile, out_wav):
     open(out_wav, "wb").write(http_get(f"{VB}/audio/{gid}", timeout=30))
     return out_wav
 # ----------------------------------------------------------------------------- slides
-def find_split(rec_path, target):
-    """Find a natural pause (waqf/breath) in the recitation nearest to `target` seconds,
-    so a two-frame Arabic display switches on the reciter's own pause, not mid-word."""
+def _silence_centers(rec_path):
+    """Timestamps (s) of natural pauses (waqf/breath) in the recitation."""
     r = subprocess.run(["ffmpeg","-i",rec_path,"-af","silencedetect=noise=-30dB:d=0.12","-f","null","-"],
                        capture_output=True, text=True)
     starts, ends = [], []
     for line in r.stderr.splitlines():
         if "silence_start" in line: starts.append(float(line.split("silence_start:")[1].strip()))
         elif "silence_end" in line: ends.append(float(line.split("silence_end:")[1].split("|")[0].strip()))
-    centers = [(s+e)/2 for s, e in zip(starts, ends)]
-    return min(centers, key=lambda c: abs(c-target)) if centers else target
+    return [(s+e)/2 for s, e in zip(starts, ends)]
+
+def find_split(rec_path, target):
+    """Nearest natural pause to `target` seconds (two-frame Arabic switch)."""
+    c = _silence_centers(rec_path)
+    return min(c, key=lambda x: abs(x-target)) if c else target
+
+def find_line_times(rec_path, seg_lens):
+    """Edges (s) that partition the recitation into one span per display line, snapping
+    each boundary to the reciter's natural pause when one is close, else proportional."""
+    D = dur(rec_path); total = sum(seg_lens); centers = _silence_centers(rec_path)
+    edges = [0.0]
+    for i in range(len(seg_lens) - 1):
+        t = D * sum(seg_lens[:i+1]) / total
+        snapped = min(centers, key=lambda x: abs(x-t)) if centers else t
+        if not centers or abs(snapped - t) > 2.2:      # too far from a pause -> use proportional
+            snapped = t
+        snapped = max(snapped, edges[-1] + 0.4)         # keep boundaries monotonic
+        edges.append(min(snapped, D - 0.3))
+    edges.append(D)
+    return edges
 
 def render_slides(cfg, out_dir, queries):
     tpl = open(os.path.join(HERE, "template.html")).read()
     logo = "file://" + os.path.join(HERE, "assets", "mq_shield_transparent.png")
     tpl = (tpl.replace("{{LOGO}}", logo)
               .replace("{{HOOK}}", cfg["hook"])
-              .replace("{{ARABIC}}", cfg["arabic_html"])
+              .replace("{{ARABIC}}", wrap_lines(cfg["arabic_html"]))
               .replace("{{ARABIC2}}", cfg.get("arabic_html_2", ""))
               .replace("{{AYAH_SIZE}}", str(cfg["ayah_font_size"]))
               .replace("{{TRANSLIT}}", cfg["translit"])
@@ -89,6 +113,7 @@ def render_slides(cfg, out_dir, queries):
               .replace("{{SURAHREF}}", html.escape(cfg["surah_label"]))
               .replace("{{TRANSLATION}}", html.escape(cfg["translation"]))
               .replace("{{TRANS_SIZE}}", str(cfg["trans_font_size"]))
+              .replace("{{TRANS_CREDIT}}", html.escape(cfg["trans_credit"]))
               .replace("{{EXP_H}}", html.escape(cfg["exp_h"]))
               .replace("{{EXPLANATION}}", cfg["explanation_html"])
               .replace("{{SOURCE}}", html.escape(cfg["source"])))
@@ -133,8 +158,21 @@ def build(cfg):
         queries = ["1","2","2b","3","4","5"]
         durs    = [HOOK, split_t, arabic_disp-split_t, tail_q["3"], tail_q["4"], TAIL]
     else:
-        queries = ["1","2","3","4","5"]
-        durs    = [HOOK, arabic_disp, tail_q["3"], tail_q["4"], TAIL]
+        segs = [s for s in re.split(r"<br\s*/?>", cfg["arabic_html"]) if s.strip()]
+        if len(cfg["ayahs"]) == 1 and len(segs) > 1:
+            # line-by-line follow-along: one highlight frame per display line, synced to the recitation
+            stripv = lambda s: re.sub(r"<[^>]+>|&#\d+;|\s", "", s)
+            edges = find_line_times(rec[0], [max(1, len(stripv(s))) for s in segs])
+            n_lines = len(segs)
+            line_durs = [edges[i+1]-edges[i] for i in range(n_lines)]
+            line_durs[-1] += 0.3
+            print(f"  line highlight: {n_lines} lines, switches at " +
+                  ", ".join(f"{edges[i+1]:.1f}" for i in range(n_lines-1)) + "s")
+            queries = ["1"] + [f"2&hl={i}" for i in range(n_lines)] + ["3","4","5"]
+            durs    = [HOOK] + line_durs + [tail_q["3"], tail_q["4"], TAIL]
+        else:
+            queries = ["1","2","3","4","5"]
+            durs    = [HOOK, arabic_disp, tail_q["3"], tail_q["4"], TAIL]
     # 4. combined audio
     inputs, n = [], 0
     def sil(t):

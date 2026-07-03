@@ -19,6 +19,12 @@
   .ayah { font-family:"Al Bayan","Baghdad","Geeza Pro",serif; font-size:132px; line-height:2.05; color:#f6fbf8;
     direction:rtl; text-shadow:0 6px 40px rgba(52,211,153,0.18); }
   .endmark { color:#34d399; font-size:74px; }
+  /* line-by-line follow-along states (applied when ?hl= is set) */
+  .aline.future { color:#3f5f58; text-shadow:none; }
+  .aline.past   { color:#cfe8df; text-shadow:none; }
+  .aline.cur    { color:#79f0d0; text-shadow:0 4px 46px rgba(52,211,153,0.55); }
+  .aline.cur .endmark { color:#79f0d0; }
+  .trans-credit { margin-top:28px; font-size:28px; color:#436b62; letter-spacing:1px; font-style:italic; }
   .translit { margin-top:70px; font-size:44px; color:#a7cfc4; font-style:italic; line-height:1.6; letter-spacing:1px; }
   .reciter { margin-top:120px; font-size:38px; color:#6fae9f; letter-spacing:2px; }
   .surahref { margin-top:20px; font-size:34px; color:#4d7a70; letter-spacing:4px; text-transform:uppercase; }
@@ -45,7 +51,8 @@
     <div class="surahref" style="margin-top:90px;">{{SURAHREF}}</div></div>
   <div class="stage slide" id="s3"><div class="quote-mark serif">&ldquo;</div>
     <div class="trans-h serif" style="font-size:{{TRANS_SIZE}}px">{{TRANSLATION}}</div>
-    <div class="surahref" style="margin-top:70px;">{{SURAHREF}}</div></div>
+    <div class="surahref" style="margin-top:70px;">{{SURAHREF}}</div>
+    <div class="trans-credit">{{TRANS_CREDIT}}</div></div>
   <div class="stage slide" id="s4"><div class="exp-h">{{EXP_H}}</div>
     <div class="exp-body">{{EXPLANATION}}</div>
     <div class="source">{{SOURCE}}</div></div>
@@ -54,7 +61,14 @@
     <div class="cta-url">masteringquran.com</div><div class="cta-stats">17 translations · 10 tafsirs · free</div></div>
   <div class="wm"><span class="dot"></span> Mastering Quran</div>
 <script>
-  var p=new URLSearchParams(location.search).get('s')||'1';
+  var params=new URLSearchParams(location.search);
+  var p=params.get('s')||'1';
   var el=document.getElementById('s'+p); if(el)el.classList.add('on');
   if(p==='5')document.querySelector('.wm').style.display='none';
+  var hl=params.get('hl');
+  if(hl!==null && el){
+    hl=parseInt(hl,10);
+    var lines=el.querySelectorAll('.ayah .aline');
+    lines.forEach(function(ln,j){ ln.classList.add(j<hl?'past':(j===hl?'cur':'future')); });
+  }
 </script></body></html>
