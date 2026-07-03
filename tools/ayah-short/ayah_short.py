@@ -66,7 +66,9 @@ def voicebox_tts(text, profile, out_wav):
 # ----------------------------------------------------------------------------- slides
 def render_slides(cfg, out_dir):
     tpl = open(os.path.join(HERE, "template.html")).read()
-    tpl = (tpl.replace("{{HOOK}}", cfg["hook"])
+    logo = "file://" + os.path.join(HERE, "assets", "mq_shield_transparent.png")
+    tpl = (tpl.replace("{{LOGO}}", logo)
+              .replace("{{HOOK}}", cfg["hook"])
               .replace("{{ARABIC}}", cfg["arabic_html"])
               .replace("{{AYAH_SIZE}}", str(cfg["ayah_font_size"]))
               .replace("{{TRANSLIT}}", cfg["translit"])
