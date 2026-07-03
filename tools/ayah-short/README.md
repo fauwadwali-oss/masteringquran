@@ -35,6 +35,24 @@ Arabic block, translit, translation, explanation (pulled from tafsir), and `sour
 
 Output: `out/<slug>/masteringquran_<slug>.mp4` (the `out/` dir is gitignored).
 
+## QA (run before publishing anything)
+
+```bash
+python3 verify.py            # all verses
+python3 verify.py 2-286      # one verse
+```
+
+`verify.py` independently cross-checks each config against the canonical sources
+(not the ones used to author it):
+- **Arabic == canonical Uthmani** from api.alquran.cloud, letter-for-letter (HARD, gates exit code)
+- cited tafsir edition/verse **exists** in `nwv-islamic-data` (HARD)
+- `source` citation present (HARD)
+- explanation's bolded claims keyword-appear in the tafsir text (SOFT — paraphrases will flag
+  "review by hand"; confirm those against the source before shipping)
+
+This content is sensitive — always run `verify.py` **and** eyeball every rendered slide before
+anything leaves the machine. Nothing is auto-posted.
+
 ## Notes
 
 - `voicebox_profile` currently points at the MHAMBA Narrator clone as a placeholder.
