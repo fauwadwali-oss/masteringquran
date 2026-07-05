@@ -10,6 +10,7 @@ import KeyboardShortcutsProvider from "./components/KeyboardShortcutsProvider";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import GoogleAnalytics from "./components/GoogleAnalytics";
 
 const Home = lazy(() => import("./pages/Home"));
 const Quran = lazy(() => import("./pages/Quran"));
@@ -88,6 +89,7 @@ function App() {
             <TooltipProvider>
               <Toaster />
               <BrowserRouter>
+                <GoogleAnalytics />
                 <ScrollToTop />
                 <KeyboardShortcutsProvider />
                 <Layout>

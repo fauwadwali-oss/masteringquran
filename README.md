@@ -35,6 +35,7 @@ Cloudflare Pages auto-deploys on push to `main`. Required env vars on the Pages 
 - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` — shared with nusratwaliventures.com
 - `VITE_APP_TITLE` — "Mastering Quran"
 - `VITE_ANALYTICS_ENDPOINT`, `VITE_ANALYTICS_WEBSITE_ID` — Umami
+- `VITE_GA_MEASUREMENT_ID` — Google Analytics web stream measurement ID (`G-...`), stored as a GitHub Actions secret for production builds
 
 ## License
 
