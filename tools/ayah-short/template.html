@@ -19,6 +19,10 @@
   .ayah { font-family:"Al Bayan","Baghdad","Geeza Pro",serif; font-size:132px; line-height:2.05; color:#f6fbf8;
     direction:rtl; text-shadow:0 6px 40px rgba(52,211,153,0.18); }
   .endmark { color:#34d399; font-size:74px; }
+  .ayah.compact { line-height:1.85; }   /* Arabic + translation share one slide */
+  /* the rule keeps scripture visually distinct from its translation */
+  .combined-trans { margin-top:64px; padding-top:58px; max-width:900px; line-height:1.42;
+    color:#dcebe4; border-top:2px solid rgba(52,211,153,0.22); }
   /* line-by-line follow-along states (applied when ?hl= is set) */
   .aline.future { color:#3f5f58; text-shadow:none; }
   .aline.past   { color:#cfe8df; text-shadow:none; }
@@ -27,6 +31,7 @@
   .trans-credit { margin-top:28px; font-size:28px; color:#436b62; letter-spacing:1px; font-style:italic; }
   .translit { margin-top:70px; font-size:44px; color:#a7cfc4; font-style:italic; line-height:1.6; letter-spacing:1px; }
   .reciter { margin-top:120px; font-size:38px; color:#6fae9f; letter-spacing:2px; }
+  .reciter:empty { display:none; }   /* silent-Arabic mode: no recitation, so no reciter credit */
   .surahref { margin-top:20px; font-size:34px; color:#4d7a70; letter-spacing:4px; text-transform:uppercase; }
   .trans-h { line-height:1.25; font-weight:500; color:#f4f9f6; max-width:940px; }
   .quote-mark { font-size:150px; color:#34d399; opacity:.6; line-height:0; margin-bottom:40px; }
@@ -45,10 +50,14 @@
   <div class="stage slide" id="s1"><div class="kicker">Ayah of the Day</div>
     <div class="hook-h serif">{{HOOK}}</div><div class="chev">&#8964;</div></div>
   <div class="stage slide" id="s2"><div class="ayah" style="font-size:{{AYAH_SIZE}}px">{{ARABIC}}</div>
-    <div class="translit">{{TRANSLIT}}</div><div class="reciter">Recited by {{RECITER}}</div>
+    <div class="translit">{{TRANSLIT}}</div><div class="reciter">{{RECITER_LINE}}</div>
     <div class="surahref">{{SURAHREF}}</div></div>
   <div class="stage slide" id="s2b"><div class="ayah" style="font-size:{{AYAH_SIZE}}px">{{ARABIC2}}</div>
     <div class="surahref" style="margin-top:90px;">{{SURAHREF}}</div></div>
+  <div class="stage slide" id="s2c"><div class="ayah compact" style="font-size:{{C_AYAH_SIZE}}px">{{ARABIC}}</div>
+    <div class="combined-trans serif" style="font-size:{{C_TRANS_SIZE}}px">{{TRANSLATION}}</div>
+    <div class="surahref" style="margin-top:52px;">{{SURAHREF}}</div>
+    <div class="trans-credit">{{TRANS_CREDIT}}</div></div>
   <div class="stage slide" id="s3"><div class="quote-mark serif">&ldquo;</div>
     <div class="trans-h serif" style="font-size:{{TRANS_SIZE}}px">{{TRANSLATION}}</div>
     <div class="surahref" style="margin-top:70px;">{{SURAHREF}}</div>

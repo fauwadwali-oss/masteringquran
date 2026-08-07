@@ -9,6 +9,9 @@ For every verses/<slug>.json it cross-checks, against sources NOT used to author
   2. The cited tafsir edition/verse in `source` actually exists in nwv-islamic-data,
      and the explanation's bolded claim words actually occur in that tafsir text.
   3. The `source` citation is present (mirrors the build-time rule).
+  4. The explanation does not reproduce the published tafsir *translation* verbatim. Those
+     English translations are copyrighted; we may use the interpretation but must express it
+     ourselves. A long shared word-run means we lifted their wording, not their meaning.
 
 Run:  python3 verify.py            # all verses
       python3 verify.py 2-286      # one verse
@@ -38,7 +41,26 @@ def collapse(s): return "".join(s.split())
 def letters(s):                                           # base-letter skeleton
     return collapse(_ALEF.sub("ا", _DIAC.sub("", strip_html(s))))
 def deaccent(s):
-    return "".join(c for c in unicodedata.normalize("NFD", s) if not unicodedata.combining(c)).lower()
+    s = "".join(c for c in unicodedata.normalize("NFD", s) if not unicodedata.combining(c)).lower()
+    # ʿ/ʾ are modifier LETTERS, not combining marks, so NFD leaves them: "Maʿārif" -> "ma'arif".
+    # Drop them (and plain quotes) or transliterated edition names never match the folder slugs.
+    return re.sub(r"[ʻ-ʿˈ‘’'`]", "", s)
+
+VERBATIM_RUN = 8          # consecutive shared words that reads as lifted wording rather than overlap
+
+def longest_shared_run(ours, theirs):
+    """Longest run of consecutive words our explanation shares with the published tafsir text."""
+    a = re.findall(r"[a-z']+", strip_html(ours).lower())
+    b = re.findall(r"[a-z']+", theirs.lower())
+    idx = {}
+    for i, w in enumerate(b): idx.setdefault(w, []).append(i)
+    best, seq = 0, []
+    for i in range(len(a)):
+        for j in idx.get(a[i], []):
+            k = 0
+            while i+k < len(a) and j+k < len(b) and a[i+k] == b[j+k]: k += 1
+            if k > best: best, seq = k, a[i:i+k]
+    return best, " ".join(seq)
 
 def ed_slug(source):
     low = deaccent(source)                                # tolerate macrons: "Kathir" from "Kathīr"
@@ -74,6 +96,11 @@ def check(slug):
                 words = re.findall(r"[a-z]{5,}", strip_html(claim).lower())
                 if words and not any(w in text for w in words):
                     notes.append(f"claim not keyword-matched in {slugf}: “{strip_html(claim)[:40]}” (review by hand)")
+            # --- 4. not a verbatim lift of the copyrighted English tafsir translation ---
+            run, seq = longest_shared_run(cfg.get("explanation_html", ""), text)
+            if run >= VERBATIM_RUN:
+                notes.append(f"{run} consecutive words shared with {slugf}: “{seq[:70]}” — "
+                             "reword in our own voice unless this is the verse itself")
     return issues, notes
 
 def main():

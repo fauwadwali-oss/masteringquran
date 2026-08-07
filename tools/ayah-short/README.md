@@ -7,7 +7,7 @@ verse + recitation → English translation → sourced tafsir explanation → CT
 
 | Piece | Source |
 |-------|--------|
-| Arabic recitation | `api.alquran.cloud`, edition `ar.abdurrahmaansudais` (real Sudais audio, per verse) |
+| Arabic recitation | `api.alquran.cloud`, edition `ar.abdurrahmaansudais` — **currently disabled**, see silent-Arabic mode |
 | English voiceover | local **Voicebox** (`:17493`) — free, on-device TTS |
 | Explanation text | the site's own tafsir data (`nwv-islamic-data`) — **must be cited on-slide** |
 | Slides | headless Chrome + `template.html` (Chrome shapes the Arabic correctly) |
@@ -21,7 +21,36 @@ verse + recitation → English translation → sourced tafsir explanation → CT
    `../../../nwv-islamic-data/tafsir/<slug>/<surah>/<ayah>.json` (same data the live
    `TafsirPanel` fetches) and cite the edition + verse.
 3. **Arabic recitation is always real qari audio, never AI/TTS.** Voicebox is for the
-   English voiceover only (the meaning, not scripture).
+   English voiceover only (the meaning, not scripture). If we cannot use a recitation we
+   have the rights to, we ship with **no** recitation — see silent-Arabic mode below.
+
+## Silent-Arabic mode (current default posture — Aug 2026)
+
+YouTube flagged Shorts in the Jul 2026 batch. Cause: **Content ID on the recitation master**.
+The Quran text is public domain, but every *recording* carries its own copyright, and an open
+API is not an open licence — `api.alquran.cloud` and Quran.com serve the audio freely but
+license only their code. Swapping Sudais for another famous qari just trades one fingerprinted
+commercial master for another; everyayah's data is CC-BY-NC (non-commercial only) and does not
+bind the original rights holder anyway.
+
+Until we own a recitation master outright, run with recitation off:
+
+```bash
+python3 ayah_short.py 11-6 --no-recitation      # or set "recitation": false in the verse config
+```
+
+In this mode: no recitation is fetched, no reciter is credited (`.reciter` collapses), and the
+English translation VO plays **under** the Arabic slide so there is no dead air — the
+line-by-line highlight paces to that VO instead of to a reciter's pauses.
+
+It also switches on the **combined slide** (`combined_slide`, defaults on whenever recitation is
+off): Arabic and its translation share one slide, separated by a hairline rule that keeps
+scripture visually distinct from the translation. Without a recitation, an Arabic slide followed
+by a standalone translation card reads as two disconnected beats, so the card is dropped and the
+video tightens by ~2s. Sizes are `combined_ayah_size` / `combined_trans_size` (the latter
+defaults to 78% of `trans_font_size`); the surah reference and Saheeh credit move onto the
+combined slide. Verses with `arabic_html_2` are too long for one slide and keep the separate
+card automatically. Translations and tafsir citations are unchanged.
 
 ## Usage
 
