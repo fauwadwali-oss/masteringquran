@@ -1,3 +1,4 @@
+import { TRANSLATIONS, TAFSIRS } from "@/lib/study-editions";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Search, Play, Pause, BookOpen, Loader2, AlertCircle, Bookmark, BookmarkCheck, Volume2, VolumeX, SkipForward, SkipBack, ChevronLeft, ChevronRight, Star, X, Mic, Moon, Languages, Layers, Copy, Share2, Check, Sparkles } from "lucide-react";
@@ -77,41 +78,6 @@ const RECITERS = [
     { id: "10", name: "Saood Ash-Shuraym", arabicName: "سعود الشريم" },
     { id: "4", name: "Abu Bakr al-Shatri", arabicName: "أبو بكر الشاطري" },
     { id: "5", name: "Hani ar-Rifai", arabicName: "هاني الرفاعي" },
-];
-
-// Translations list (Quran.com API v4 translation IDs)
-const TRANSLATIONS = [
-    { id: "20", name: "Sahih International", language: "English" },
-    { id: "22", name: "Yusuf Ali", language: "English" },
-    { id: "19", name: "Pickthall", language: "English" },
-    { id: "85", name: "Abdel Haleem", language: "English" },
-    { id: "95", name: "Maududi (Tafhim)", language: "English" },
-    { id: "203", name: "Hilali & Khan", language: "English" },
-    { id: "84", name: "Taqi Usmani", language: "English" },
-    { id: "57", name: "Transliteration (Latin)", language: "English" },
-    { id: "234", name: "Jalandhari", language: "Urdu" },
-    { id: "54", name: "Junagarhi", language: "Urdu" },
-    { id: "97", name: "Maududi (Tafheem)", language: "Urdu" },
-    { id: "819", name: "Wahiduddin Khan", language: "Urdu" },
-    { id: "31", name: "Hamidullah", language: "French" },
-    { id: "208", name: "Abu Reda", language: "German" },
-    { id: "77", name: "Diyanet", language: "Turkish" },
-    { id: "33", name: "Indonesian Islamic Affairs", language: "Indonesian" },
-    { id: "161", name: "Taisirul Quran", language: "Bengali" },
-];
-
-// English Tafsir editions mirrored in nwv-islamic-data
-const TAFSIRS = [
-    { slug: "en-tafisr-ibn-kathir", name: "Ibn Kathir (Abridged)" },
-    { slug: "en-al-jalalayn", name: "al-Jalalayn" },
-    { slug: "en-tafsir-maarif-ul-quran", name: "Ma'arif al-Qur'an — Mufti Shafi" },
-    { slug: "en-tazkirul-quran", name: "Tazkirul Quran — Wahiduddin Khan" },
-    { slug: "en-tafsir-ibn-abbas", name: "Tanwîr al-Miqbâs — Ibn Abbas" },
-    { slug: "en-al-qushairi-tafsir", name: "Lataif al-Ishara — al-Qushairi" },
-    { slug: "en-tafsir-al-tustari", name: "al-Tustari" },
-    { slug: "en-kashani-tafsir", name: "Kashani" },
-    { slug: "en-kashf-al-asrar-tafsir", name: "Kashf al-Asrar" },
-    { slug: "en-asbab-al-nuzul-by-al-wahidi", name: "Asbab al-Nuzul — al-Wahidi" },
 ];
 
 // Strip HTML footnote markers from Quran.com translation text
@@ -729,31 +695,32 @@ export default function Quran() {
                     </svg>
                 </div>
 
-                <div className="relative z-10 px-4 py-10 sm:px-6 md:py-16">
-                    <div className="mx-auto max-w-4xl space-y-6 text-center">
+                <div className="relative z-10 px-4 py-4 sm:px-6 md:py-6">
+                    <div className="mx-auto max-w-4xl space-y-3 text-center">
                         {/* Arabic Badge */}
-                        <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 shadow-lg">
+                        <div className="hidden md:inline-flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 shadow-lg">
                             <Moon className="w-5 h-5 text-emerald-300" />
                             <span className="text-xl font-amiri">القرآن الكريم</span>
                             <BookOpen className="w-5 h-5 text-emerald-300" />
                         </div>
 
-                        <h1 className="text-4xl font-bold tracking-tight text-white md:text-6xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        <h1 className="text-2xl font-bold tracking-tight text-white md:text-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
                             The Holy Quran
                         </h1>
 
-                        <p className="mx-auto max-w-2xl text-base font-light leading-relaxed text-emerald-100/90 md:text-xl">
+                        <p className="hidden mx-auto max-w-2xl text-base font-light leading-relaxed text-emerald-100/90 md:text-xl">
                             "This is the Book about which there is no doubt, a guidance for those conscious of Allah."
                             <span className="block mt-2 text-sm text-emerald-300/70">— Surah Al-Baqarah 2:2</span>
                         </p>
 
                         {/* Search Bar */}
-                        <form onSubmit={handleSearch} className="mx-auto mt-8 max-w-2xl">
+                        <form onSubmit={handleSearch} className="mx-auto mt-3 max-w-2xl">
                             <div className="relative group">
                                 <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-500"></div>
                                 <div className="relative flex gap-2 rounded-2xl border border-white/20 bg-white/10 p-2 shadow-2xl shadow-black/10 backdrop-blur-xl">
                                     <Input
                                         type="text"
+                                        aria-label="Search the Quran in English"
                                         placeholder="Search the Quran in English..."
                                         className="flex-1 bg-transparent border-0 text-white placeholder:text-emerald-200/50 focus-visible:ring-0 focus-visible:ring-offset-0 text-lg"
                                         value={searchQuery}
@@ -764,6 +731,7 @@ export default function Quran() {
                                             type="button"
                                             variant="ghost"
                                             size="icon"
+                                            aria-label="Clear search"
                                             onClick={() => { setSearchQuery(""); setShowSearchResults(false); }}
                                             className="text-emerald-200 hover:text-white hover:bg-white/10"
                                         >
@@ -772,6 +740,7 @@ export default function Quran() {
                                     )}
                                     <Button
                                         type="submit"
+                                        aria-label="Search Quran"
                                         className="bg-emerald-500 hover:bg-emerald-400 text-white px-6 rounded-lg shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:shadow-emerald-400/40"
                                         disabled={isSearching}
                                     >
@@ -782,7 +751,7 @@ export default function Quran() {
                         </form>
 
                         {/* Quick Stats */}
-                        <div className="flex flex-wrap justify-center gap-2 pt-2 md:gap-3 md:pt-5">
+                        <div className="hidden">
                             {[
                                 { label: "114 Surahs", icon: BookOpen },
                                 { label: "30 Juz", icon: Layers },
@@ -805,7 +774,7 @@ export default function Quran() {
             </div>
 
             {/* Main Content */}
-            <div className="relative z-10 mx-auto max-w-6xl px-4 pt-6 sm:px-6">
+            <div className="relative z-10 mx-auto max-w-6xl px-4 pt-4 sm:px-6">
 
                 {/* Search Results Modal */}
                 {showSearchResults && (
@@ -815,7 +784,7 @@ export default function Quran() {
                                 <Search className="h-5 w-5 text-emerald-600" />
                                 Search Results {searchResults.length > 0 && <Badge className="bg-emerald-100 text-emerald-700">{searchResults.length}</Badge>}
                             </h3>
-                            <Button variant="ghost" size="icon" onClick={() => setShowSearchResults(false)} className="hover:bg-emerald-100 dark:hover:bg-emerald-900/30">
+                            <Button variant="ghost" size="icon" aria-label="Close search results" onClick={() => setShowSearchResults(false)} className="hover:bg-emerald-100 dark:hover:bg-emerald-900/30">
                                 <X className="h-5 w-5" />
                             </Button>
                         </div>
@@ -855,7 +824,7 @@ export default function Quran() {
                                 <BookmarkCheck className="h-5 w-5 text-amber-600" />
                                 Your Bookmarks <Badge className="bg-amber-100 text-amber-700">{bookmarks.length}</Badge>
                             </h3>
-                            <Button variant="ghost" size="icon" onClick={() => setShowBookmarks(false)} className="hover:bg-amber-100 dark:hover:bg-amber-900/30">
+                            <Button variant="ghost" size="icon" aria-label="Close bookmarks" onClick={() => setShowBookmarks(false)} className="hover:bg-amber-100 dark:hover:bg-amber-900/30">
                                 <X className="h-5 w-5" />
                             </Button>
                         </div>
@@ -890,15 +859,10 @@ export default function Quran() {
                 )}
 
                 {/* Controls Section */}
-                <div className="mb-8 rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-4 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 md:p-6">
-                    <div className="mb-5 flex flex-col gap-1 text-center">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Reader controls</p>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Choose a reading section, reciter, translations, and study layers.</p>
-                    </div>
-
+                <div className="mb-4 rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-4 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 md:p-6">
                     {/* View Mode Tabs */}
-                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-full mb-6">
-                        <TabsList className="mx-auto grid w-full max-w-2xl grid-cols-3 rounded-xl bg-emerald-50 p-1 dark:bg-emerald-950/30 sm:grid-cols-6">
+                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-full mb-3">
+                        <TabsList className="mx-auto grid w-full max-w-2xl h-auto grid-cols-3 rounded-xl bg-emerald-50 p-1 dark:bg-emerald-950/30 sm:grid-cols-6">
                             <TabsTrigger value="surah" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Surah</TabsTrigger>
                             <TabsTrigger value="juz" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Juz</TabsTrigger>
                             <TabsTrigger value="hizb" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Hizb</TabsTrigger>
@@ -909,10 +873,10 @@ export default function Quran() {
                     </Tabs>
 
                     {/* Navigation Controls */}
-                    <div className="mb-6 flex flex-wrap items-center justify-center gap-3 md:gap-4">
+                    <div className="mb-3 flex flex-wrap items-center justify-center gap-3 md:gap-4">
                         {viewMode === "surah" && (
                             <Select value={currentSurah?.number.toString()} onValueChange={handleSurahChange}>
-                                <SelectTrigger className="w-full md:w-[320px] h-12 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
+                                <SelectTrigger aria-label="Surah" className="w-full md:w-[320px] h-12 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
                                     <SelectValue placeholder="Select Surah" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[400px]">
@@ -936,14 +900,14 @@ export default function Quran() {
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => setCurrentJuz(Math.max(1, currentJuz - 1))}
+                                    aria-label="Previous juz" onClick={() => setCurrentJuz(Math.max(1, currentJuz - 1))}
                                     disabled={currentJuz === 1}
                                     className="h-12 w-12 rounded-xl shadow-sm"
                                 >
                                     <ChevronLeft className="h-5 w-5" />
                                 </Button>
                                 <Select value={currentJuz.toString()} onValueChange={(v) => setCurrentJuz(parseInt(v))}>
-                                    <SelectTrigger className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm">
+                                    <SelectTrigger aria-label="Juz" className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -962,7 +926,7 @@ export default function Quran() {
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => setCurrentJuz(Math.min(30, currentJuz + 1))}
+                                    aria-label="Next juz" onClick={() => setCurrentJuz(Math.min(30, currentJuz + 1))}
                                     disabled={currentJuz === 30}
                                     className="h-12 w-12 rounded-xl shadow-sm"
                                 >
@@ -973,18 +937,18 @@ export default function Quran() {
 
                         {viewMode === "hizb" && (
                             <div className="flex items-center gap-3">
-                                <Button variant="outline" size="icon" onClick={() => setCurrentHizb(Math.max(1, currentHizb - 1))} disabled={currentHizb === 1} className="h-12 w-12 rounded-xl shadow-sm">
+                                <Button variant="outline" size="icon" aria-label="Previous hizb" onClick={() => setCurrentHizb(Math.max(1, currentHizb - 1))} disabled={currentHizb === 1} className="h-12 w-12 rounded-xl shadow-sm">
                                     <ChevronLeft className="h-5 w-5" />
                                 </Button>
                                 <Select value={currentHizb.toString()} onValueChange={(v) => setCurrentHizb(parseInt(v))}>
-                                    <SelectTrigger className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm"><SelectValue /></SelectTrigger>
+                                    <SelectTrigger aria-label="Hizb" className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm"><SelectValue /></SelectTrigger>
                                     <SelectContent className="max-h-[300px]">
                                         {Array.from({ length: 60 }, (_, i) => i + 1).map((hizb) => (
                                             <SelectItem key={hizb} value={hizb.toString()}>Hizb {hizb}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <Button variant="outline" size="icon" onClick={() => setCurrentHizb(Math.min(60, currentHizb + 1))} disabled={currentHizb === 60} className="h-12 w-12 rounded-xl shadow-sm">
+                                <Button variant="outline" size="icon" aria-label="Next hizb" onClick={() => setCurrentHizb(Math.min(60, currentHizb + 1))} disabled={currentHizb === 60} className="h-12 w-12 rounded-xl shadow-sm">
                                     <ChevronRight className="h-5 w-5" />
                                 </Button>
                             </div>
@@ -992,18 +956,18 @@ export default function Quran() {
 
                         {viewMode === "rub" && (
                             <div className="flex items-center gap-3">
-                                <Button variant="outline" size="icon" onClick={() => setCurrentRub(Math.max(1, currentRub - 1))} disabled={currentRub === 1} className="h-12 w-12 rounded-xl shadow-sm">
+                                <Button variant="outline" size="icon" aria-label="Previous rub" onClick={() => setCurrentRub(Math.max(1, currentRub - 1))} disabled={currentRub === 1} className="h-12 w-12 rounded-xl shadow-sm">
                                     <ChevronLeft className="h-5 w-5" />
                                 </Button>
                                 <Select value={currentRub.toString()} onValueChange={(v) => setCurrentRub(parseInt(v))}>
-                                    <SelectTrigger className="w-[200px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm"><SelectValue /></SelectTrigger>
+                                    <SelectTrigger aria-label="Rub al-Hizb" className="w-[200px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm"><SelectValue /></SelectTrigger>
                                     <SelectContent className="max-h-[300px]">
                                         {Array.from({ length: 240 }, (_, i) => i + 1).map((rub) => (
                                             <SelectItem key={rub} value={rub.toString()}>Rub al-Hizb {rub}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <Button variant="outline" size="icon" onClick={() => setCurrentRub(Math.min(240, currentRub + 1))} disabled={currentRub === 240} className="h-12 w-12 rounded-xl shadow-sm">
+                                <Button variant="outline" size="icon" aria-label="Next rub" onClick={() => setCurrentRub(Math.min(240, currentRub + 1))} disabled={currentRub === 240} className="h-12 w-12 rounded-xl shadow-sm">
                                     <ChevronRight className="h-5 w-5" />
                                 </Button>
                             </div>
@@ -1011,18 +975,18 @@ export default function Quran() {
 
                         {viewMode === "manzil" && (
                             <div className="flex items-center gap-3">
-                                <Button variant="outline" size="icon" onClick={() => setCurrentManzil(Math.max(1, currentManzil - 1))} disabled={currentManzil === 1} className="h-12 w-12 rounded-xl shadow-sm">
+                                <Button variant="outline" size="icon" aria-label="Previous manzil" onClick={() => setCurrentManzil(Math.max(1, currentManzil - 1))} disabled={currentManzil === 1} className="h-12 w-12 rounded-xl shadow-sm">
                                     <ChevronLeft className="h-5 w-5" />
                                 </Button>
                                 <Select value={currentManzil.toString()} onValueChange={(v) => setCurrentManzil(parseInt(v))}>
-                                    <SelectTrigger className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm"><SelectValue /></SelectTrigger>
+                                    <SelectTrigger aria-label="Manzil" className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm"><SelectValue /></SelectTrigger>
                                     <SelectContent>
                                         {Array.from({ length: 7 }, (_, i) => i + 1).map((manzil) => (
                                             <SelectItem key={manzil} value={manzil.toString()}>Manzil {manzil}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <Button variant="outline" size="icon" onClick={() => setCurrentManzil(Math.min(7, currentManzil + 1))} disabled={currentManzil === 7} className="h-12 w-12 rounded-xl shadow-sm">
+                                <Button variant="outline" size="icon" aria-label="Next manzil" onClick={() => setCurrentManzil(Math.min(7, currentManzil + 1))} disabled={currentManzil === 7} className="h-12 w-12 rounded-xl shadow-sm">
                                     <ChevronRight className="h-5 w-5" />
                                 </Button>
                             </div>
@@ -1033,14 +997,14 @@ export default function Quran() {
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                    aria-label="Previous page" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                                     disabled={currentPage === 1}
                                     className="h-12 w-12 rounded-xl shadow-sm"
                                 >
                                     <ChevronLeft className="h-5 w-5" />
                                 </Button>
                                 <Select value={currentPage.toString()} onValueChange={(v) => setCurrentPage(parseInt(v))}>
-                                    <SelectTrigger className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm">
+                                    <SelectTrigger aria-label="Page" className="w-[180px] h-12 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-sm">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="max-h-[300px]">
@@ -1054,7 +1018,7 @@ export default function Quran() {
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => setCurrentPage(Math.min(604, currentPage + 1))}
+                                    aria-label="Next page" onClick={() => setCurrentPage(Math.min(604, currentPage + 1))}
                                     disabled={currentPage === 604}
                                     className="h-12 w-12 rounded-xl shadow-sm"
                                 >
@@ -1063,7 +1027,13 @@ export default function Quran() {
                             </div>
                         )}
 
+                    </div>
+                    <details className="group/settings">
+                        <summary className="cursor-pointer min-h-11 py-3 text-sm font-semibold text-emerald-800 dark:text-emerald-300">Reading settings</summary>
+                        <div className="flex flex-wrap gap-2 pt-3">
                         <Button
+                            aria-label="Tajweed"
+                            aria-pressed={showTajweed}
                             variant={showTajweed ? "default" : "outline"}
                             onClick={() => setShowTajweed(!showTajweed)}
                             className={`h-12 px-5 rounded-xl gap-2 transition-all ${
@@ -1071,9 +1041,11 @@ export default function Quran() {
                             }`}
                         >
                             <Star className="h-5 w-5" />
-                            <span className="hidden sm:inline">Tajweed</span>
+                            <span>Tajweed</span>
                         </Button>
                         <Button
+                            aria-label="Beginner"
+                            aria-pressed={beginnerMode}
                             variant={beginnerMode ? "default" : "outline"}
                             onClick={() => {
                                 const next = !beginnerMode;
@@ -1089,9 +1061,11 @@ export default function Quran() {
                             }`}
                         >
                             <Sparkles className="h-5 w-5" />
-                            <span className="hidden sm:inline">Beginner</span>
+                            <span>Beginner</span>
                         </Button>
                         <Button
+                            aria-label="Word by Word"
+                            aria-pressed={showWordByWord}
                             variant={showWordByWord ? "default" : "outline"}
                             onClick={() => setShowWordByWord(!showWordByWord)}
                             className={`h-12 px-5 rounded-xl gap-2 transition-all ${
@@ -1099,9 +1073,11 @@ export default function Quran() {
                             }`}
                         >
                             <Layers className="h-5 w-5" />
-                            <span className="hidden sm:inline">Word by Word</span>
+                            <span>Word by Word</span>
                         </Button>
                         <Button
+                            aria-label="Tafsir"
+                            aria-pressed={showTafsir}
                             variant={showTafsir ? "default" : "outline"}
                             onClick={() => setShowTafsir(!showTafsir)}
                             className={`h-12 px-5 rounded-xl gap-2 transition-all ${
@@ -1109,9 +1085,11 @@ export default function Quran() {
                             }`}
                         >
                             <BookOpen className="h-5 w-5" />
-                            <span className="hidden sm:inline">Tafsir</span>
+                            <span>Tafsir</span>
                         </Button>
                         <Button
+                            aria-label="Bookmarks"
+                            aria-pressed={showBookmarks}
                             variant={showBookmarks ? "default" : "outline"}
                             onClick={() => setShowBookmarks(!showBookmarks)}
                             className={`h-12 px-5 rounded-xl gap-2 transition-all ${
@@ -1119,7 +1097,7 @@ export default function Quran() {
                             }`}
                         >
                             <Bookmark className="h-5 w-5" />
-                            <span className="hidden sm:inline">Bookmarks</span>
+                            <span>Bookmarks</span>
                             {bookmarks.length > 0 && (
                                 <Badge variant="secondary" className="ml-1 h-5 px-2 text-xs">
                                     {bookmarks.length}
@@ -1136,7 +1114,7 @@ export default function Quran() {
                                 Reciter
                             </label>
                             <Select value={selectedReciter} onValueChange={setSelectedReciter}>
-                                <SelectTrigger className="w-full h-11 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                                <SelectTrigger aria-label="Reciter" className="w-full h-11 bg-slate-50 dark:bg-slate-800 rounded-xl">
                                     <SelectValue placeholder="Select Reciter" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -1163,7 +1141,7 @@ export default function Quran() {
                                 Primary Translation
                             </label>
                             <Select value={selectedTranslation} onValueChange={setSelectedTranslation}>
-                                <SelectTrigger className="w-full h-11 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                                <SelectTrigger aria-label="Primary translation" className="w-full h-11 bg-slate-50 dark:bg-slate-800 rounded-xl">
                                     <SelectValue placeholder="Translation 1" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -1185,7 +1163,7 @@ export default function Quran() {
                                 Secondary Translation
                             </label>
                             <Select value={secondaryTranslation} onValueChange={setSecondaryTranslation}>
-                                <SelectTrigger className="w-full h-11 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                                <SelectTrigger aria-label="Secondary translation" className="w-full h-11 bg-slate-50 dark:bg-slate-800 rounded-xl">
                                     <SelectValue placeholder="Translation 2" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -1211,7 +1189,7 @@ export default function Quran() {
                                     Tafsir Edition
                                 </label>
                                 <Select value={selectedTafsir} onValueChange={setSelectedTafsir}>
-                                    <SelectTrigger className="w-full h-11 bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/40 rounded-xl">
+                                    <SelectTrigger aria-label="Tafsir edition" className="w-full h-11 bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/40 rounded-xl">
                                         <SelectValue placeholder="Select Tafsir" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -1225,39 +1203,36 @@ export default function Quran() {
                             </div>
                         </div>
                     )}
-                </div>
-
-                <div className="mb-8 grid md:grid-cols-3 gap-3">
-                    <ReaderTip icon={Layers} title="Tap a word" text="Turn on Word by Word, then tap Arabic words for meaning, transliteration, and audio." />
-                    <ReaderTip icon={BookOpen} title="Open tafsir" text="Use Tafsir when you want explanation beyond the translation." />
-                    <ReaderTip icon={Star} title="Use study layers" text="Tajweed, bookmarks, notes, and audio can be mixed as you read." />
+                    </details>
                 </div>
 
                 {/* Surah Info Card */}
                 {viewMode === "surah" && currentSurah && (
-                    <div className="mb-8 text-center animate-in fade-in duration-500">
-                        <div className="inline-block rounded-[1.5rem] border border-emerald-100 bg-white/90 px-6 py-6 shadow-xl shadow-emerald-900/5 dark:border-slate-800 dark:bg-slate-900 md:px-10 md:py-8">
-                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 font-serif mb-2">
+                    <div className="mb-4 text-center animate-in fade-in duration-500">
+                        <div className="inline-block rounded-[1.5rem] border border-emerald-100 bg-white/90 px-4 py-3 shadow-xl shadow-emerald-900/5 dark:border-slate-800 dark:bg-slate-900 md:px-6 md:py-4">
+                            <div className="flex flex-wrap items-center justify-center gap-3">
+                            <h2 className="text-xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 font-serif mb-1">
                                 {currentSurah.englishName}
                             </h2>
-                            <p className="text-4xl md:text-5xl font-amiri text-emerald-700 dark:text-emerald-400 mb-4">
+                            <p className="text-2xl md:text-3xl font-amiri text-emerald-700 dark:text-emerald-400 mb-2">
                                 {currentSurah.name}
                             </p>
-                            <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
-                                <Badge variant="outline" className="px-4 py-1.5 text-slate-600 border-slate-300">
+                            </div>
+                            <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
+                                <Badge variant="outline" className="px-2 py-1 text-slate-600 border-slate-300">
                                     {currentSurah.englishNameTranslation}
                                 </Badge>
-                                <Badge className={`px-4 py-1.5 ${currentSurah.revelationType === 'Meccan' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>
+                                <Badge className={`px-2 py-1 ${currentSurah.revelationType === 'Meccan' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>
                                     {currentSurah.revelationType}
                                 </Badge>
-                                <Badge variant="outline" className="px-4 py-1.5 text-emerald-600 border-emerald-300">
+                                <Badge variant="outline" className="px-2 py-1 text-emerald-600 border-emerald-300">
                                     {currentSurah.numberOfAyahs} Verses
                                 </Badge>
                             </div>
                             <Button
                                 onClick={toggleFullSurahAudio}
                                 disabled={fullSurahLoading}
-                                className="mt-5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded-xl shadow-md"
+                                className="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded-xl shadow-md"
                             >
                                 {fullSurahLoading ? (
                                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading…</>
@@ -1396,7 +1371,7 @@ export default function Quran() {
                                         : 'hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none border-slate-200/80 dark:border-slate-800'
                                 } ${verse.isSajda ? 'border-l-4 border-l-amber-400 bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-950/20' : 'bg-white dark:bg-slate-900'}`}
                             >
-                                <CardContent className="p-6 md:p-8 space-y-6">
+                                <CardContent className="p-4 md:p-8 space-y-3 md:space-y-6">
                                     {/* Header */}
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-3">
@@ -1410,16 +1385,18 @@ export default function Quran() {
                                                 </Badge>
                                             )}
                                         </div>
-                                        <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                                        <div className="flex items-center gap-1">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className={`h-10 w-10 rounded-xl transition-all ${isBookmarked(currentSurah?.number || 0, verse.number)
+                                                className={`h-10 w-10 rounded-xl transition-all ${isBookmarked(verse.surahNumber, verse.number)
                                                     ? 'text-amber-500 bg-amber-50 dark:bg-amber-900/30'
                                                     : 'text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/30'}`}
-                                                onClick={() => saveBookmark(currentSurah?.number || 0, verse.number, currentSurah?.englishName || '')}
+                                                aria-label={`${isBookmarked(verse.surahNumber, verse.number) ? "Remove bookmark for" : "Bookmark"} verse ${verse.surahNumber}:${verse.number}`}
+                                                aria-pressed={isBookmarked(verse.surahNumber, verse.number)}
+                                                onClick={() => saveBookmark(verse.surahNumber, verse.number, surahs.find(s => s.number === verse.surahNumber)?.englishName || '')}
                                             >
-                                                {isBookmarked(currentSurah?.number || 0, verse.number) ? (
+                                                {isBookmarked(verse.surahNumber, verse.number) ? (
                                                     <BookmarkCheck className="h-5 w-5" />
                                                 ) : (
                                                     <Bookmark className="h-5 w-5" />
@@ -1432,6 +1409,7 @@ export default function Quran() {
                                                     className={`h-10 w-10 rounded-xl transition-all ${currentPlayingVerse === index && isPlaying
                                                         ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30'
                                                         : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30'}`}
+                                                    aria-label={`${currentPlayingVerse === index && isPlaying ? "Pause" : "Play"} verse ${verse.surahNumber}:${verse.number}`}
                                                     onClick={() => playVerse(index)}
                                                 >
                                                     {currentPlayingVerse === index && isPlaying ? (
@@ -1453,7 +1431,7 @@ export default function Quran() {
                                     </div>
 
                                     {/* Arabic Text */}
-                                    <div className="text-right py-6 px-4 bg-gradient-to-r from-transparent via-emerald-50/50 to-emerald-50 dark:via-emerald-950/20 dark:to-emerald-950/30 rounded-xl">
+                                    <div className="text-right py-3 md:py-6 px-3 md:px-4 bg-gradient-to-r from-transparent via-emerald-50/50 to-emerald-50 dark:via-emerald-950/20 dark:to-emerald-950/30 rounded-xl">
                                         {showWordByWord && verse.words && verse.words.length ? (
                                             <WordByWordVerse words={verse.words} />
                                         ) : showTajweed && verse.arabicTajweed ? (
@@ -1622,7 +1600,7 @@ export default function Quran() {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    onClick={playPrevious}
+                                    aria-label="Previous verse" onClick={playPrevious}
                                     disabled={currentPlayingVerse === null || currentPlayingVerse === 0}
                                     className="hidden h-10 w-10 rounded-xl sm:inline-flex"
                                 >
@@ -1631,7 +1609,7 @@ export default function Quran() {
 
                                 <Button
                                     size="icon"
-                                    onClick={togglePlayPause}
+                                    aria-label={isPlaying ? "Pause recitation" : "Play recitation"} onClick={togglePlayPause}
                                     className="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/40 transition-all hover:scale-105 hover:from-emerald-600 hover:to-teal-700 hover:shadow-emerald-600/50 md:h-14 md:w-14"
                                 >
                                     {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
@@ -1640,7 +1618,7 @@ export default function Quran() {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    onClick={playNext}
+                                    aria-label="Next verse" onClick={playNext}
                                     disabled={currentPlayingVerse === null || currentPlayingVerse >= verses.length - 1}
                                     className="hidden h-10 w-10 rounded-xl sm:inline-flex"
                                 >
@@ -1651,6 +1629,8 @@ export default function Quran() {
                             {/* Auto-play Toggle */}
                             <div className="flex items-center gap-3">
                                 <Button
+                                    aria-label="Auto-play"
+                                    aria-pressed={isContinuousPlay}
                                     variant={isContinuousPlay ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => setIsContinuousPlay(!isContinuousPlay)}
@@ -1661,7 +1641,7 @@ export default function Quran() {
                                     }`}
                                 >
                                     {isContinuousPlay ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-                                    <span className="hidden sm:inline">Auto-play</span>
+                                    <span className="sr-only sm:not-sr-only">Auto-play</span>
                                 </Button>
                             </div>
                         </div>
@@ -1677,28 +1657,6 @@ export default function Quran() {
                 onPlay={() => setIsPlaying(true)}
                 className="hidden"
             />
-        </div>
-    );
-}
-
-function ReaderTip({
-    icon: Icon, title, text,
-}: {
-    icon: React.ComponentType<{ className?: string }>;
-    title: string;
-    text: string;
-}) {
-    return (
-        <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-white/80 dark:bg-slate-900/80 p-4 shadow-sm">
-            <div className="flex items-start gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300">
-                    <Icon className="h-5 w-5" />
-                </span>
-                <span>
-                    <span className="block text-sm font-semibold text-slate-900 dark:text-white">{title}</span>
-                    <span className="mt-1 block text-sm leading-relaxed text-slate-600 dark:text-slate-400">{text}</span>
-                </span>
-            </div>
         </div>
     );
 }

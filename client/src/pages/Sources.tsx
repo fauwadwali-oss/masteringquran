@@ -1,3 +1,4 @@
+import { TRANSLATIONS, TAFSIRS } from "@/lib/study-editions";
 import { BookOpen, CheckCircle2, Library, SearchCheck, ShieldCheck, Sparkles } from "lucide-react";
 import SEO from "@/components/SEO";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,7 +8,7 @@ const SOURCE_GROUPS = [
         icon: BookOpen,
         title: "Quran Text and Recitation",
         items: [
-            "Uthmani Arabic text and verse metadata are fetched from Quran.com-compatible APIs.",
+            "Uthmani Arabic text, verse metadata and translation resources are fetched from the Quran.com API.",
             "Audio recitations are normalized from Quran.com verse audio URLs.",
             "Reader tools include surah, juz, hizb, rub, manzil, and page navigation.",
         ],
@@ -16,8 +17,8 @@ const SOURCE_GROUPS = [
         icon: SearchCheck,
         title: "Translations and Tafsir",
         items: [
-            "The reader offers 17 translation options across English, Urdu, French, German, Turkish, Indonesian, and Bengali.",
-            "English tafsir editions include Ibn Kathir, al-Jalalayn, Ma'arif al-Quran, Tazkirul Quran, Asbab al-Nuzul, and other classical resources mirrored for study use.",
+            "The reader offers 16 translations across seven languages, plus a Latin transliteration option. The list below matches the reader settings.",
+            "Tafsir editions include abridged Ibn Kathir, al-Jalalayn and the other editions listed below. Edition labels follow the source dataset; an attribution is not a claim of scholarly verification.",
             "Translation and tafsir text is shown as study material, not as a replacement for qualified scholarship.",
         ],
     },
@@ -87,10 +88,42 @@ export default function Sources() {
                     ))}
                 </div>
 
+                <section className="mt-8 space-y-5 rounded-2xl border border-slate-200 p-6 dark:border-slate-800">
+                    <h2 className="text-2xl font-bold">Source directory</h2>
+                    <ul className="space-y-3 text-sm leading-relaxed">
+                        <li><SourceLink href="https://api.quran.com/api/v4/resources/translations?language=en">Quran.com translation resource catalog</SourceLink> — translator and resource metadata; the reader displays the selected edition above each translation.</li>
+                        <li><SourceLink href="https://github.com/fauwadwali-oss/nwv-islamic-data">Our tafsir and hadith data mirror</SourceLink> — dataset layout, attribution and corrections.</li>
+                        <li><SourceLink href="https://github.com/spa5k/tafsir_api">Upstream tafsir dataset</SourceLink> — edition provenance and available source details.</li>
+                        <li><SourceLink href="https://github.com/fawazahmed0/hadith-api">Upstream hadith dataset</SourceLink> — edition metadata and numbering. Hadith numbers can differ between editions; use the displayed collection and book reference.</li>
+                        <li><SourceLink href="https://ummahapi.com">UmmahAPI</SourceLink> — duas, Names of Allah and calendar information. Dua references are displayed when provided.</li>
+                    </ul>
+                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">Daily cards rotate at midnight UTC. The hadith card rotates through the 42 entries in the an-Nawawi dataset. Selections link to their full text; excerpts are not standalone rulings.</p>
+                </section>
+                <section className="mt-8 grid gap-6 md:grid-cols-2">
+                    <div className="rounded-2xl border border-slate-200 p-6 dark:border-slate-800">
+                        <h2 className="mb-4 text-xl font-bold">Translations and transliteration</h2>
+                        <ul className="space-y-2 text-sm">{TRANSLATIONS.map(edition => <li key={edition.id}>{edition.name} · {edition.language} · Resource {edition.id}</li>)}</ul>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 p-6 dark:border-slate-800">
+                        <h2 className="mb-4 text-xl font-bold">Tafsir editions</h2>
+                        <ul className="space-y-2 text-sm">{TAFSIRS.map(edition => <li key={edition.slug}><SourceLink href={`https://github.com/fauwadwali-oss/nwv-islamic-data/tree/main/tafsir/${edition.slug}`}>{edition.name}</SourceLink></li>)}</ul>
+                        <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">Translator or publisher details not supplied by a dataset are not inferred. Consult the upstream edition records when identifying a published edition.</p>
+                    </div>
+                </section>
+                <section className="mt-8 rounded-2xl border border-slate-200 p-6 dark:border-slate-800">
+                    <h2 className="text-xl font-bold">Licensing and corrections</h2>
+                    <p className="mt-3 text-sm leading-relaxed">The site's code is MIT licensed. Quran translations, commentary, recitation recordings and other content remain subject to their respective source terms; a code license does not grant blanket republication rights for the texts. Check the linked providers and edition details before reuse.</p>
+                    <p className="mt-3 text-sm leading-relaxed">Found a text, reference or attribution error? <SourceLink href="mailto:fauwad@nusratwaliventures.com?subject=Mastering%20Quran%20content%20correction">Report a correction</SourceLink> with the page URL, verse or hadith reference, selected edition, and a supporting source. Rights holders can use the same contact.</p>
+                </section>
+
                 <div className="mt-8 rounded-2xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/70 dark:bg-amber-950/20 p-5 text-sm leading-relaxed text-amber-900 dark:text-amber-200">
                     Mastering Quran supports learning and reflection. It does not replace qualified teachers, scholars, or local religious authorities for personal rulings, fatwas, or urgent religious guidance.
                 </div>
             </section>
         </div>
     );
+}
+
+function SourceLink({ href, children }: { href: string; children: React.ReactNode }) {
+    return <a href={href} className="font-medium text-emerald-700 underline underline-offset-4 hover:text-emerald-900 dark:text-emerald-300">{children}</a>;
 }

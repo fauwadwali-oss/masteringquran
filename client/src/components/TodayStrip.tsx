@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, Library, Heart, Star, Calendar, Loader2 } from "lucide-react";
+import { dailyIndex, dailyVerseKey } from "@/lib/daily-selection";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface VerseOfDay {
@@ -11,10 +12,14 @@ interface VerseOfDay {
 }
 interface HadithOfDay {
     collection: string;
+    slug: string;
     number: string;
     text: string;
 }
 interface DuaOfDay {
+    id: number;
+    categoryId: string;
+    source?: string;
     title: string;
     category: string;
     translation: string;
@@ -40,89 +45,77 @@ export default function TodayStrip() {
     const [name, setName] = useState<NameOfDay | null>(null);
     const [event, setEvent] = useState<NextEvent | null>(null);
 
+    const [date, setDate] = useState(() => new Date());
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const [retry, setRetry] = useState(0);
+    const dateKey = date.toISOString().slice(0, 10);
+
     useEffect(() => {
-        // Random verse — Quran.com (Yusuf Ali translation)
-        fetch("https://api.quran.com/api/v4/verses/random?translations=22&language=en&fields=text_uthmani")
-            .then((r) => r.json())
-            .then((d: any) => {
-                const v = d.verse;
-                if (!v) return;
-                setVerse({
-                    verse_key: v.verse_key,
-                    arabic: v.text_uthmani,
-                    english: v.translations?.[0]?.text || "",
-                    surahName: `Surah ${v.verse_key.split(":")[0]}`,
-                });
-            })
-            .catch(() => { });
-
-        // Random hadith — UmmahAPI
-        fetch("https://ummahapi.com/api/hadith/random")
-            .then((r) => r.json())
-            .then((d: any) => {
-                const h = d.data;
-                if (!h) return;
-                setHadith({
-                    collection: h.collection_name || h.collection || "",
-                    number: String(h.hadithnumber || ""),
-                    text: h.english || h.text || "",
-                });
-            })
-            .catch(() => { });
-
-        // Random dua — UmmahAPI
-        fetch("https://ummahapi.com/api/duas/random")
-            .then((r) => r.json())
-            .then((d: any) => {
-                const du = d.data;
-                if (!du) return;
-                setDua({
-                    title: du.title,
-                    category: du.category_info?.name || du.category,
-                    translation: du.translation,
-                });
-            })
-            .catch(() => { });
-
-        // 99 Name of the day (day of year 1-365 mod 99 + 1 gives a rotation)
-        const day = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-        const nameNumber = ((day - 1) % 99) + 1;
-        fetch(`https://ummahapi.com/api/asma-ul-husna/${nameNumber}`)
-            .then((r) => r.json())
-            .then((d: any) => {
-                const n = d.data?.name || d.data;
-                if (!n) return;
-                setName({
-                    number: n.number,
-                    arabic: n.arabic,
-                    transliteration: n.transliteration,
-                    english: n.english,
-                });
-            })
-            .catch(() => { });
-
-        // Next Islamic event
-        fetch("https://ummahapi.com/api/islamic-events")
-            .then((r) => r.json())
-            .then((d: any) => {
-                const next = d.data?.next_event;
-                if (next) {
-                    setEvent({
-                        name: next.name,
-                        hijri_date: next.hijri_date,
-                        days_until: next.days_until,
-                    });
-                }
-            })
-            .catch(() => { });
+        const timer = window.setInterval(() => {
+            setDate((previous) => {
+                const now = new Date();
+                return now.toISOString().slice(0, 10) === previous.toISOString().slice(0, 10) ? previous : now;
+            });
+        }, 30_000);
+        return () => window.clearInterval(timer);
     }, []);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const day = new Date(`${dateKey}T00:00:00Z`);
+        setVerse(null); setHadith(null); setDua(null); setName(null); setEvent(null); setErrors({});
+        async function json(url: string) {
+            const response = await fetch(url, { signal: controller.signal });
+            if (!response.ok) throw new Error("Content unavailable");
+            return response.json();
+        }
+        const failed = (key: string) => { if (!controller.signal.aborted) setErrors(previous => ({ ...previous, [key]: true })); };
+        const verseTask = (async () => {
+            const { chapters } = await json("https://api.quran.com/api/v4/chapters?language=en");
+            const key = dailyVerseKey(day, chapters);
+            const { verse: v } = await json(`https://api.quran.com/api/v4/verses/by_key/${key}?translations=22&language=en&fields=text_uthmani`);
+            if (!v?.text_uthmani || !v.translations?.[0]?.text) throw new Error("Missing verse");
+            setVerse({ verse_key: v.verse_key, arabic: v.text_uthmani, english: v.translations[0].text.replace(/<[^>]+>/g, ""), surahName: `Surah ${key.split(":")[0]}` });
+        })().catch(() => failed("verse"));
+        const hadithTask = (async () => {
+            const data = await json("https://cdn.jsdelivr.net/gh/fauwadwali-oss/nwv-islamic-data@main/hadith/editions/eng-nawawi.min.json");
+            const h = data.hadiths[dailyIndex(day, data.hadiths.length)];
+            if (!h?.text) throw new Error("Missing hadith");
+            setHadith({ collection: data.metadata.name, slug: "nawawi", number: String(h.hadithnumber), text: h.text });
+        })().catch(() => failed("hadith"));
+        const duaTask = (async () => {
+            const { data } = await json("https://ummahapi.com/api/duas/categories");
+            const categories = [...data.categories].sort((a, b) => a.id.localeCompare(b.id));
+            const category = categories[dailyIndex(day, categories.length)];
+            const result = await json(`https://ummahapi.com/api/duas/category/${encodeURIComponent(category.id)}`);
+            const duas = [...result.data.duas].sort((a, b) => a.id - b.id);
+            const du = duas[dailyIndex(day, duas.length)];
+            if (!du?.translation) throw new Error("Missing dua");
+            setDua({ id: du.id, categoryId: category.id, title: du.title, category: category.name, translation: du.translation, source: du.source });
+        })().catch(() => failed("dua"));
+        const nameTask = json(`https://ummahapi.com/api/asma-ul-husna/${dailyIndex(day, 99) + 1}`)
+            .then(d => { const n = d.data?.name || d.data; if (!n?.arabic) throw new Error("Missing name"); setName(n); })
+            .catch(() => failed("name"));
+        const eventTask = json("https://ummahapi.com/api/islamic-events")
+            .then(d => setEvent(d.data?.next_event ?? null)).catch(() => {});
+        const timeout = window.setTimeout(() => {
+            controller.abort();
+            setErrors({ verse: true, hadith: true, dua: true, name: true });
+        }, 15_000);
+        void Promise.allSettled([verseTask, hadithTask, duaTask, nameTask, eventTask]).then(() => window.clearTimeout(timeout));
+        return () => { window.clearTimeout(timeout); controller.abort(); };
+    }, [dateKey, retry]);
+
+    const placeholder = (key: string) => errors[key]
+        ? <p className="py-4 text-sm text-slate-500">Could not load this selection. Open the library or retry below.</p>
+        : <div role="status" className="flex justify-center gap-2 py-6 text-sm text-slate-500"><Loader2 className="h-5 w-5 animate-spin" /><span>Loading…</span></div>;
 
     return (
         <section className="py-12 px-6 bg-gradient-to-b from-white via-emerald-50/20 to-white dark:from-slate-950 dark:via-slate-900/40 dark:to-slate-950 border-t border-slate-100 dark:border-slate-800">
             <div className="max-w-6xl mx-auto">
                 <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
                     <div>
-                        <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Today</p>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Today · {dateKey} · UTC</p>
                         <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
                             A few things to reflect on
                         </h2>
@@ -137,7 +130,7 @@ export default function TodayStrip() {
 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Verse of the day */}
-                    <Link to={verse ? `/quran` : "#"} className="group">
+                    <Link to={verse ? `/quran?verse=${verse.verse_key}` : "/quran"} className="group">
                         <Card className="h-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-400 dark:hover:border-emerald-500 hover:shadow-xl transition-all">
                             <CardContent className="p-5 space-y-3">
                                 <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
@@ -146,23 +139,23 @@ export default function TodayStrip() {
                                 </div>
                                 {verse ? (
                                     <>
-                                        <p className="font-amiri text-2xl leading-loose text-slate-900 dark:text-slate-100 text-right line-clamp-2" dir="rtl">
-                                            {clampText(verse.arabic, 80)}
+                                        <p className="font-amiri text-2xl leading-loose text-slate-900 dark:text-slate-100 text-right line-clamp-2" dir="rtl" lang="ar">
+                                            {verse.arabic}
                                         </p>
                                         <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-4">
                                             {clampText(verse.english, 160)}
                                         </p>
-                                        <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">— Quran {verse.verse_key}</p>
+                                        <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">— Quran {verse.verse_key} · Yusuf Ali</p>
                                     </>
                                 ) : (
-                                    <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-slate-300" /></div>
+                                    placeholder("verse")
                                 )}
                             </CardContent>
                         </Card>
                     </Link>
 
                     {/* Hadith of the day */}
-                    <Link to="/hadith" className="group">
+                    <Link to={hadith ? `/hadith?collection=${hadith.slug}&hadith=${encodeURIComponent(hadith.number)}` : "/hadith"} className="group">
                         <Card className="h-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-amber-400 dark:hover:border-amber-500 hover:shadow-xl transition-all">
                             <CardContent className="p-5 space-y-3">
                                 <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
@@ -177,14 +170,14 @@ export default function TodayStrip() {
                                         <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">— {hadith.collection} #{hadith.number}</p>
                                     </>
                                 ) : (
-                                    <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-slate-300" /></div>
+                                    placeholder("hadith")
                                 )}
                             </CardContent>
                         </Card>
                     </Link>
 
                     {/* Dua of the day */}
-                    <Link to="/duas" className="group">
+                    <Link to={dua ? `/duas?category=${encodeURIComponent(dua.categoryId)}&dua=${dua.id}` : "/duas"} className="group">
                         <Card className="h-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-teal-400 dark:hover:border-teal-500 hover:shadow-xl transition-all">
                             <CardContent className="p-5 space-y-3">
                                 <div className="flex items-center gap-2 text-teal-700 dark:text-teal-400">
@@ -197,10 +190,10 @@ export default function TodayStrip() {
                                         <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-5">
                                             {clampText(dua.translation, 220)}
                                         </p>
-                                        <p className="text-xs text-teal-600 dark:text-teal-400 font-medium">— {dua.category}</p>
+                                        <p className="text-xs text-teal-600 dark:text-teal-400 font-medium">— {dua.source || dua.category}</p>
                                     </>
                                 ) : (
-                                    <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-slate-300" /></div>
+                                    placeholder("dua")
                                 )}
                             </CardContent>
                         </Card>
@@ -216,7 +209,7 @@ export default function TodayStrip() {
                                 </div>
                                 {name ? (
                                     <>
-                                        <p className="font-amiri text-4xl text-amber-800 dark:text-amber-300 leading-tight" dir="rtl">
+                                        <p className="font-amiri text-4xl text-amber-800 dark:text-amber-300 leading-tight" dir="rtl" lang="ar">
                                             {name.arabic}
                                         </p>
                                         <div>
@@ -226,12 +219,13 @@ export default function TodayStrip() {
                                         <p className="text-xs text-slate-400 font-mono">#{name.number} of 99</p>
                                     </>
                                 ) : (
-                                    <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-slate-300" /></div>
+                                    placeholder("name")
                                 )}
                             </CardContent>
                         </Card>
                     </Link>
                 </div>
+                {((errors.verse && !verse) || (errors.hadith && !hadith) || (errors.dua && !dua) || (errors.name && !name)) && <button onClick={() => setRetry(n => n + 1)} className="mt-4 min-h-11 rounded-lg border border-emerald-300 px-4 text-sm font-semibold text-emerald-800 dark:text-emerald-300">Retry daily selections</button>}
             </div>
         </section>
     );

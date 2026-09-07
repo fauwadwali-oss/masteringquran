@@ -57,7 +57,7 @@ export default function About() {
                                     <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                 </div>
                                 <h3 className="font-semibold text-slate-900 dark:text-white">Grounded AI</h3>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">Every answer the AI gives is backed by a tool call to the Quran, hadith, or tafsir. It cites — it never invents.</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">The AI uses Quran, hadith and tafsir source tools to support its answers. It can make mistakes; open the cited references and verify them.</p>
                             </CardContent>
                         </Card>
                     </div>

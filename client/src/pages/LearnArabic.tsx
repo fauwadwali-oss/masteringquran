@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, CheckCircle2, ChevronRight, GraduationCap, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import LoginModal from "@/components/LoginModal";
 import SEO from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { LESSONS } from "@/lib/content/arabic-foundations";
@@ -9,6 +10,7 @@ import { listCompletedLessons, type LessonProgress } from "@/lib/queries/learn-p
 
 export default function LearnArabic() {
     const { user } = useAuth();
+    const [showLogin, setShowLogin] = useState(false);
     const [completed, setCompleted] = useState<Record<string, LessonProgress>>({});
 
     useEffect(() => {
@@ -26,6 +28,7 @@ export default function LearnArabic() {
 
     return (
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_34%),linear-gradient(180deg,#ecfdf5_0%,#ffffff_42%,#f8fafc_100%)] px-4 py-10 dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.16),transparent_30%),linear-gradient(180deg,#020617_0%,#0f172a_58%,#020617_100%)]">
+            <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to save your Arabic lesson progress. You will return here after signing in." />
             <SEO
                 title="Learn Quranic Arabic from Zero | Mastering Quran"
                 description="Learn Quranic Arabic from zero with a 12-lesson path: letters, shapes, harakat, tajweed, common Quranic words, grammar, roots, writing, and five full surahs."
@@ -124,12 +127,13 @@ export default function LearnArabic() {
                                 All lessons are free to browse. Sign in to save which lessons you've completed and pick up where you left off across devices.
                             </p>
                             <div>
-                                <Link
-                                    to="/ask"
+                                <button
+                                    type="button"
+                                    onClick={() => setShowLogin(true)}
                                     className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:underline"
                                 >
                                     Sign in →
-                                </Link>
+                                </button>
                             </div>
                         </CardContent>
                     </Card>

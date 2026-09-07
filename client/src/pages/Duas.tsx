@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Loader2, AlertCircle, Search, BookOpen, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,8 +26,12 @@ interface Dua {
 }
 
 export default function Duas() {
+    const [params, setParams] = useSearchParams();
+    const targetCategory = params.get("category");
+    const targetDua = params.get("dua");
     const [categories, setCategories] = useState<Category[]>([]);
-    const [selected, setSelected] = useState<Category | null>(null);
+    const selected = categories.find(c => c.id === targetCategory) ?? null;
+    const setSelected = (category: Category | null) => setParams(category ? { category: category.id } : {});
     const [duas, setDuas] = useState<Dua[]>([]);
     const [loadingCats, setLoadingCats] = useState(true);
     const [loadingDuas, setLoadingDuas] = useState(false);
@@ -73,10 +78,12 @@ export default function Duas() {
 
     useEffect(() => {
         if (!selected) return;
+        setError(null);
         setLoadingDuas(true);
         setDuas([]);
         setSearch("");
-        fetch(`https://ummahapi.com/api/duas/category/${encodeURIComponent(selected.id)}`)
+        const controller = new AbortController();
+        fetch(`https://ummahapi.com/api/duas/category/${encodeURIComponent(selected.id)}`, { signal: controller.signal })
             .then(async (r) => {
                 if (!r.ok) throw new Error("failed");
                 const d: any = await r.json();
@@ -84,9 +91,11 @@ export default function Duas() {
                 setLoadingDuas(false);
             })
             .catch(() => {
+                if (controller.signal.aborted) return;
                 setError("Failed to load duas from this category.");
                 setLoadingDuas(false);
             });
+        return () => controller.abort();
     }, [selected]);
 
     const filteredCats = useMemo(() => {
@@ -98,6 +107,7 @@ export default function Duas() {
     }, [categories, search, selected]);
 
     const filteredDuas = useMemo(() => {
+        if (targetDua) return duas.filter(d => String(d.id) === targetDua);
         if (!search.trim()) return duas;
         const q = search.toLowerCase();
         return duas.filter(
@@ -106,7 +116,7 @@ export default function Duas() {
                 d.translation?.toLowerCase().includes(q) ||
                 d.transliteration?.toLowerCase().includes(q),
         );
-    }, [duas, search]);
+    }, [duas, search, targetDua]);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-teal-50/30 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 font-sans">
@@ -139,6 +149,7 @@ export default function Duas() {
                         />
                     </div>
 
+                    {targetDua && selected && <button onClick={() => setSelected(selected)} className="mb-4 min-h-11 font-semibold text-teal-700 dark:text-teal-300 hover:underline">Browse all {selected.name} duas</button>}
                     {/* Search */}
                     <div className="max-w-md mx-auto mb-8">
                         <div className="relative">

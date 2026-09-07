@@ -36,6 +36,9 @@ jobs:
       - name: Type check
         run: npm run check
 
+      - name: Test study navigation
+        run: npm test
+
       - name: Build
         env:
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}

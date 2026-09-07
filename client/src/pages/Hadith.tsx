@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft, BookOpen, ChevronLeft, ChevronRight, Loader2, Search, AlertCircle, Library } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,7 +51,11 @@ interface CollectionData {
 const PAGE_SIZE = 10;
 
 export default function Hadith() {
-    const [selected, setSelected] = useState<Collection | null>(null);
+    const [params, setParams] = useSearchParams();
+    const collectionSlug = params.get("collection");
+    const selected = COLLECTIONS.find(c => c.slug === collectionSlug) ?? null;
+    const targetHadith = params.get("hadith");
+    const setSelected = (collection: Collection | null) => setParams(collection ? { collection: collection.slug } : {});
     const [data, setData] = useState<CollectionData | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -68,7 +72,8 @@ export default function Hadith() {
         setSelectedBook("all");
         setSearch("");
 
-        fetch(`${DATA_BASE}/hadith/editions/eng-${selected.slug}.min.json`)
+        const controller = new AbortController();
+        fetch(`${DATA_BASE}/hadith/editions/eng-${selected.slug}.min.json`, { signal: controller.signal })
             .then(async (r) => {
                 if (!r.ok) throw new Error("failed");
                 const j: CollectionData = await r.json();
@@ -76,15 +81,17 @@ export default function Hadith() {
                 setLoading(false);
             })
             .catch(() => {
+                if (controller.signal.aborted) return;
                 setError("Failed to load this collection. Please try again.");
                 setLoading(false);
             });
+        return () => controller.abort();
     }, [selected]);
 
     // Filter hadiths by book + search
     const filtered = useMemo(() => {
         if (!data) return [] as Hadith[];
-        let list = data.hadiths;
+        let list = targetHadith ? data.hadiths.filter(h => String(h.hadithnumber) === targetHadith) : data.hadiths;
         if (selectedBook !== "all") {
             const bookNum = parseInt(selectedBook);
             list = list.filter((h) => h.reference?.book === bookNum);
@@ -94,7 +101,7 @@ export default function Hadith() {
             list = list.filter((h) => h.text?.toLowerCase().includes(q));
         }
         return list;
-    }, [data, selectedBook, search]);
+    }, [data, selectedBook, search, targetHadith]);
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
     const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -113,7 +120,7 @@ export default function Hadith() {
 
     useEffect(() => {
         setPage(1);
-    }, [selectedBook, search]);
+    }, [selectedBook, search, targetHadith]);
 
     // === Picker view ===
     if (!selected) {
@@ -205,6 +212,10 @@ export default function Hadith() {
                         <ArrowLeft className="h-4 w-4" /> All collections
                     </Button>
 
+                    {targetHadith && <div className="mb-4 rounded-xl bg-emerald-50 p-4 text-sm dark:bg-emerald-950/40">
+                        <p>Showing {selected.name} #{targetHadith}, using this dataset's numbering.</p>
+                        <button onClick={() => setSelected(selected)} className="mt-2 min-h-11 font-semibold text-emerald-700 dark:text-emerald-300 hover:underline">Browse the full collection</button>
+                    </div>}
                     <div className="text-center mb-10 space-y-2">
                         <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
                             {selected.name}
@@ -239,7 +250,7 @@ export default function Hadith() {
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-slate-500 dark:text-slate-400">Book</label>
                                         <Select value={selectedBook} onValueChange={setSelectedBook}>
-                                            <SelectTrigger className="h-11 bg-white dark:bg-slate-800 rounded-xl">
+                                            <SelectTrigger aria-label="Hadith book" className="h-11 bg-white dark:bg-slate-800 rounded-xl">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className="max-h-[400px]">
@@ -258,7 +269,7 @@ export default function Hadith() {
                                     <div className="relative">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
                                         <Input
-                                            placeholder="e.g. intention, mercy, prayer…"
+                                            aria-label="Search within collection" placeholder="e.g. intention, mercy, prayer…"
                                             value={search}
                                             onChange={(e) => setSearch(e.target.value)}
                                             className="pl-10 h-11 bg-white dark:bg-slate-800 rounded-xl"
@@ -307,13 +318,13 @@ export default function Hadith() {
 
                             {totalPages > 1 && (
                                 <div className="flex items-center justify-center gap-2 mt-10">
-                                    <Button variant="outline" size="icon" disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+                                    <Button variant="outline" aria-label="Previous page" size="icon" disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
                                         <ChevronLeft className="h-4 w-4" />
                                     </Button>
                                     <span className="text-sm text-slate-600 dark:text-slate-400 px-4">
                                         Page {page} of {totalPages}
                                     </span>
-                                    <Button variant="outline" size="icon" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
+                                    <Button variant="outline" aria-label="Next page" size="icon" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
                                         <ChevronRight className="h-4 w-4" />
                                     </Button>
                                 </div>

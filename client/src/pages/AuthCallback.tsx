@@ -1,15 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { consumeAuthReturn } from "@/lib/auth-return";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AuthCallback() {
     const { user, loading } = useAuth();
     const navigate = useNavigate();
+    const navigated = useRef(false);
 
     useEffect(() => {
-        if (!loading) {
-            navigate(user ? "/" : "/?auth_error=1", { replace: true });
+        if (!loading && !navigated.current) {
+            navigated.current = true;
+            navigate(user ? consumeAuthReturn() : "/?auth_error=1", { replace: true });
         }
     }, [loading, user, navigate]);
 

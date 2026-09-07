@@ -131,7 +131,7 @@ function AskInner() {
                         Ask AI
                     </h1>
                     <p className="text-sm md:text-base text-slate-600 dark:text-slate-300 max-w-xl mx-auto">
-                        Questions about the Quran, hadith, or classical tafsir. Every answer is grounded in tool calls to authentic sources and cites them directly.
+                        Questions about the Quran, hadith, or classical tafsir. The assistant uses source tools and provides references for you to check. AI answers can contain mistakes.
                     </p>
                 </div>
 

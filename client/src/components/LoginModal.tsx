@@ -1,7 +1,10 @@
-import { useState } from "react";
-import { Loader2, Mail, CheckCircle2, X, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Loader2, Mail, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLocation } from "react-router-dom";
+import { rememberAuthReturn } from "@/lib/auth-return";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
@@ -11,41 +14,39 @@ interface Props {
 }
 
 export default function LoginModal({ open, onClose, reason }: Props) {
-    const { signInWithEmail, configured } = useAuth();
+    const { signInWithEmail, configured, user } = useAuth();
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const [sent, setSent] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    if (!open) return null;
+    const location = useLocation();
+    useEffect(() => { if (open && user) onClose(); }, [open, user, onClose]);
 
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!email.trim()) return;
         setLoading(true);
         setError(null);
-        const { error } = await signInWithEmail(email.trim());
-        setLoading(false);
-        if (error) setError(error);
-        else setSent(true);
+        try {
+            const { error } = await signInWithEmail(email.trim());
+            if (error) setError(error);
+            else {
+                rememberAuthReturn(location.pathname + location.search + location.hash);
+                setSent(true);
+            }
+        } catch {
+            setError("Could not send the sign-in link. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="fixed inset-0 z-[100] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-            <div
-                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-md w-full p-6 space-y-5"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Sign in</h3>
-                    </div>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800">
-                        <X className="h-4 w-4" />
-                    </button>
-                </div>
-
+        <Dialog open={open} onOpenChange={(value) => { if (!value) onClose(); }}>
+            <DialogContent className="z-[100] w-[calc(100%-2rem)] max-w-md rounded-2xl border-slate-200 bg-white p-6 space-y-3 dark:border-slate-800 dark:bg-slate-900">
+                <DialogTitle className="text-lg font-semibold">Sign in</DialogTitle>
+                <DialogDescription>Save your progress with a free account.</DialogDescription>
                 {reason && (
                     <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 text-sm text-emerald-800 dark:text-emerald-300">
                         {reason}
@@ -85,6 +86,8 @@ export default function LoginModal({ open, onClose, reason }: Props) {
                         <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
                             <Input
+                                aria-label="Email address"
+                                autoComplete="email"
                                 type="email"
                                 placeholder="you@example.com"
                                 value={email}
@@ -103,7 +106,7 @@ export default function LoginModal({ open, onClose, reason }: Props) {
                         </p>
                     </form>
                 )}
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 }
