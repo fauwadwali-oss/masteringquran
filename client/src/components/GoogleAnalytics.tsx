@@ -16,8 +16,9 @@ function loadGoogleAnalytics(measurementId: string) {
   }
 
   window.dataLayer = window.dataLayer || [];
-  window.gtag = (...args: unknown[]) => {
-    window.dataLayer?.push(args);
+  window.gtag = function () {
+    // gtag.js expects an Arguments object for commands, not a plain array.
+    window.dataLayer?.push(arguments);
   };
 
   window.gtag("js", new Date());
