@@ -16,6 +16,7 @@ import json
 import subprocess
 import sys
 import time
+import unicodedata
 from pathlib import Path
 
 import requests
@@ -58,14 +59,20 @@ def clean_translation(text):
     return text
 
 
+def skeleton(text):
+    # Letters only: some surahs' Basmala carries extra marks (e.g. a shadda in 95 and 97).
+    return ''.join(ch for ch in text if not unicodedata.category(ch).startswith('M'))
+
+
 def arabic_ayah(ara, s, a):
-    # alquran.cloud prefixes the Basmala (= 1:1 in the same edition) to ayah 1 of every
-    # other surah; it is not part of that ayah, so strip it.
+    # alquran.cloud prefixes the Basmala (= 1:1) to ayah 1 of every other surah;
+    # it is not part of that ayah, so strip its first four words.
     text = ara[s - 1]['ayahs'][a - 1]['text'].lstrip('\ufeff')
-    basmala = ara[0]['ayahs'][0]['text'].lstrip('\ufeff')
-    if a == 1 and s != 1 and s != 9:
-        assert text.startswith(basmala), (s, a)
-        text = text[len(basmala):].strip()
+    if a == 1 and s not in (1, 9):
+        basmala = ara[0]['ayahs'][0]['text'].lstrip('\ufeff').split()
+        words = text.split()
+        assert skeleton(' '.join(words[:4])) == skeleton(' '.join(basmala)), (s, a)
+        text = ' '.join(words[4:])
     return text
 
 

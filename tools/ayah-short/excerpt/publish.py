@@ -23,6 +23,7 @@ import requests
 
 BRAND = 'eba22d8bc0a4af15'
 PROFILES = [11463, 11511, 11465, 11466, 11472]  # FB, IG, TikTok, YT, Threads
+PLATFORMS = sorted(['facebook', 'instagram_direct', 'tiktok', 'youtube', 'threads'])
 KEY = (Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs/MSDrills-Tokens/robinreach-api-key.txt').read_text().strip()
 API = 'https://robinreach.com/api/v1/posts'
 BUCKET = 'masteringseries-video-assets'
@@ -121,7 +122,7 @@ def verify(pub, posts, fix_times=False):
         checks = {
             'utc': (s['publish_time'][:16], p['utc']),
             'status': (s['status'], 'scheduled'),
-            'profiles': (len(s['social_profiles']), len(PROFILES)),
+            'platforms': (sorted(x['platform'] for x in s['social_profiles']), PLATFORMS),
             'label': (s.get('labels'), want['labels']),
             'media': (len(s.get('attachments') or []) >= 1, True),
         }
@@ -132,6 +133,12 @@ def verify(pub, posts, fix_times=False):
                              json={'publish_time': local, 'timezone': 'America/New_York'}, timeout=120)
             r.raise_for_status()
             print('RETIMED', p['slug'], pid, flush=True)
+            got = requests.get(f'{API}/{pid}', params={'api_key': KEY, 'brand_id': BRAND}, timeout=120).json()
+            got = got.get('post', got).get('publish_time', '')[:16]
+            if got == p['utc']:
+                del bad['utc']
+            else:
+                bad['utc'] = (got, p['utc'])
         if bad:
             problems.append((p['slug'], bad))
     (pub / 'verify.json').write_text(json.dumps({'checked': len(posts), 'problems': problems}, indent=2, default=str))
