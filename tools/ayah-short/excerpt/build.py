@@ -58,6 +58,17 @@ def clean_translation(text):
     return text
 
 
+def arabic_ayah(ara, s, a):
+    # alquran.cloud prefixes the Basmala (= 1:1 in the same edition) to ayah 1 of every
+    # other surah; it is not part of that ayah, so strip it.
+    text = ara[s - 1]['ayahs'][a - 1]['text'].lstrip('\ufeff')
+    basmala = ara[0]['ayahs'][0]['text'].lstrip('\ufeff')
+    if a == 1 and s != 1 and s != 9:
+        assert text.startswith(basmala), (s, a)
+        text = text[len(basmala):].strip()
+    return text
+
+
 def build_manifest(batch):
     sels = json.loads((batch / 'selections.json').read_text())
     for sub in ['scripts', 'sources', 'audio', 'qa', 'covers', 'videos']:
@@ -74,9 +85,10 @@ def build_manifest(batch):
         (batch / 'sources' / f'{slug}-{ed}.json').write_bytes(src.read_bytes())
 
         verses = [{'ayah': a,
-                   'arabic': ara[s - 1]['ayahs'][a - 1]['text'],
-                   'translation': clean_translation(eng[s - 1]['ayahs'][a - 1]['text'])} for a in ayahs]
-        trans = ' '.join(v['translation'] for v in verses)
+                   'arabic': arabic_ayah(ara, s, a),
+                   'translation': eng[s - 1]['ayahs'][a - 1]['text']} for a in ayahs]
+        # Balance quotes over the whole passage: a speech may open in the first ayah and close in the last.
+        trans = clean_translation(' '.join(v['translation'] for v in verses))
         label = LABELS[ed]
         # Spoken "Tafseer" — VocalLab mispronounces "Tafsir"; on-screen spelling is unchanged.
         spoken = label.replace('Tafsir', 'Tafseer')

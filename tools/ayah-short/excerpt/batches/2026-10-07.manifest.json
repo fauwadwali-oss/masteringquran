@@ -205,7 +205,7 @@
       {
         "ayah": 8,
         "arabic": "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ ٱلْوَهَّابُ",
-        "translation": "[Who say], \"Our Lord, let not our hearts deviate after You have guided us and grant us from Yourself mercy. Indeed, You are the Bestower.\""
+        "translation": "[Who say], \"Our Lord, let not our hearts deviate after You have guided us and grant us from Yourself mercy. Indeed, You are the Bestower."
       }
     ],
     "translation": "[Who say], \"Our Lord, let not our hearts deviate after You have guided us and grant us from Yourself mercy. Indeed, You are the Bestower.\"",
@@ -217,6 +217,30 @@
   },
   {
     "index": 10,
+    "slug": "3-26",
+    "surah": 3,
+    "ayahs": [
+      26
+    ],
+    "ref": "3:26",
+    "surah_name": "Aal-i-Imraan",
+    "arabic_name": "سُورَةُ آلِ عِمۡرَانَ",
+    "verses": [
+      {
+        "ayah": 26,
+        "arabic": "قُلِ ٱللَّهُمَّ مَٰلِكَ ٱلْمُلْكِ تُؤْتِى ٱلْمُلْكَ مَن تَشَآءُ وَتَنزِعُ ٱلْمُلْكَ مِمَّن تَشَآءُ وَتُعِزُّ مَن تَشَآءُ وَتُذِلُّ مَن تَشَآءُ ۖ بِيَدِكَ ٱلْخَيْرُ ۖ إِنَّكَ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌۭ",
+        "translation": "Say, \"O Allah, Owner of Sovereignty, You give sovereignty to whom You will and You take sovereignty away from whom You will. You honor whom You will and You humble whom You will. In Your hand is [all] good. Indeed, You are over all things competent."
+      }
+    ],
+    "translation": "Say, \"O Allah, Owner of Sovereignty, You give sovereignty to whom You will and You take sovereignty away from whom You will. You honor whom You will and You humble whom You will. In Your hand is [all] good. Indeed, You are over all things competent.\"",
+    "tafsir_excerpt": "This Ayah encourages thanking Allah for the favors He granted His Messenger and his Ummah.",
+    "tafsir_label": "Tafsir Ibn Kathir",
+    "edition": "en-tafisr-ibn-kathir",
+    "narration": "Say, \"O Allah, Owner of Sovereignty, You give sovereignty to whom You will and You take sovereignty away from whom You will. You honor whom You will and You humble whom You will. In Your hand is all good. Indeed, You are over all things competent.\" Tafseer Ibn Kathir. This Ayah encourages thanking Allah for the favors He granted His Messenger and his Ummah.",
+    "source_url": "https://quran.com/3:26/tafsirs/en-tafisr-ibn-kathir"
+  },
+  {
+    "index": 11,
     "slug": "3-103",
     "surah": 3,
     "ayahs": [
@@ -240,7 +264,7 @@
     "source_url": "https://quran.com/3:103/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 11,
+    "index": 12,
     "slug": "3-133",
     "surah": 3,
     "ayahs": [
@@ -264,7 +288,7 @@
     "source_url": "https://quran.com/3:133/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 12,
+    "index": 13,
     "slug": "3-134",
     "surah": 3,
     "ayahs": [
@@ -288,7 +312,7 @@
     "source_url": "https://quran.com/3:134/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 13,
+    "index": 14,
     "slug": "3-185",
     "surah": 3,
     "ayahs": [
@@ -312,7 +336,7 @@
     "source_url": "https://quran.com/3:185/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 14,
+    "index": 15,
     "slug": "3-190-191",
     "surah": 3,
     "ayahs": [
@@ -331,7 +355,7 @@
       {
         "ayah": 191,
         "arabic": "ٱلَّذِينَ يَذْكُرُونَ ٱللَّهَ قِيَٰمًۭا وَقُعُودًۭا وَعَلَىٰ جُنُوبِهِمْ وَيَتَفَكَّرُونَ فِى خَلْقِ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضِ رَبَّنَا مَا خَلَقْتَ هَٰذَا بَٰطِلًۭا سُبْحَٰنَكَ فَقِنَا عَذَابَ ٱلنَّارِ",
-        "translation": "Who remember Allah while standing or sitting or [lying] on their sides and give thought to the creation of the heavens and the earth, [saying], \"Our Lord, You did not create this aimlessly; exalted are You [above such a thing]; then protect us from the punishment of the Fire.\""
+        "translation": "Who remember Allah while standing or sitting or [lying] on their sides and give thought to the creation of the heavens and the earth, [saying], \"Our Lord, You did not create this aimlessly; exalted are You [above such a thing]; then protect us from the punishment of the Fire."
       }
     ],
     "translation": "Indeed, in the creation of the heavens and the earth and the alternation of the night and the day are signs for those of understanding. Who remember Allah while standing or sitting or [lying] on their sides and give thought to the creation of the heavens and the earth, [saying], \"Our Lord, You did not create this aimlessly; exalted are You [above such a thing]; then protect us from the punishment of the Fire.\"",
@@ -340,30 +364,6 @@
     "edition": "en-tafisr-ibn-kathir",
     "narration": "Indeed, in the creation of the heavens and the earth and the alternation of the night and the day are signs for those of understanding. Who remember Allah while standing or sitting or lying on their sides and give thought to the creation of the heavens and the earth, saying, \"Our Lord, You did not create this aimlessly; exalted are You above such a thing; then protect us from the punishment of the Fire.\" Tafseer Ibn Kathir. You did not create all this in jest and play. Rather, You created it in truth, so that You recompense those who do evil in kind, and reward those who do righteous deeds with what is better.",
     "source_url": "https://quran.com/3:190/tafsirs/en-tafisr-ibn-kathir"
-  },
-  {
-    "index": 15,
-    "slug": "6-54",
-    "surah": 6,
-    "ayahs": [
-      54
-    ],
-    "ref": "6:54",
-    "surah_name": "Al-An'aam",
-    "arabic_name": "سُورَةُ الأَنۡعَامِ",
-    "verses": [
-      {
-        "ayah": 54,
-        "arabic": "وَإِذَا جَآءَكَ ٱلَّذِينَ يُؤْمِنُونَ بِـَٔايَٰتِنَا فَقُلْ سَلَٰمٌ عَلَيْكُمْ ۖ كَتَبَ رَبُّكُمْ عَلَىٰ نَفْسِهِ ٱلرَّحْمَةَ ۖ أَنَّهُۥ مَنْ عَمِلَ مِنكُمْ سُوٓءًۢا بِجَهَٰلَةٍۢ ثُمَّ تَابَ مِنۢ بَعْدِهِۦ وَأَصْلَحَ فَأَنَّهُۥ غَفُورٌۭ رَّحِيمٌۭ",
-        "translation": "And when those come to you who believe in Our verses, say, \"Peace be upon you. Your Lord has decreed upon Himself mercy: that any of you who does wrong out of ignorance and then repents after that and corrects himself - indeed, He is Forgiving and Merciful.\""
-      }
-    ],
-    "translation": "And when those come to you who believe in Our verses, say, \"Peace be upon you. Your Lord has decreed upon Himself mercy: that any of you who does wrong out of ignorance and then repents after that and corrects himself - indeed, He is Forgiving and Merciful.\"",
-    "tafsir_excerpt": "honor them by returning the Salam and give them the good news of Allah's exclusive, encompassing mercy for them.",
-    "tafsir_label": "Tafsir Ibn Kathir",
-    "edition": "en-tafisr-ibn-kathir",
-    "narration": "And when those come to you who believe in Our verses, say, \"Peace be upon you. Your Lord has decreed upon Himself mercy: that any of you who does wrong out of ignorance and then repents after that and corrects himself - indeed, He is Forgiving and Merciful.\" Tafseer Ibn Kathir. honor them by returning the Salam and give them the good news of Allah's exclusive, encompassing mercy for them.",
-    "source_url": "https://quran.com/6:54/tafsirs/en-tafisr-ibn-kathir"
   },
   {
     "index": 16,
@@ -403,7 +403,7 @@
       {
         "ayah": 162,
         "arabic": "قُلْ إِنَّ صَلَاتِى وَنُسُكِى وَمَحْيَاىَ وَمَمَاتِى لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ",
-        "translation": "Say, \"Indeed, my prayer, my rites of sacrifice, my living and my dying are for Allah, Lord of the worlds.\""
+        "translation": "Say, \"Indeed, my prayer, my rites of sacrifice, my living and my dying are for Allah, Lord of the worlds."
       }
     ],
     "translation": "Say, \"Indeed, my prayer, my rites of sacrifice, my living and my dying are for Allah, Lord of the worlds.\"",
@@ -439,6 +439,30 @@
   },
   {
     "index": 19,
+    "slug": "7-180",
+    "surah": 7,
+    "ayahs": [
+      180
+    ],
+    "ref": "7:180",
+    "surah_name": "Al-A'raaf",
+    "arabic_name": "سُورَةُ الأَعۡرَافِ",
+    "verses": [
+      {
+        "ayah": 180,
+        "arabic": "وَلِلَّهِ ٱلْأَسْمَآءُ ٱلْحُسْنَىٰ فَٱدْعُوهُ بِهَا ۖ وَذَرُوا۟ ٱلَّذِينَ يُلْحِدُونَ فِىٓ أَسْمَٰٓئِهِۦ ۚ سَيُجْزَوْنَ مَا كَانُوا۟ يَعْمَلُونَ",
+        "translation": "And to Allah belong the best names, so invoke Him by them. And leave [the company of] those who practice deviation concerning His names. They will be recompensed for what they have been doing."
+      }
+    ],
+    "translation": "And to Allah belong the best names, so invoke Him by them. And leave [the company of] those who practice deviation concerning His names. They will be recompensed for what they have been doing.",
+    "tafsir_excerpt": "We should state that Allah's Names are not restricted to only ninety-nine.",
+    "tafsir_label": "Tafsir Ibn Kathir",
+    "edition": "en-tafisr-ibn-kathir",
+    "narration": "And to Allah belong the best names, so invoke Him by them. And leave the company of those who practice deviation concerning His names. They will be recompensed for what they have been doing. Tafseer Ibn Kathir. We should state that Allah's Names are not restricted to only ninety-nine.",
+    "source_url": "https://quran.com/7:180/tafsirs/en-tafisr-ibn-kathir"
+  },
+  {
+    "index": 20,
     "slug": "9-51",
     "surah": 9,
     "ayahs": [
@@ -462,7 +486,7 @@
     "source_url": "https://quran.com/9:51/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 20,
+    "index": 21,
     "slug": "9-129",
     "surah": 9,
     "ayahs": [
@@ -486,7 +510,7 @@
     "source_url": "https://quran.com/9:129/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 21,
+    "index": 22,
     "slug": "11-88",
     "surah": 11,
     "ayahs": [
@@ -499,7 +523,7 @@
       {
         "ayah": 88,
         "arabic": "قَالَ يَٰقَوْمِ أَرَءَيْتُمْ إِن كُنتُ عَلَىٰ بَيِّنَةٍۢ مِّن رَّبِّى وَرَزَقَنِى مِنْهُ رِزْقًا حَسَنًۭا ۚ وَمَآ أُرِيدُ أَنْ أُخَالِفَكُمْ إِلَىٰ مَآ أَنْهَىٰكُمْ عَنْهُ ۚ إِنْ أُرِيدُ إِلَّا ٱلْإِصْلَٰحَ مَا ٱسْتَطَعْتُ ۚ وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ",
-        "translation": "He said, \"O my people, have you considered: if I am upon clear evidence from my Lord and He has provided me with a good provision from Him...? And I do not intend to differ from you in that which I have forbidden you; I only intend reform as much as I am able. And my success is not but through Allah. Upon him I have relied, and to Him I return.\""
+        "translation": "He said, \"O my people, have you considered: if I am upon clear evidence from my Lord and He has provided me with a good provision from Him...? And I do not intend to differ from you in that which I have forbidden you; I only intend reform as much as I am able. And my success is not but through Allah. Upon him I have relied, and to Him I return."
       }
     ],
     "translation": "He said, \"O my people, have you considered: if I am upon clear evidence from my Lord and He has provided me with a good provision from Him...? And I do not intend to differ from you in that which I have forbidden you; I only intend reform as much as I am able. And my success is not but through Allah. Upon him I have relied, and to Him I return.\"",
@@ -510,7 +534,7 @@
     "source_url": "https://quran.com/11:88/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 22,
+    "index": 23,
     "slug": "11-114",
     "surah": 11,
     "ayahs": [
@@ -534,7 +558,7 @@
     "source_url": "https://quran.com/11:114/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 23,
+    "index": 24,
     "slug": "12-86",
     "surah": 12,
     "ayahs": [
@@ -547,7 +571,7 @@
       {
         "ayah": 86,
         "arabic": "قَالَ إِنَّمَآ أَشْكُوا۟ بَثِّى وَحُزْنِىٓ إِلَى ٱللَّهِ وَأَعْلَمُ مِنَ ٱللَّهِ مَا لَا تَعْلَمُونَ",
-        "translation": "He said, \"I only complain of my suffering and my grief to Allah, and I know from Allah that which you do not know.\""
+        "translation": "He said, \"I only complain of my suffering and my grief to Allah, and I know from Allah that which you do not know."
       }
     ],
     "translation": "He said, \"I only complain of my suffering and my grief to Allah, and I know from Allah that which you do not know.\"",
@@ -558,7 +582,7 @@
     "source_url": "https://quran.com/12:86/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 24,
+    "index": 25,
     "slug": "12-92",
     "surah": 12,
     "ayahs": [
@@ -582,7 +606,7 @@
     "source_url": "https://quran.com/12:92/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 25,
+    "index": 26,
     "slug": "13-24",
     "surah": 13,
     "ayahs": [
@@ -606,7 +630,7 @@
     "source_url": "https://quran.com/13:24/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 26,
+    "index": 27,
     "slug": "14-24",
     "surah": 14,
     "ayahs": [
@@ -630,7 +654,7 @@
     "source_url": "https://quran.com/14:24/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 27,
+    "index": 28,
     "slug": "16-53",
     "surah": 16,
     "ayahs": [
@@ -654,7 +678,7 @@
     "source_url": "https://quran.com/16:53/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 28,
+    "index": 29,
     "slug": "16-90",
     "surah": 16,
     "ayahs": [
@@ -678,7 +702,7 @@
     "source_url": "https://quran.com/16:90/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 29,
+    "index": 30,
     "slug": "16-96",
     "surah": 16,
     "ayahs": [
@@ -702,7 +726,7 @@
     "source_url": "https://quran.com/16:96/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 30,
+    "index": 31,
     "slug": "16-97",
     "surah": 16,
     "ayahs": [
@@ -726,7 +750,31 @@
     "source_url": "https://quran.com/16:97/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 31,
+    "index": 32,
+    "slug": "16-128",
+    "surah": 16,
+    "ayahs": [
+      128
+    ],
+    "ref": "16:128",
+    "surah_name": "An-Nahl",
+    "arabic_name": "سُورَةُ النَّحۡلِ",
+    "verses": [
+      {
+        "ayah": 128,
+        "arabic": "إِنَّ ٱللَّهَ مَعَ ٱلَّذِينَ ٱتَّقَوا۟ وَّٱلَّذِينَ هُم مُّحْسِنُونَ",
+        "translation": "Indeed, Allah is with those who fear Him and those who are doers of good."
+      }
+    ],
+    "translation": "Indeed, Allah is with those who fear Him and those who are doers of good.",
+    "tafsir_excerpt": "He is with them in the sense of supporting them, helping them and guiding them.",
+    "tafsir_label": "Tafsir Ibn Kathir",
+    "edition": "en-tafisr-ibn-kathir",
+    "narration": "Indeed, Allah is with those who fear Him and those who are doers of good. Tafseer Ibn Kathir. He is with them in the sense of supporting them, helping them and guiding them.",
+    "source_url": "https://quran.com/16:128/tafsirs/en-tafisr-ibn-kathir"
+  },
+  {
+    "index": 33,
     "slug": "17-23-24",
     "surah": 17,
     "ayahs": [
@@ -756,7 +804,7 @@
     "source_url": "https://quran.com/17:23/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 32,
+    "index": 34,
     "slug": "17-82",
     "surah": 17,
     "ayahs": [
@@ -780,7 +828,7 @@
     "source_url": "https://quran.com/17:82/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 33,
+    "index": 35,
     "slug": "18-10",
     "surah": 18,
     "ayahs": [
@@ -804,7 +852,7 @@
     "source_url": "https://quran.com/18:10/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 34,
+    "index": 36,
     "slug": "18-46",
     "surah": 18,
     "ayahs": [
@@ -828,7 +876,7 @@
     "source_url": "https://quran.com/18:46/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 35,
+    "index": 37,
     "slug": "19-96",
     "surah": 19,
     "ayahs": [
@@ -852,7 +900,7 @@
     "source_url": "https://quran.com/19:96/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 36,
+    "index": 38,
     "slug": "21-83",
     "surah": 21,
     "ayahs": [
@@ -876,7 +924,7 @@
     "source_url": "https://quran.com/21:83/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 37,
+    "index": 39,
     "slug": "21-87",
     "surah": 21,
     "ayahs": [
@@ -900,7 +948,7 @@
     "source_url": "https://quran.com/21:87/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 38,
+    "index": 40,
     "slug": "22-37",
     "surah": 22,
     "ayahs": [
@@ -924,7 +972,37 @@
     "source_url": "https://quran.com/22:37/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 39,
+    "index": 41,
+    "slug": "23-1-2",
+    "surah": 23,
+    "ayahs": [
+      1,
+      2
+    ],
+    "ref": "23:1–2",
+    "surah_name": "Al-Muminoon",
+    "arabic_name": "سُورَةُ المُؤۡمِنُونَ",
+    "verses": [
+      {
+        "ayah": 1,
+        "arabic": "قَدْ أَفْلَحَ ٱلْمُؤْمِنُونَ",
+        "translation": "Certainly will the believers have succeeded:"
+      },
+      {
+        "ayah": 2,
+        "arabic": "ٱلَّذِينَ هُمْ فِى صَلَاتِهِمْ خَٰشِعُونَ",
+        "translation": "They who are during their prayer humbly submissive"
+      }
+    ],
+    "translation": "Certainly will the believers have succeeded: They who are during their prayer humbly submissive",
+    "tafsir_excerpt": "Khushu` in prayer is only attained by the one who has emptied his heart totally, who does not pay attention to anything else besides it, and who prefers it above all else.",
+    "tafsir_label": "Tafsir Ibn Kathir",
+    "edition": "en-tafisr-ibn-kathir",
+    "narration": "Certainly will the believers have succeeded: They who are during their prayer humbly submissive Tafseer Ibn Kathir. Khushoo in prayer is only attained by the one who has emptied his heart totally, who does not pay attention to anything else besides it, and who prefers it above all else.",
+    "source_url": "https://quran.com/23:1/tafsirs/en-tafisr-ibn-kathir"
+  },
+  {
+    "index": 42,
     "slug": "25-63",
     "surah": 25,
     "ayahs": [
@@ -948,7 +1026,7 @@
     "source_url": "https://quran.com/25:63/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 40,
+    "index": 43,
     "slug": "25-74",
     "surah": 25,
     "ayahs": [
@@ -972,7 +1050,7 @@
     "source_url": "https://quran.com/25:74/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 41,
+    "index": 44,
     "slug": "26-80",
     "surah": 26,
     "ayahs": [
@@ -996,31 +1074,7 @@
     "source_url": "https://quran.com/26:80/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 42,
-    "slug": "29-45",
-    "surah": 29,
-    "ayahs": [
-      45
-    ],
-    "ref": "29:45",
-    "surah_name": "Al-Ankaboot",
-    "arabic_name": "سُورَةُ العَنكَبُوتِ",
-    "verses": [
-      {
-        "ayah": 45,
-        "arabic": "ٱتْلُ مَآ أُوحِىَ إِلَيْكَ مِنَ ٱلْكِتَٰبِ وَأَقِمِ ٱلصَّلَوٰةَ ۖ إِنَّ ٱلصَّلَوٰةَ تَنْهَىٰ عَنِ ٱلْفَحْشَآءِ وَٱلْمُنكَرِ ۗ وَلَذِكْرُ ٱللَّهِ أَكْبَرُ ۗ وَٱللَّهُ يَعْلَمُ مَا تَصْنَعُونَ",
-        "translation": "Recite, [O Muhammad], what has been revealed to you of the Book and establish prayer. Indeed, prayer prohibits immorality and wrongdoing, and the remembrance of Allah is greater. And Allah knows that which you do."
-      }
-    ],
-    "translation": "Recite, [O Muhammad], what has been revealed to you of the Book and establish prayer. Indeed, prayer prohibits immorality and wrongdoing, and the remembrance of Allah is greater. And Allah knows that which you do.",
-    "tafsir_excerpt": "When you are praying, you are doing good, it is keeping you away from immoral sins and evil wicked deeds and what you are doing is part of the remembrance of Allah which is greater.",
-    "tafsir_label": "Tafsir Ibn Kathir",
-    "edition": "en-tafisr-ibn-kathir",
-    "narration": "Recite, O Muhammad, what has been revealed to you of the Book and establish prayer. Indeed, prayer prohibits immorality and wrongdoing, and the remembrance of Allah is greater. And Allah knows that which you do. Tafseer Ibn Kathir. When you are praying, you are doing good, it is keeping you away from immoral sins and evil wicked deeds and what you are doing is part of the remembrance of Allah which is greater.",
-    "source_url": "https://quran.com/29:45/tafsirs/en-tafisr-ibn-kathir"
-  },
-  {
-    "index": 43,
+    "index": 45,
     "slug": "30-21",
     "surah": 30,
     "ayahs": [
@@ -1044,7 +1098,7 @@
     "source_url": "https://quran.com/30:21/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 44,
+    "index": 46,
     "slug": "33-41-42",
     "surah": 33,
     "ayahs": [
@@ -1074,7 +1128,7 @@
     "source_url": "https://quran.com/33:41/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 45,
+    "index": 47,
     "slug": "35-15",
     "surah": 35,
     "ayahs": [
@@ -1098,7 +1152,7 @@
     "source_url": "https://quran.com/35:15/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 46,
+    "index": 48,
     "slug": "41-30",
     "surah": 41,
     "ayahs": [
@@ -1111,7 +1165,7 @@
       {
         "ayah": 30,
         "arabic": "إِنَّ ٱلَّذِينَ قَالُوا۟ رَبُّنَا ٱللَّهُ ثُمَّ ٱسْتَقَٰمُوا۟ تَتَنَزَّلُ عَلَيْهِمُ ٱلْمَلَٰٓئِكَةُ أَلَّا تَخَافُوا۟ وَلَا تَحْزَنُوا۟ وَأَبْشِرُوا۟ بِٱلْجَنَّةِ ٱلَّتِى كُنتُمْ تُوعَدُونَ",
-        "translation": "Indeed, those who have said, \"Our Lord is Allah \" and then remained on a right course - the angels will descend upon them, [saying], \"Do not fear and do not grieve but receive good tidings of Paradise, which you were promised.\""
+        "translation": "Indeed, those who have said, \"Our Lord is Allah \" and then remained on a right course - the angels will descend upon them, [saying], \"Do not fear and do not grieve but receive good tidings of Paradise, which you were promised."
       }
     ],
     "translation": "Indeed, those who have said, \"Our Lord is Allah \" and then remained on a right course - the angels will descend upon them, [saying], \"Do not fear and do not grieve but receive good tidings of Paradise, which you were promised.\"",
@@ -1122,7 +1176,7 @@
     "source_url": "https://quran.com/41:30/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 47,
+    "index": 49,
     "slug": "42-36",
     "surah": 42,
     "ayahs": [
@@ -1146,7 +1200,7 @@
     "source_url": "https://quran.com/42:36/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 48,
+    "index": 50,
     "slug": "51-56",
     "surah": 51,
     "ayahs": [
@@ -1170,7 +1224,7 @@
     "source_url": "https://quran.com/51:56/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 49,
+    "index": 51,
     "slug": "53-39",
     "surah": 53,
     "ayahs": [
@@ -1194,7 +1248,7 @@
     "source_url": "https://quran.com/53:39/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 50,
+    "index": 52,
     "slug": "57-4",
     "surah": 57,
     "ayahs": [
@@ -1218,7 +1272,7 @@
     "source_url": "https://quran.com/57:4/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 51,
+    "index": 53,
     "slug": "57-22-23",
     "surah": 57,
     "ayahs": [
@@ -1248,7 +1302,7 @@
     "source_url": "https://quran.com/57:22/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 52,
+    "index": 54,
     "slug": "58-11",
     "surah": 58,
     "ayahs": [
@@ -1272,7 +1326,7 @@
     "source_url": "https://quran.com/58:11/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 53,
+    "index": 55,
     "slug": "59-9",
     "surah": 59,
     "ayahs": [
@@ -1296,31 +1350,7 @@
     "source_url": "https://quran.com/59:9/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 54,
-    "slug": "65-2",
-    "surah": 65,
-    "ayahs": [
-      2
-    ],
-    "ref": "65:2",
-    "surah_name": "At-Talaaq",
-    "arabic_name": "سُورَةُ الطَّلَاقِ",
-    "verses": [
-      {
-        "ayah": 2,
-        "arabic": "فَإِذَا بَلَغْنَ أَجَلَهُنَّ فَأَمْسِكُوهُنَّ بِمَعْرُوفٍ أَوْ فَارِقُوهُنَّ بِمَعْرُوفٍۢ وَأَشْهِدُوا۟ ذَوَىْ عَدْلٍۢ مِّنكُمْ وَأَقِيمُوا۟ ٱلشَّهَٰدَةَ لِلَّهِ ۚ ذَٰلِكُمْ يُوعَظُ بِهِۦ مَن كَانَ يُؤْمِنُ بِٱللَّهِ وَٱلْيَوْمِ ٱلْءَاخِرِ ۚ وَمَن يَتَّقِ ٱللَّهَ يَجْعَل لَّهُۥ مَخْرَجًۭا",
-        "translation": "And when they have [nearly] fulfilled their term, either retain them according to acceptable terms or part with them according to acceptable terms. And bring to witness two just men from among you and establish the testimony for [the acceptance of] Allah. That is instructed to whoever should believe in Allah and the Last day. And whoever fears Allah - He will make for him a way out"
-      }
-    ],
-    "translation": "And when they have [nearly] fulfilled their term, either retain them according to acceptable terms or part with them according to acceptable terms. And bring to witness two just men from among you and establish the testimony for [the acceptance of] Allah. That is instructed to whoever should believe in Allah and the Last day. And whoever fears Allah - He will make for him a way out",
-    "tafsir_excerpt": "whoever has Taqwa of Allah in what He has commanded and avoids what He has forbidden, then Allah will make a way out for him from every difficulty and will provide for him from resources he never anticipated or thought about.",
-    "tafsir_label": "Tafsir Ibn Kathir",
-    "edition": "en-tafisr-ibn-kathir",
-    "narration": "And when they have nearly fulfilled their term, either retain them according to acceptable terms or part with them according to acceptable terms. And bring to witness two just men from among you and establish the testimony for the acceptance of Allah. That is instructed to whoever should believe in Allah and the Last day. And whoever fears Allah - He will make for him a way out Tafseer Ibn Kathir. whoever has Taqwa of Allah in what He has commanded and avoids what He has forbidden, then Allah will make a way out for him from every difficulty and will provide for him from resources he never anticipated or thought about.",
-    "source_url": "https://quran.com/65:2/tafsirs/en-tafisr-ibn-kathir"
-  },
-  {
-    "index": 55,
+    "index": 56,
     "slug": "87-14-15",
     "surah": 87,
     "ayahs": [
@@ -1350,7 +1380,7 @@
     "source_url": "https://quran.com/87:14/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 56,
+    "index": 57,
     "slug": "89-27-28-29-30",
     "surah": 89,
     "ayahs": [
@@ -1366,7 +1396,7 @@
       {
         "ayah": 27,
         "arabic": "يَٰٓأَيَّتُهَا ٱلنَّفْسُ ٱلْمُطْمَئِنَّةُ",
-        "translation": "[To the righteous it will be said], \"O reassured soul,\""
+        "translation": "[To the righteous it will be said], \"O reassured soul,"
       },
       {
         "ayah": 28,
@@ -1381,18 +1411,18 @@
       {
         "ayah": 30,
         "arabic": "وَٱدْخُلِى جَنَّتِى",
-        "translation": "And enter My Paradise."
+        "translation": "And enter My Paradise.\""
       }
     ],
-    "translation": "[To the righteous it will be said], \"O reassured soul,\" Return to your Lord, well-pleased and pleasing [to Him], And enter among My [righteous] servants And enter My Paradise.",
+    "translation": "[To the righteous it will be said], \"O reassured soul, Return to your Lord, well-pleased and pleasing [to Him], And enter among My [righteous] servants And enter My Paradise.\"",
     "tafsir_excerpt": "This will be said to it at the time of death and on the Day of Judgement. This is like the angels giving glad tiding to the believer at his time of death and when he rises from his grave.",
     "tafsir_label": "Tafsir Ibn Kathir",
     "edition": "en-tafisr-ibn-kathir",
-    "narration": "To the righteous it will be said, \"O reassured soul,\" Return to your Lord, well-pleased and pleasing to Him, And enter among My righteous servants And enter My Paradise. Tafseer Ibn Kathir. This will be said to it at the time of death and on the Day of Judgement. This is like the angels giving glad tiding to the believer at his time of death and when he rises from his grave.",
+    "narration": "To the righteous it will be said, \"O reassured soul, Return to your Lord, well-pleased and pleasing to Him, And enter among My righteous servants And enter My Paradise.\" Tafseer Ibn Kathir. This will be said to it at the time of death and on the Day of Judgement. This is like the angels giving glad tiding to the believer at his time of death and when he rises from his grave.",
     "source_url": "https://quran.com/89:27/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 57,
+    "index": 58,
     "slug": "94-7-8",
     "surah": 94,
     "ayahs": [
@@ -1422,51 +1452,51 @@
     "source_url": "https://quran.com/94:7/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 58,
-    "slug": "95-4",
-    "surah": 95,
-    "ayahs": [
-      4
-    ],
-    "ref": "95:4",
-    "surah_name": "At-Tin",
-    "arabic_name": "سُورَةُ التِّينِ",
-    "verses": [
-      {
-        "ayah": 4,
-        "arabic": "لَقَدْ خَلَقْنَا ٱلْإِنسَٰنَ فِىٓ أَحْسَنِ تَقْوِيمٍۢ",
-        "translation": "We have certainly created man in the best of stature;"
-      }
-    ],
-    "translation": "We have certainly created man in the best of stature;",
-    "tafsir_excerpt": "This is the subject being sworn about, and it is that Allah created man in the best image and form, standing upright with straight limbs that He beautified.",
-    "tafsir_label": "Tafsir Ibn Kathir",
-    "edition": "en-tafisr-ibn-kathir",
-    "narration": "We have certainly created man in the best of stature; Tafseer Ibn Kathir. This is the subject being sworn about, and it is that Allah created man in the best image and form, standing upright with straight limbs that He beautified.",
-    "source_url": "https://quran.com/95:4/tafsirs/en-tafisr-ibn-kathir"
-  },
-  {
     "index": 59,
-    "slug": "96-1",
+    "slug": "96-1-2-3-4-5",
     "surah": 96,
     "ayahs": [
-      1
+      1,
+      2,
+      3,
+      4,
+      5
     ],
-    "ref": "96:1",
+    "ref": "96:1–5",
     "surah_name": "Al-Alaq",
     "arabic_name": "سُورَةُ العَلَقِ",
     "verses": [
       {
         "ayah": 1,
-        "arabic": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ٱقْرَأْ بِٱسْمِ رَبِّكَ ٱلَّذِى خَلَقَ",
+        "arabic": "ٱقْرَأْ بِٱسْمِ رَبِّكَ ٱلَّذِى خَلَقَ",
         "translation": "Recite in the name of your Lord who created -"
+      },
+      {
+        "ayah": 2,
+        "arabic": "خَلَقَ ٱلْإِنسَٰنَ مِنْ عَلَقٍ",
+        "translation": "Created man from a clinging substance."
+      },
+      {
+        "ayah": 3,
+        "arabic": "ٱقْرَأْ وَرَبُّكَ ٱلْأَكْرَمُ",
+        "translation": "Recite, and your Lord is the most Generous -"
+      },
+      {
+        "ayah": 4,
+        "arabic": "ٱلَّذِى عَلَّمَ بِٱلْقَلَمِ",
+        "translation": "Who taught by the pen -"
+      },
+      {
+        "ayah": 5,
+        "arabic": "عَلَّمَ ٱلْإِنسَٰنَ مَا لَمْ يَعْلَمْ",
+        "translation": "Taught man that which he knew not."
       }
     ],
-    "translation": "Recite in the name of your Lord who created -",
+    "translation": "Recite in the name of your Lord who created - Created man from a clinging substance. Recite, and your Lord is the most Generous - Who taught by the pen - Taught man that which he knew not.",
     "tafsir_excerpt": "So the first thing that was revealed of the Qur'an were these noble and blessed Ayat. They are the first mercy that Allah bestowed upon His servants and the first bounty that Allah favored them with.",
     "tafsir_label": "Tafsir Ibn Kathir",
     "edition": "en-tafisr-ibn-kathir",
-    "narration": "Recite in the name of your Lord who created - Tafseer Ibn Kathir. So the first thing that was revealed of the Qur'an were these noble and blessed Ayat. They are the first mercy that Allah bestowed upon His servants and the first bounty that Allah favored them with.",
+    "narration": "Recite in the name of your Lord who created - Created man from a clinging substance. Recite, and your Lord is the most Generous - Who taught by the pen - Taught man that which he knew not. Tafseer Ibn Kathir. So the first thing that was revealed of the Qur'an were these noble and blessed Ayat. They are the first mercy that Allah bestowed upon His servants and the first bounty that Allah favored them with.",
     "source_url": "https://quran.com/96:1/tafsirs/en-tafisr-ibn-kathir"
   },
   {
@@ -1485,8 +1515,8 @@
     "verses": [
       {
         "ayah": 1,
-        "arabic": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ هُوَ ٱللَّهُ أَحَدٌ",
-        "translation": "Say, \"He is Allah, [who is] One,\""
+        "arabic": "قُلْ هُوَ ٱللَّهُ أَحَدٌ",
+        "translation": "Say, \"He is Allah, [who is] One,"
       },
       {
         "ayah": 2,
@@ -1501,14 +1531,14 @@
       {
         "ayah": 4,
         "arabic": "وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",
-        "translation": "Nor is there to Him any equivalent."
+        "translation": "Nor is there to Him any equivalent.\""
       }
     ],
-    "translation": "Say, \"He is Allah, [who is] One,\" Allah, the Eternal Refuge. He neither begets nor is born, Nor is there to Him any equivalent.",
+    "translation": "Say, \"He is Allah, [who is] One, Allah, the Eternal Refuge. He neither begets nor is born, Nor is there to Him any equivalent.\"",
     "tafsir_excerpt": "This means that there is none similar to Him, none equal to Him and there is nothing at all like Him.",
     "tafsir_label": "Tafsir Ibn Kathir",
     "edition": "en-tafisr-ibn-kathir",
-    "narration": "Say, \"He is Allah, who is One,\" Allah, the Eternal Refuge. He neither begets nor is born, Nor is there to Him any equivalent. Tafseer Ibn Kathir. This means that there is none similar to Him, none equal to Him and there is nothing at all like Him.",
+    "narration": "Say, \"He is Allah, who is One, Allah, the Eternal Refuge. He neither begets nor is born, Nor is there to Him any equivalent.\" Tafseer Ibn Kathir. This means that there is none similar to Him, none equal to Him and there is nothing at all like Him.",
     "source_url": "https://quran.com/112:1/tafsirs/en-tafisr-ibn-kathir"
   }
 ]

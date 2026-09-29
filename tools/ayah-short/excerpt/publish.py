@@ -5,13 +5,17 @@
 Default is a dry run that writes publishing/posts.json for review.
   --upload  put videos + covers on R2 (masteringseries-video-assets/masteringquran/tafsir/<batch>/)
   --create  POST each post (resumable: publishing/created.json)
-  --verify  list the brand's posts and assert every stored UTC instant matches the plan
+  --verify  list the brand's posts and fail unless every post matches the plan exactly
+  --fix-times  PUT the planned wall-clock time on posts whose stored UTC is off
 Publish times carry an explicit UTC offset from zoneinfo, so the Nov DST change is handled.
+RobinReach's create endpoint has applied a fixed -5 to America/New_York before (DST bug);
+its update endpoint is DST-aware, hence --fix-times.
 """
 import datetime
 import json
 import subprocess
 import sys
+import time
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -42,7 +46,7 @@ def plan(batch, start):
                  f'{c["source_url"]}\n#MasteringQuran #Quran')
         assert len(title) <= 100 and len(caption) <= 2200 and len(short) <= 500, c['slug']
         payload = {
-            'brand_id': BRAND, 'content': caption, 'social_profile_ids': PROFILES, 'post_status': 'scheduled',
+            'brand_id': BRAND, 'content': caption, 'social_profile_ids': PROFILES, 'status': 'scheduled',
             'publish_time': when.isoformat(), 'timezone': 'America/New_York', 'labels': [label],
             'media_urls': [f'{PUBLIC}/{prefix}/MasteringQuran_{c["slug"]}.mp4'],
             'thumbnail_url': f'{PUBLIC}/{prefix}/{c["slug"]}.png',
@@ -79,30 +83,63 @@ def create(pub, posts):
         if p['slug'] in done:
             continue
         r = requests.post(API, params={'api_key': KEY, 'brand_id': BRAND}, json=p['payload'], timeout=120)
-        r.raise_for_status()
         body = r.json()
-        done[p['slug']] = {'id': body.get('id') or body.get('post', {}).get('id'), 'response': body}
+        if r.status_code not in (200, 201) or not body.get('post_id'):
+            raise RuntimeError(f'{p["slug"]}: {r.status_code} {r.text[:300]}')
+        done[p['slug']] = {'post_id': body['post_id'], 'response': body}
         log.write_text(json.dumps(done, ensure_ascii=False, indent=2))
-        print('CREATED', p['slug'], done[p['slug']]['id'], flush=True)
+        print('CREATED', p['slug'], body['post_id'], flush=True)
+        time.sleep(3)
 
 
-def verify(pub, posts):
-    done = json.loads((pub / 'created.json').read_text())
+def stored_posts():
     stored = {}
-    for page in range(1, 20):
+    for page in range(1, 30):
         r = requests.get(API, params={'api_key': KEY, 'brand_id': BRAND, 'per_page': 100, 'page': page}, timeout=120)
-        batch_posts = r.json().get('posts', [])
-        if not batch_posts:
+        r.raise_for_status()
+        page_posts = r.json().get('posts', [])
+        if not page_posts:
             break
-        stored.update({p['id']: p for p in batch_posts})
-    bad = []
+        stored.update({p['id']: p for p in page_posts})
+    return stored
+
+
+def verify(pub, posts, fix_times=False):
+    done = json.loads((pub / 'created.json').read_text())
+    ids = [done[p['slug']]['post_id'] for p in posts if p['slug'] in done]
+    problems = []
+    if len(ids) != len(posts) or len(set(ids)) != len(ids):
+        problems.append(('batch', f'{len(set(ids))} unique ids for {len(posts)} planned posts'))
+    stored = stored_posts()
     for p in posts:
-        s = stored.get(done[p['slug']]['id'])
-        got = s and s['publish_time'][:16]
-        if not s or got != p['utc'] or s['status'] != 'scheduled' or len(s['social_profiles']) != len(PROFILES):
-            bad.append((p['slug'], p['utc'], got, s and s['status']))
-    (pub / 'verify.json').write_text(json.dumps({'checked': len(posts), 'problems': bad}, indent=2))
-    print('VERIFY', len(posts), 'problems:', bad, flush=True)
+        pid = done.get(p['slug'], {}).get('post_id')
+        s = stored.get(pid)
+        if not s:
+            problems.append((p['slug'], f'post {pid} not found'))
+            continue
+        want = p['payload']
+        checks = {
+            'utc': (s['publish_time'][:16], p['utc']),
+            'status': (s['status'], 'scheduled'),
+            'profiles': (len(s['social_profiles']), len(PROFILES)),
+            'label': (s.get('labels'), want['labels']),
+            'media': (len(s.get('attachments') or []) >= 1, True),
+        }
+        bad = {k: v for k, v in checks.items() if v[0] != v[1]}
+        if bad.get('utc') and fix_times:
+            local = datetime.datetime.fromisoformat(want['publish_time']).strftime('%Y-%m-%dT%H:%M:%S')
+            r = requests.put(f'{API}/{pid}', params={'api_key': KEY, 'brand_id': BRAND},
+                             json={'publish_time': local, 'timezone': 'America/New_York'}, timeout=120)
+            r.raise_for_status()
+            print('RETIMED', p['slug'], pid, flush=True)
+        if bad:
+            problems.append((p['slug'], bad))
+    (pub / 'verify.json').write_text(json.dumps({'checked': len(posts), 'problems': problems}, indent=2, default=str))
+    print('VERIFY', len(posts), 'problems:', len(problems), flush=True)
+    if problems:
+        for pr in problems:
+            print(' ', pr)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
@@ -116,5 +153,5 @@ if __name__ == '__main__':
         upload(batch, prefix, posts)
     if '--create' in sys.argv:
         create(pub, posts)
-    if '--verify' in sys.argv:
-        verify(pub, posts)
+    if '--verify' in sys.argv or '--fix-times' in sys.argv:
+        verify(pub, posts, fix_times='--fix-times' in sys.argv)
