@@ -25,6 +25,30 @@
   },
   {
     "index": 2,
+    "slug": "2-112",
+    "surah": 2,
+    "ayahs": [
+      112
+    ],
+    "ref": "2:112",
+    "surah_name": "Al-Baqara",
+    "arabic_name": "سُورَةُ البَقَرَةِ",
+    "verses": [
+      {
+        "ayah": 112,
+        "arabic": "بَلَىٰ مَنْ أَسْلَمَ وَجْهَهُۥ لِلَّهِ وَهُوَ مُحْسِنٌۭ فَلَهُۥٓ أَجْرُهُۥ عِندَ رَبِّهِۦ وَلَا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ",
+        "translation": "Yes [on the contrary], whoever submits his face in Islam to Allah while being a doer of good will have his reward with his Lord. And no fear will there be concerning them, nor will they grieve."
+      }
+    ],
+    "translation": "Yes [on the contrary], whoever submits his face in Islam to Allah while being a doer of good will have his reward with his Lord. And no fear will there be concerning them, nor will they grieve.",
+    "tafsir_excerpt": "For there are two conditions for deeds to be accepted; the deed must be performed for Allah's sake alone and conform to the Shari`ah.",
+    "tafsir_label": "Tafsir Ibn Kathir",
+    "edition": "en-tafisr-ibn-kathir",
+    "narration": "Yes on the contrary, whoever submits his face in Islam to Allah while being a doer of good will have his reward with his Lord. And no fear will there be concerning them, nor will they grieve. Tafseer Ibn Kathir. For there are two conditions for deeds to be accepted; the deed must be performed for Allah's sake alone and conform to the Shariah.",
+    "source_url": "https://quran.com/2:112/tafsirs/en-tafisr-ibn-kathir"
+  },
+  {
+    "index": 3,
     "slug": "2-212",
     "surah": 2,
     "ayahs": [
@@ -48,7 +72,31 @@
     "source_url": "https://quran.com/2:212/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 3,
+    "index": 4,
+    "slug": "2-245",
+    "surah": 2,
+    "ayahs": [
+      245
+    ],
+    "ref": "2:245",
+    "surah_name": "Al-Baqara",
+    "arabic_name": "سُورَةُ البَقَرَةِ",
+    "verses": [
+      {
+        "ayah": 245,
+        "arabic": "مَّن ذَا ٱلَّذِى يُقْرِضُ ٱللَّهَ قَرْضًا حَسَنًۭا فَيُضَٰعِفَهُۥ لَهُۥٓ أَضْعَافًۭا كَثِيرَةًۭ ۚ وَٱللَّهُ يَقْبِضُ وَيَبْصُۜطُ وَإِلَيْهِ تُرْجَعُونَ",
+        "translation": "Who is it that would loan Allah a goodly loan so He may multiply it for him many times over? And it is Allah who withholds and grants abundance, and to Him you will be returned."
+      }
+    ],
+    "translation": "Who is it that would loan Allah a goodly loan so He may multiply it for him many times over? And it is Allah who withholds and grants abundance, and to Him you will be returned.",
+    "tafsir_excerpt": "Certainly, Allah is the Sustainer Who increases or decreases the provisions to whomever He wills among His servants.",
+    "tafsir_label": "Tafsir Ibn Kathir",
+    "edition": "en-tafisr-ibn-kathir",
+    "narration": "Who is it that would loan Allah a goodly loan so He may multiply it for him many times over? And it is Allah who withholds and grants abundance, and to Him you will be returned. Tafseer Ibn Kathir. Certainly, Allah is the Sustainer Who increases or decreases the provisions to whomever He wills among His servants.",
+    "source_url": "https://quran.com/2:245/tafsirs/en-tafisr-ibn-kathir"
+  },
+  {
+    "index": 5,
     "slug": "2-256",
     "surah": 2,
     "ayahs": [
@@ -72,7 +120,7 @@
     "source_url": "https://quran.com/2:256/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 4,
+    "index": 6,
     "slug": "2-264",
     "surah": 2,
     "ayahs": [
@@ -96,7 +144,7 @@
     "source_url": "https://quran.com/2:264/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 5,
+    "index": 7,
     "slug": "2-274",
     "surah": 2,
     "ayahs": [
@@ -120,7 +168,7 @@
     "source_url": "https://quran.com/2:274/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 6,
+    "index": 8,
     "slug": "2-284",
     "surah": 2,
     "ayahs": [
@@ -144,7 +192,7 @@
     "source_url": "https://quran.com/2:284/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 7,
+    "index": 9,
     "slug": "3-9",
     "surah": 3,
     "ayahs": [
@@ -168,7 +216,55 @@
     "source_url": "https://quran.com/3:9/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 8,
+    "index": 10,
+    "slug": "3-104",
+    "surah": 3,
+    "ayahs": [
+      104
+    ],
+    "ref": "3:104",
+    "surah_name": "Aal-i-Imraan",
+    "arabic_name": "سُورَةُ آلِ عِمۡرَانَ",
+    "verses": [
+      {
+        "ayah": 104,
+        "arabic": "وَلْتَكُن مِّنكُمْ أُمَّةٌۭ يَدْعُونَ إِلَى ٱلْخَيْرِ وَيَأْمُرُونَ بِٱلْمَعْرُوفِ وَيَنْهَوْنَ عَنِ ٱلْمُنكَرِ ۚ وَأُو۟لَٰٓئِكَ هُمُ ٱلْمُفْلِحُونَ",
+        "translation": "And let there be [arising] from you a nation inviting to [all that is] good, enjoining what is right and forbidding what is wrong, and those will be the successful."
+      }
+    ],
+    "translation": "And let there be [arising] from you a nation inviting to [all that is] good, enjoining what is right and forbidding what is wrong, and those will be the successful.",
+    "tafsir_excerpt": "The objective of this Ayah is that there should be a segment of this Muslim Ummah fulfilling this task, even though it is also an obligation on every member of this Ummah, each according to his ability.",
+    "tafsir_label": "Tafsir Ibn Kathir",
+    "edition": "en-tafisr-ibn-kathir",
+    "narration": "And let there be arising from you a nation inviting to all that is good, enjoining what is right and forbidding what is wrong, and those will be the successful. Tafseer Ibn Kathir. The objective of this Ayah is that there should be a segment of this Muslim Ummah fulfilling this task, even though it is also an obligation on every member of this Ummah, each according to his ability.",
+    "source_url": "https://quran.com/3:104/tafsirs/en-tafisr-ibn-kathir"
+  },
+  {
+    "index": 11,
+    "slug": "3-135",
+    "surah": 3,
+    "ayahs": [
+      135
+    ],
+    "ref": "3:135",
+    "surah_name": "Aal-i-Imraan",
+    "arabic_name": "سُورَةُ آلِ عِمۡرَانَ",
+    "verses": [
+      {
+        "ayah": 135,
+        "arabic": "وَٱلَّذِينَ إِذَا فَعَلُوا۟ فَٰحِشَةً أَوْ ظَلَمُوٓا۟ أَنفُسَهُمْ ذَكَرُوا۟ ٱللَّهَ فَٱسْتَغْفَرُوا۟ لِذُنُوبِهِمْ وَمَن يَغْفِرُ ٱلذُّنُوبَ إِلَّا ٱللَّهُ وَلَمْ يُصِرُّوا۟ عَلَىٰ مَا فَعَلُوا۟ وَهُمْ يَعْلَمُونَ",
+        "translation": "And those who, when they commit an immorality or wrong themselves [by transgression], remember Allah and seek forgiveness for their sins - and who can forgive sins except Allah? - and [who] do not persist in what they have done while they know."
+      }
+    ],
+    "translation": "And those who, when they commit an immorality or wrong themselves [by transgression], remember Allah and seek forgiveness for their sins - and who can forgive sins except Allah? - and [who] do not persist in what they have done while they know.",
+    "tafsir_excerpt": "Therefore, if they commit an error they follow it with repentance and ask forgiveness.",
+    "tafsir_label": "Tafsir Ibn Kathir",
+    "edition": "en-tafisr-ibn-kathir",
+    "narration": "And those who, when they commit an immorality or wrong themselves by transgression, remember Allah and seek forgiveness for their sins - and who can forgive sins except Allah? - and who do not persist in what they have done while they know. Tafseer Ibn Kathir. Therefore, if they commit an error they follow it with repentance and ask forgiveness.",
+    "source_url": "https://quran.com/3:135/tafsirs/en-tafisr-ibn-kathir"
+  },
+  {
+    "index": 12,
     "slug": "4-1",
     "surah": 4,
     "ayahs": [
@@ -192,7 +288,7 @@
     "source_url": "https://quran.com/4:1/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 9,
+    "index": 13,
     "slug": "4-17",
     "surah": 4,
     "ayahs": [
@@ -216,7 +312,7 @@
     "source_url": "https://quran.com/4:17/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 10,
+    "index": 14,
     "slug": "4-40",
     "surah": 4,
     "ayahs": [
@@ -240,7 +336,7 @@
     "source_url": "https://quran.com/4:40/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 11,
+    "index": 15,
     "slug": "4-58",
     "surah": 4,
     "ayahs": [
@@ -264,7 +360,7 @@
     "source_url": "https://quran.com/4:58/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 12,
+    "index": 16,
     "slug": "4-124",
     "surah": 4,
     "ayahs": [
@@ -288,7 +384,7 @@
     "source_url": "https://quran.com/4:124/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 13,
+    "index": 17,
     "slug": "5-9",
     "surah": 5,
     "ayahs": [
@@ -312,7 +408,7 @@
     "source_url": "https://quran.com/5:9/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 14,
+    "index": 18,
     "slug": "6-12",
     "surah": 6,
     "ayahs": [
@@ -336,7 +432,7 @@
     "source_url": "https://quran.com/6:12/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 15,
+    "index": 19,
     "slug": "6-60",
     "surah": 6,
     "ayahs": [
@@ -360,7 +456,7 @@
     "source_url": "https://quran.com/6:60/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 16,
+    "index": 20,
     "slug": "6-63",
     "surah": 6,
     "ayahs": [
@@ -384,7 +480,7 @@
     "source_url": "https://quran.com/6:63/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 17,
+    "index": 21,
     "slug": "6-103",
     "surah": 6,
     "ayahs": [
@@ -408,31 +504,31 @@
     "source_url": "https://quran.com/6:103/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 18,
-    "slug": "7-156",
+    "index": 22,
+    "slug": "7-43",
     "surah": 7,
     "ayahs": [
-      156
+      43
     ],
-    "ref": "7:156",
+    "ref": "7:43",
     "surah_name": "Al-A'raaf",
     "arabic_name": "سُورَةُ الأَعۡرَافِ",
     "verses": [
       {
-        "ayah": 156,
-        "arabic": "۞ وَٱكْتُبْ لَنَا فِى هَٰذِهِ ٱلدُّنْيَا حَسَنَةًۭ وَفِى ٱلْءَاخِرَةِ إِنَّا هُدْنَآ إِلَيْكَ ۚ قَالَ عَذَابِىٓ أُصِيبُ بِهِۦ مَنْ أَشَآءُ ۖ وَرَحْمَتِى وَسِعَتْ كُلَّ شَىْءٍۢ ۚ فَسَأَكْتُبُهَا لِلَّذِينَ يَتَّقُونَ وَيُؤْتُونَ ٱلزَّكَوٰةَ وَٱلَّذِينَ هُم بِـَٔايَٰتِنَا يُؤْمِنُونَ",
-        "translation": "And decree for us in this world [that which is] good and [also] in the Hereafter; indeed, we have turned back to You.\" [Allah] said, \"My punishment - I afflict with it whom I will, but My mercy encompasses all things.\" So I will decree it [especially] for those who fear Me and give zakah and those who believe in Our verses -"
+        "ayah": 43,
+        "arabic": "وَنَزَعْنَا مَا فِى صُدُورِهِم مِّنْ غِلٍّۢ تَجْرِى مِن تَحْتِهِمُ ٱلْأَنْهَٰرُ ۖ وَقَالُوا۟ ٱلْحَمْدُ لِلَّهِ ٱلَّذِى هَدَىٰنَا لِهَٰذَا وَمَا كُنَّا لِنَهْتَدِىَ لَوْلَآ أَنْ هَدَىٰنَا ٱللَّهُ ۖ لَقَدْ جَآءَتْ رُسُلُ رَبِّنَا بِٱلْحَقِّ ۖ وَنُودُوٓا۟ أَن تِلْكُمُ ٱلْجَنَّةُ أُورِثْتُمُوهَا بِمَا كُنتُمْ تَعْمَلُونَ",
+        "translation": "And We will have removed whatever is within their breasts of resentment, [while] flowing beneath them are rivers. And they will say, \"Praise to Allah, who has guided us to this; and we would never have been guided if Allah had not guided us. Certainly the messengers of our Lord had come with the truth.\" And they will be called, \"This is Paradise, which you have been made to inherit for what you used to do.\""
       }
     ],
-    "translation": "And decree for us in this world [that which is] good and [also] in the Hereafter; indeed, we have turned back to You.\" [Allah] said, \"My punishment - I afflict with it whom I will, but My mercy encompasses all things.\" So I will decree it [especially] for those who fear Me and give zakah and those who believe in Our verses -\"",
-    "tafsir_excerpt": "I will ordain My mercy for them, as a favor and kindness from Me to them.",
+    "translation": "And We will have removed whatever is within their breasts of resentment, [while] flowing beneath them are rivers. And they will say, \"Praise to Allah, who has guided us to this; and we would never have been guided if Allah had not guided us. Certainly the messengers of our Lord had come with the truth.\" And they will be called, \"This is Paradise, which you have been made to inherit for what you used to do.\"",
+    "tafsir_excerpt": "This means, because of your good deeds, you earned Allah's mercy and thus entered Paradise and took your designated dwellings in it, comparable to your deeds.",
     "tafsir_label": "Tafsir Ibn Kathir",
     "edition": "en-tafisr-ibn-kathir",
-    "narration": "And decree for us in this world that which is good and also in the Hereafter; indeed, we have turned back to You.\" Allah said, \"My punishment - I afflict with it whom I will, but My mercy encompasses all things.\" So I will decree it especially for those who fear Me and give zakah and those who believe in Our verses -\" Tafseer Ibn Kathir. I will ordain My mercy for them, as a favor and kindness from Me to them.",
-    "source_url": "https://quran.com/7:156/tafsirs/en-tafisr-ibn-kathir"
+    "narration": "And We will have removed whatever is within their breasts of resentment, while flowing beneath them are rivers. And they will say, \"Praise to Allah, who has guided us to this; and we would never have been guided if Allah had not guided us. Certainly the messengers of our Lord had come with the truth.\" And they will be called, \"This is Paradise, which you have been made to inherit for what you used to do.\" Tafseer Ibn Kathir. This means, because of your good deeds, you earned Allah's mercy and thus entered Paradise and took your designated dwellings in it, comparable to your deeds.",
+    "source_url": "https://quran.com/7:43/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 19,
+    "index": 23,
     "slug": "7-204",
     "surah": 7,
     "ayahs": [
@@ -456,7 +552,7 @@
     "source_url": "https://quran.com/7:204/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 20,
+    "index": 24,
     "slug": "7-205",
     "surah": 7,
     "ayahs": [
@@ -480,31 +576,7 @@
     "source_url": "https://quran.com/7:205/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 21,
-    "slug": "8-2",
-    "surah": 8,
-    "ayahs": [
-      2
-    ],
-    "ref": "8:2",
-    "surah_name": "Al-Anfaal",
-    "arabic_name": "سُورَةُ الأَنفَالِ",
-    "verses": [
-      {
-        "ayah": 2,
-        "arabic": "إِنَّمَا ٱلْمُؤْمِنُونَ ٱلَّذِينَ إِذَا ذُكِرَ ٱللَّهُ وَجِلَتْ قُلُوبُهُمْ وَإِذَا تُلِيَتْ عَلَيْهِمْ ءَايَٰتُهُۥ زَادَتْهُمْ إِيمَٰنًۭا وَعَلَىٰ رَبِّهِمْ يَتَوَكَّلُونَ",
-        "translation": "The believers are only those who, when Allah is mentioned, their hearts become fearful, and when His verses are recited to them, it increases them in faith; and upon their Lord they rely -"
-      }
-    ],
-    "translation": "The believers are only those who, when Allah is mentioned, their hearts become fearful, and when His verses are recited to them, it increases them in faith; and upon their Lord they rely -",
-    "tafsir_excerpt": "The quality of a true believer is that when Allah is mentioned, he feels a fear in his heart, and thus implements His orders and abstains from His prohibitions.",
-    "tafsir_label": "Tafsir Ibn Kathir",
-    "edition": "en-tafisr-ibn-kathir",
-    "narration": "The believers are only those who, when Allah is mentioned, their hearts become fearful, and when His verses are recited to them, it increases them in faith; and upon their Lord they rely - Tafseer Ibn Kathir. The quality of a true believer is that when Allah is mentioned, he feels a fear in his heart, and thus implements His orders and abstains from His prohibitions.",
-    "source_url": "https://quran.com/8:2/tafsirs/en-tafisr-ibn-kathir"
-  },
-  {
-    "index": 22,
+    "index": 25,
     "slug": "9-72",
     "surah": 9,
     "ayahs": [
@@ -528,7 +600,7 @@
     "source_url": "https://quran.com/9:72/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 23,
+    "index": 26,
     "slug": "9-119",
     "surah": 9,
     "ayahs": [
@@ -552,7 +624,7 @@
     "source_url": "https://quran.com/9:119/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 24,
+    "index": 27,
     "slug": "10-25",
     "surah": 10,
     "ayahs": [
@@ -576,7 +648,7 @@
     "source_url": "https://quran.com/10:25/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 25,
+    "index": 28,
     "slug": "10-107",
     "surah": 10,
     "ayahs": [
@@ -600,7 +672,7 @@
     "source_url": "https://quran.com/10:107/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 26,
+    "index": 29,
     "slug": "11-23",
     "surah": 11,
     "ayahs": [
@@ -624,31 +696,7 @@
     "source_url": "https://quran.com/11:23/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 27,
-    "slug": "13-22",
-    "surah": 13,
-    "ayahs": [
-      22
-    ],
-    "ref": "13:22",
-    "surah_name": "Ar-Ra'd",
-    "arabic_name": "سُورَةُ الرَّعۡدِ",
-    "verses": [
-      {
-        "ayah": 22,
-        "arabic": "وَٱلَّذِينَ صَبَرُوا۟ ٱبْتِغَآءَ وَجْهِ رَبِّهِمْ وَأَقَامُوا۟ ٱلصَّلَوٰةَ وَأَنفَقُوا۟ مِمَّا رَزَقْنَٰهُمْ سِرًّۭا وَعَلَانِيَةًۭ وَيَدْرَءُونَ بِٱلْحَسَنَةِ ٱلسَّيِّئَةَ أُو۟لَٰٓئِكَ لَهُمْ عُقْبَى ٱلدَّارِ",
-        "translation": "And those who are patient, seeking the countenance of their Lord, and establish prayer and spend from what We have provided for them secretly and publicly and prevent evil with good - those will have the good consequence of [this] home -"
-      }
-    ],
-    "translation": "And those who are patient, seeking the countenance of their Lord, and establish prayer and spend from what We have provided for them secretly and publicly and prevent evil with good - those will have the good consequence of [this] home -",
-    "tafsir_excerpt": "When the people harm them they face their harm with good patience, forbearing, forgiveness and pardon.",
-    "tafsir_label": "Tafsir Ibn Kathir",
-    "edition": "en-tafisr-ibn-kathir",
-    "narration": "And those who are patient, seeking the countenance of their Lord, and establish prayer and spend from what We have provided for them secretly and publicly and prevent evil with good - those will have the good consequence of this home - Tafseer Ibn Kathir. When the people harm them they face their harm with good patience, forbearing, forgiveness and pardon.",
-    "source_url": "https://quran.com/13:22/tafsirs/en-tafisr-ibn-kathir"
-  },
-  {
-    "index": 28,
+    "index": 30,
     "slug": "14-31",
     "surah": 14,
     "ayahs": [
@@ -672,7 +720,31 @@
     "source_url": "https://quran.com/14:31/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 29,
+    "index": 31,
+    "slug": "17-79",
+    "surah": 17,
+    "ayahs": [
+      79
+    ],
+    "ref": "17:79",
+    "surah_name": "Al-Israa",
+    "arabic_name": "سُورَةُ الإِسۡرَاءِ",
+    "verses": [
+      {
+        "ayah": 79,
+        "arabic": "وَمِنَ ٱلَّيْلِ فَتَهَجَّدْ بِهِۦ نَافِلَةًۭ لَّكَ عَسَىٰٓ أَن يَبْعَثَكَ رَبُّكَ مَقَامًۭا مَّحْمُودًۭا",
+        "translation": "And from [part of] the night, pray with it as additional [worship] for you; it is expected that your Lord will resurrect you to a praised station."
+      }
+    ],
+    "translation": "And from [part of] the night, pray with it as additional [worship] for you; it is expected that your Lord will resurrect you to a praised station.",
+    "tafsir_excerpt": "Allah commanded His Messenger to pray the Night prayer after offering the prescribed prayers, and the term Tahajjud refers to prayer that is offered after sleeping.",
+    "tafsir_label": "Tafsir Ibn Kathir",
+    "edition": "en-tafisr-ibn-kathir",
+    "narration": "And from part of the night, pray with it as additional worship for you; it is expected that your Lord will resurrect you to a praised station. Tafseer Ibn Kathir. Allah commanded His Messenger to pray the Night prayer after offering the prescribed prayers, and the term Tahajjud refers to prayer that is offered after sleeping.",
+    "source_url": "https://quran.com/17:79/tafsirs/en-tafisr-ibn-kathir"
+  },
+  {
+    "index": 32,
     "slug": "17-84",
     "surah": 17,
     "ayahs": [
@@ -696,31 +768,31 @@
     "source_url": "https://quran.com/17:84/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 30,
-    "slug": "17-111",
-    "surah": 17,
+    "index": 33,
+    "slug": "18-110",
+    "surah": 18,
     "ayahs": [
-      111
+      110
     ],
-    "ref": "17:111",
-    "surah_name": "Al-Israa",
-    "arabic_name": "سُورَةُ الإِسۡرَاءِ",
+    "ref": "18:110",
+    "surah_name": "Al-Kahf",
+    "arabic_name": "سُورَةُ الكَهۡفِ",
     "verses": [
       {
-        "ayah": 111,
-        "arabic": "وَقُلِ ٱلْحَمْدُ لِلَّهِ ٱلَّذِى لَمْ يَتَّخِذْ وَلَدًۭا وَلَمْ يَكُن لَّهُۥ شَرِيكٌۭ فِى ٱلْمُلْكِ وَلَمْ يَكُن لَّهُۥ وَلِىٌّۭ مِّنَ ٱلذُّلِّ ۖ وَكَبِّرْهُ تَكْبِيرًۢا",
-        "translation": "And say, \"Praise to Allah, who has not taken a son and has had no partner in [His] dominion and has no [need of a] protector out of weakness; and glorify Him with [great] glorification.\""
+        "ayah": 110,
+        "arabic": "قُلْ إِنَّمَآ أَنَا۠ بَشَرٌۭ مِّثْلُكُمْ يُوحَىٰٓ إِلَىَّ أَنَّمَآ إِلَٰهُكُمْ إِلَٰهٌۭ وَٰحِدٌۭ ۖ فَمَن كَانَ يَرْجُوا۟ لِقَآءَ رَبِّهِۦ فَلْيَعْمَلْ عَمَلًۭا صَٰلِحًۭا وَلَا يُشْرِكْ بِعِبَادَةِ رَبِّهِۦٓ أَحَدًۢا",
+        "translation": "Say, \"I am only a man like you, to whom has been revealed that your god is one God. So whoever would hope for the meeting with his Lord - let him do righteous work and not associate in the worship of his Lord anyone.\""
       }
     ],
-    "translation": "And say, \"Praise to Allah, who has not taken a son and has had no partner in [His] dominion and has no [need of a] protector out of weakness; and glorify Him with [great] glorification.\"",
-    "tafsir_excerpt": "He does not form an alliance with anyone, nor does He seek the support or help of anyone.",
+    "translation": "Say, \"I am only a man like you, to whom has been revealed that your god is one God. So whoever would hope for the meeting with his Lord - let him do righteous work and not associate in the worship of his Lord anyone.\"",
+    "tafsir_excerpt": "This is what is meant by seeking the pleasure of Allah alone with no associate or partner.",
     "tafsir_label": "Tafsir Ibn Kathir",
     "edition": "en-tafisr-ibn-kathir",
-    "narration": "And say, \"Praise to Allah, who has not taken a son and has had no partner in His dominion and has no need of a protector out of weakness; and glorify Him with great glorification.\" Tafseer Ibn Kathir. He does not form an alliance with anyone, nor does He seek the support or help of anyone.",
-    "source_url": "https://quran.com/17:111/tafsirs/en-tafisr-ibn-kathir"
+    "narration": "Say, \"I am only a man like you, to whom has been revealed that your god is one God. So whoever would hope for the meeting with his Lord - let him do righteous work and not associate in the worship of his Lord anyone.\" Tafseer Ibn Kathir. This is what is meant by seeking the pleasure of Allah alone with no associate or partner.",
+    "source_url": "https://quran.com/18:110/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 31,
+    "index": 34,
     "slug": "20-82",
     "surah": 20,
     "ayahs": [
@@ -744,7 +816,7 @@
     "source_url": "https://quran.com/20:82/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 32,
+    "index": 35,
     "slug": "20-132",
     "surah": 20,
     "ayahs": [
@@ -768,7 +840,7 @@
     "source_url": "https://quran.com/20:132/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 33,
+    "index": 36,
     "slug": "21-35",
     "surah": 21,
     "ayahs": [
@@ -792,7 +864,7 @@
     "source_url": "https://quran.com/21:35/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 34,
+    "index": 37,
     "slug": "21-89",
     "surah": 21,
     "ayahs": [
@@ -816,31 +888,7 @@
     "source_url": "https://quran.com/21:89/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 35,
-    "slug": "23-60",
-    "surah": 23,
-    "ayahs": [
-      60
-    ],
-    "ref": "23:60",
-    "surah_name": "Al-Muminoon",
-    "arabic_name": "سُورَةُ المُؤۡمِنُونَ",
-    "verses": [
-      {
-        "ayah": 60,
-        "arabic": "وَٱلَّذِينَ يُؤْتُونَ مَآ ءَاتَوا۟ وَّقُلُوبُهُمْ وَجِلَةٌ أَنَّهُمْ إِلَىٰ رَبِّهِمْ رَٰجِعُونَ",
-        "translation": "And they who give what they give while their hearts are fearful because they will be returning to their Lord -"
-      }
-    ],
-    "translation": "And they who give what they give while their hearts are fearful because they will be returning to their Lord -",
-    "tafsir_excerpt": "they give in charity, fearing that it may not be accepted from them because of some shortcoming or failure to meet the required conditions of giving.",
-    "tafsir_label": "Tafsir Ibn Kathir",
-    "edition": "en-tafisr-ibn-kathir",
-    "narration": "And they who give what they give while their hearts are fearful because they will be returning to their Lord - Tafseer Ibn Kathir. they give in charity, fearing that it may not be accepted from them because of some shortcoming or failure to meet the required conditions of giving.",
-    "source_url": "https://quran.com/23:60/tafsirs/en-tafisr-ibn-kathir"
-  },
-  {
-    "index": 36,
+    "index": 38,
     "slug": "23-115",
     "surah": 23,
     "ayahs": [
@@ -864,7 +912,7 @@
     "source_url": "https://quran.com/23:115/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 37,
+    "index": 39,
     "slug": "23-118",
     "surah": 23,
     "ayahs": [
@@ -888,7 +936,7 @@
     "source_url": "https://quran.com/23:118/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 38,
+    "index": 40,
     "slug": "28-83",
     "surah": 28,
     "ayahs": [
@@ -912,7 +960,7 @@
     "source_url": "https://quran.com/28:83/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 39,
+    "index": 41,
     "slug": "28-88",
     "surah": 28,
     "ayahs": [
@@ -936,7 +984,7 @@
     "source_url": "https://quran.com/28:88/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 40,
+    "index": 42,
     "slug": "29-8",
     "surah": 29,
     "ayahs": [
@@ -960,31 +1008,7 @@
     "source_url": "https://quran.com/29:8/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 41,
-    "slug": "30-41",
-    "surah": 30,
-    "ayahs": [
-      41
-    ],
-    "ref": "30:41",
-    "surah_name": "Ar-Room",
-    "arabic_name": "سُورَةُ الرُّومِ",
-    "verses": [
-      {
-        "ayah": 41,
-        "arabic": "ظَهَرَ ٱلْفَسَادُ فِى ٱلْبَرِّ وَٱلْبَحْرِ بِمَا كَسَبَتْ أَيْدِى ٱلنَّاسِ لِيُذِيقَهُم بَعْضَ ٱلَّذِى عَمِلُوا۟ لَعَلَّهُمْ يَرْجِعُونَ",
-        "translation": "Corruption has appeared throughout the land and sea by [reason of] what the hands of people have earned so He may let them taste part of [the consequence of] what they have done that perhaps they will return [to righteousness]."
-      }
-    ],
-    "translation": "Corruption has appeared throughout the land and sea by [reason of] what the hands of people have earned so He may let them taste part of [the consequence of] what they have done that perhaps they will return [to righteousness].",
-    "tafsir_excerpt": "If they give up sin, this will be a cause of blessings in the skies and on the earth.",
-    "tafsir_label": "Tafsir Ibn Kathir",
-    "edition": "en-tafisr-ibn-kathir",
-    "narration": "Corruption has appeared throughout the land and sea by reason of what the hands of people have earned so He may let them taste part of the consequence of what they have done that perhaps they will return to righteousness. Tafseer Ibn Kathir. If they give up sin, this will be a cause of blessings in the skies and on the earth.",
-    "source_url": "https://quran.com/30:41/tafsirs/en-tafisr-ibn-kathir"
-  },
-  {
-    "index": 42,
+    "index": 43,
     "slug": "31-12",
     "surah": 31,
     "ayahs": [
@@ -1008,7 +1032,7 @@
     "source_url": "https://quran.com/31:12/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 43,
+    "index": 44,
     "slug": "31-17",
     "surah": 31,
     "ayahs": [
@@ -1032,7 +1056,7 @@
     "source_url": "https://quran.com/31:17/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 44,
+    "index": 45,
     "slug": "32-16",
     "surah": 32,
     "ayahs": [
@@ -1056,7 +1080,7 @@
     "source_url": "https://quran.com/32:16/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 45,
+    "index": 46,
     "slug": "33-35",
     "surah": 33,
     "ayahs": [
@@ -1080,7 +1104,7 @@
     "source_url": "https://quran.com/33:35/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 46,
+    "index": 47,
     "slug": "34-39",
     "surah": 34,
     "ayahs": [
@@ -1104,7 +1128,7 @@
     "source_url": "https://quran.com/34:39/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 47,
+    "index": 48,
     "slug": "36-82",
     "surah": 36,
     "ayahs": [
@@ -1128,7 +1152,7 @@
     "source_url": "https://quran.com/36:82/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 48,
+    "index": 49,
     "slug": "40-7",
     "surah": 40,
     "ayahs": [
@@ -1152,7 +1176,7 @@
     "source_url": "https://quran.com/40:7/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 49,
+    "index": 50,
     "slug": "42-11",
     "surah": 42,
     "ayahs": [
@@ -1176,7 +1200,7 @@
     "source_url": "https://quran.com/42:11/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 50,
+    "index": 51,
     "slug": "42-25",
     "surah": 42,
     "ayahs": [
@@ -1200,7 +1224,7 @@
     "source_url": "https://quran.com/42:25/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 51,
+    "index": 52,
     "slug": "43-67",
     "surah": 43,
     "ayahs": [
@@ -1224,7 +1248,7 @@
     "source_url": "https://quran.com/43:67/tafsirs/en-tafisr-ibn-kathir"
   },
   {
-    "index": 52,
+    "index": 53,
     "slug": "46-15",
     "surah": 46,
     "ayahs": [
@@ -1246,30 +1270,6 @@
     "edition": "en-tafisr-ibn-kathir",
     "narration": "And We have enjoined upon man, to his parents, good treatment. His mother carried him with hardship and gave birth to him with hardship, and his gestation and weaning period is thirty months. He grows until, when he reaches maturity and reaches the age of forty years, he says, \"My Lord, enable me to be grateful for Your favor which You have bestowed upon me and upon my parents and to work righteousness of which You will approve and make righteous for me my offspring. Indeed, I have repented to You, and indeed, I am of the Muslims.\" Tafseer Ibn Kathir. This contains an instruction for anyone who reaches forty years of age to renew his repentance and turn to Allah with strong resolution.",
     "source_url": "https://quran.com/46:15/tafsirs/en-tafisr-ibn-kathir"
-  },
-  {
-    "index": 53,
-    "slug": "48-4",
-    "surah": 48,
-    "ayahs": [
-      4
-    ],
-    "ref": "48:4",
-    "surah_name": "Al-Fath",
-    "arabic_name": "سُورَةُ الفَتۡحِ",
-    "verses": [
-      {
-        "ayah": 4,
-        "arabic": "هُوَ ٱلَّذِىٓ أَنزَلَ ٱلسَّكِينَةَ فِى قُلُوبِ ٱلْمُؤْمِنِينَ لِيَزْدَادُوٓا۟ إِيمَٰنًۭا مَّعَ إِيمَٰنِهِمْ ۗ وَلِلَّهِ جُنُودُ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضِ ۚ وَكَانَ ٱللَّهُ عَلِيمًا حَكِيمًۭا",
-        "translation": "It is He who sent down tranquillity into the hearts of the believers that they would increase in faith along with their [present] faith. And to Allah belong the soldiers of the heavens and the earth, and ever is Allah Knowing and Wise."
-      }
-    ],
-    "translation": "It is He who sent down tranquillity into the hearts of the believers that they would increase in faith along with their [present] faith. And to Allah belong the soldiers of the heavens and the earth, and ever is Allah Knowing and Wise.",
-    "tafsir_excerpt": "When their hearts felt content with acceptance and were at peace, Allah increased their faith, joining it to the faith they already had.",
-    "tafsir_label": "Tafsir Ibn Kathir",
-    "edition": "en-tafisr-ibn-kathir",
-    "narration": "It is He who sent down tranquillity into the hearts of the believers that they would increase in faith along with their present faith. And to Allah belong the soldiers of the heavens and the earth, and ever is Allah Knowing and Wise. Tafseer Ibn Kathir. When their hearts felt content with acceptance and were at peace, Allah increased their faith, joining it to the faith they already had.",
-    "source_url": "https://quran.com/48:4/tafsirs/en-tafisr-ibn-kathir"
   },
   {
     "index": 54,

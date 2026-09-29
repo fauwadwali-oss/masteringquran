@@ -96,6 +96,8 @@ def build_manifest(batch):
                    'translation': eng[s - 1]['ayahs'][a - 1]['text']} for a in ayahs]
         # Balance quotes over the whole passage: a speech may open in the first ayah and close in the last.
         trans = clean_translation(' '.join(v['translation'] for v in verses))
+        # A dash/comma ending means the sentence runs into the next ayah: widen the range or pick another verse.
+        assert not trans.rstrip().endswith(('-', '—', ',', ';')), f'{slug}: translation ends mid-sentence'
         label = LABELS[ed]
         # Spoken "Tafseer" — VocalLab mispronounces "Tafsir"; on-screen spelling is unchanged.
         spoken = label.replace('Tafsir', 'Tafseer')
