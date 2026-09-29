@@ -29,6 +29,7 @@ API = 'https://robinreach.com/api/v1/posts'
 BUCKET = 'masteringseries-video-assets'
 PUBLIC = 'https://pub-ca0333dc5cfb48928ff4b0506b16b415.r2.dev'
 NY = ZoneInfo('America/New_York')
+WRANGLER_CWD = '/Volumes/Extreme SSD/Github/msdrills'  # its wrangler install uploads to remote R2 by default
 
 
 def plan(batch, start):
@@ -71,7 +72,7 @@ def upload(batch, prefix, posts):
         for local, key, ctype in [(batch / 'videos' / f'MasteringQuran_{slug}.mp4', f'{prefix}/MasteringQuran_{slug}.mp4', 'video/mp4'),
                                   (batch / 'covers' / f'{slug}.png', f'{prefix}/{slug}.png', 'image/png')]:
             subprocess.run(['npx', 'wrangler', 'r2', 'object', 'put', f'{BUCKET}/{key}', '--file', str(local),
-                            '--content-type', ctype, '--remote'], check=True, capture_output=True)
+                            '--content-type', ctype], check=True, capture_output=True, cwd=WRANGLER_CWD)
         for url in (p['payload']['media_urls'][0], p['payload']['thumbnail_url']):
             assert requests.head(url, timeout=60).status_code == 200, url
         print('UPLOADED', slug, flush=True)
