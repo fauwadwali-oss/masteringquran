@@ -108,6 +108,7 @@ function App() {
                       <Route path="/names" element={<Names />} />
                       <Route path="/duas" element={<Duas />} />
                       <Route path="/ramadan" element={<Ramadan />} />
+                      <Route path="/ramadan/:city" element={<Ramadan />} />
                       <Route path="/calendar" element={<CalendarPage />} />
                       <Route path="/topics" element={<Topics />} />
                       <Route path="/about" element={<About />} />

@@ -180,4 +180,4 @@ write(
 );
 
 const total = surahs.reduce((n, s) => n + s.verses.length, 0);
-console.log(`prerendered ${surahs.length} surah, ${total} ayah and ${prayer.count} city pages; ${routes.length} SPA routes; 404.html`);
+console.log(`prerendered ${surahs.length} surah, ${total} ayah, ${prayer.count} prayer-time and ${prayer.count} Ramadan ${prayer.ramadanYear} city pages; ${routes.length} SPA routes; 404.html`);
