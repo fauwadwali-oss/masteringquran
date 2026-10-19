@@ -183,6 +183,7 @@ const publicPages = [
         links: [["Review all sources", "/sources"], ["Ask a question", "/ask"], ["About the project", "/about"]],
     },
 ];
+const publicPagePaths = new Set(publicPages.map(page => page.pathname));
 
 for (const page of publicPages) {
     const sections = page.sections.map(([heading, copy]) => `<section><h2>${esc(heading)}</h2><p>${esc(copy)}</p></section>`).join("");
@@ -404,7 +405,7 @@ fs.writeFileSync(sitemapFile, sitemap.replace("</urlset>", `${entries}\n${prayer
 const appSource = fs.readFileSync(path.join(ROOT, "client", "src", "App.tsx"), "utf8");
 const routes = [...appSource.matchAll(/<Route path="([^"]+)"/g)]
     .map(m => m[1])
-    .filter(p => p !== "/" && p !== "*" && p !== namesPath && !p.includes(":") && !prayer.staticRoutes.has(p));
+    .filter(p => p !== "*" && p !== namesPath && !publicPagePaths.has(p) && !p.includes(":") && !prayer.staticRoutes.has(p));
 if (routes.length < 20) throw new Error(`only found ${routes.length} routes in App.tsx`);
 fs.writeFileSync(
     path.join(DIST, "_redirects"),
