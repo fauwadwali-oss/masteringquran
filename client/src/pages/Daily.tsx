@@ -63,6 +63,19 @@ function localTz(): string {
     }
 }
 
+function isValidEmail(value: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function isValidTimezone(value: string): boolean {
+    try {
+        new Intl.DateTimeFormat("en", { timeZone: value }).format();
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 function urlBase64ToUint8Array(base64: string): Uint8Array {
     const padding = "=".repeat((4 - (base64.length % 4)) % 4);
     const clean = (base64 + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -224,19 +237,27 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
     }, [userId]);
 
     const onSave = async () => {
-        if (!email) {
-            toast.error("Enter an email address");
+        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedTimezone = timezone.trim();
+        if (!isValidEmail(normalizedEmail)) {
+            toast.error("Enter a valid email address");
+            return;
+        }
+        if (!isValidTimezone(normalizedTimezone)) {
+            toast.error("Enter a valid timezone, such as America/New_York");
             return;
         }
         setSaving(true);
         try {
             const wasActive = Boolean(sub?.active);
             const s = await upsertEmailSubscription(userId, {
-                email,
+                email: normalizedEmail,
                 delivery_hour: hour,
-                timezone,
+                timezone: normalizedTimezone,
                 active: true,
             });
+            setEmail(normalizedEmail);
+            setTimezone(normalizedTimezone);
             setSub(s);
             if (!wasActive && s.active) trackDailyEmailSubscription(userId);
             toast.success("Subscribed, your first verse will arrive within a day.");
