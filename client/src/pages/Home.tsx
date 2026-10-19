@@ -32,7 +32,15 @@ export default function Home() {
                             <Link to="/quran" className="inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-emerald-950 hover:bg-emerald-100"><BookOpen className="h-5 w-5" />Read the Quran</Link>
                             <Link to="/learn-arabic/letters" className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/40 px-6 font-semibold hover:bg-white/10"><GraduationCap className="h-5 w-5" />Start learning Arabic</Link>
                         </div>
-                        <p className="text-sm leading-relaxed text-slate-300">16 translations + transliteration · 10 tafsirs · Word-by-word audio</p>
+                        <div className="space-y-1 text-sm leading-relaxed text-slate-300">
+                            <p>16 translations + transliteration · 10 tafsirs · Word-by-word audio</p>
+                            <p>
+                                Translation and tafsir editions are identified. AI answers include references and can make mistakes.{" "}
+                                <Link to="/sources" className="font-semibold text-emerald-200 underline decoration-emerald-300/50 underline-offset-4 hover:text-white">
+                                    Review sources
+                                </Link>
+                            </p>
+                        </div>
                     </div>
                     <div className="rounded-3xl border border-white/15 bg-white/5 p-5 md:p-6">
                         <h2 className="text-xl font-semibold">{lastSurah ? "Continue studying" : "Start studying"}</h2>
