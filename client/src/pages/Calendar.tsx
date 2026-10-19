@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import { Calendar as CalendarIcon, ArrowRightLeft, Loader2, AlertCircle } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Calendar as CalendarIcon, ArrowRightLeft, AlertCircle } from "lucide-react";
+import { HIJRI_MONTHS, formatHijri, hijriToGregorian, todayYmd, upcomingEvents } from "@/lib/hijri";
+import { toHijri } from "@/lib/prayer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,76 +9,32 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SEO from "@/components/SEO";
 import MoonPhaseWidget from "@/components/MoonPhaseWidget";
 
-interface Event {
-    name: string;
-    hijri_date?: string;
-    month?: number;
-    day?: number;
-    days_until?: number;
-}
-interface Month {
-    number: number;
-    name_english: string;
-    name_arabic?: string;
-    days?: number;
-    significance?: string;
-}
-
 export default function CalendarPage() {
-    const [todayHijri, setTodayHijri] = useState<any>(null);
-    const [events, setEvents] = useState<Event[]>([]);
-    const [months, setMonths] = useState<Month[]>([]);
-    const [loadingCore, setLoadingCore] = useState(true);
+    const today = todayYmd();
+    const todayHijri = toHijri(today);
+    const events = useMemo(() => upcomingEvents(today), [today[0], today[1], today[2]]);
 
     // Converter
     const [direction, setDirection] = useState<"g2h" | "h2g">("g2h");
-    const [gDate, setGDate] = useState(new Date().toISOString().slice(0, 10));
-    const [hYear, setHYear] = useState(1447);
-    const [hMonth, setHMonth] = useState(1);
-    const [hDay, setHDay] = useState(1);
+    const [gDate, setGDate] = useState(() => today.map((n, i) => String(n).padStart(i ? 2 : 4, "0")).join("-"));
+    const [hYear, setHYear] = useState(todayHijri.year);
+    const [hMonth, setHMonth] = useState(todayHijri.month);
+    const [hDay, setHDay] = useState(todayHijri.day);
     const [converted, setConverted] = useState<string | null>(null);
-    const [convertLoading, setConvertLoading] = useState(false);
     const [convertErr, setConvertErr] = useState<string | null>(null);
-
-    useEffect(() => {
-        Promise.all([
-            fetch("https://ummahapi.com/api/today-hijri").then((r) => r.json()),
-            fetch("https://ummahapi.com/api/islamic-events").then((r) => r.json()),
-            fetch("https://ummahapi.com/api/islamic-months").then((r) => r.json()),
-        ])
-            .then(([a, b, c]) => {
-                setTodayHijri(a.data?.hijri || a.data);
-                setEvents((b.data?.events || []).slice(0, 12));
-                setMonths(c.data?.months || c.data || []);
-                setLoadingCore(false);
-            })
-            .catch(() => setLoadingCore(false));
-    }, []);
 
     const convert = () => {
         setConverted(null);
         setConvertErr(null);
-        setConvertLoading(true);
-        const url =
-            direction === "g2h"
-                ? `https://ummahapi.com/api/hijri-date?date=${gDate}`
-                : `https://ummahapi.com/api/gregorian-date?year=${hYear}&month=${hMonth}&day=${hDay}`;
-        fetch(url)
-            .then(async (r) => {
-                if (!r.ok) throw new Error("failed");
-                const d: any = await r.json();
-                const payload = d.data || d;
-                const formatted =
-                    direction === "g2h"
-                        ? payload.hijri?.formatted || `${payload.hijri?.date}`
-                        : payload.gregorian?.formatted || `${payload.gregorian?.date}`;
-                setConverted(formatted || "Converted");
-                setConvertLoading(false);
-            })
-            .catch(() => {
-                setConvertErr("Conversion failed.");
-                setConvertLoading(false);
-            });
+        if (direction === "g2h") {
+            const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(gDate);
+            if (!m) return setConvertErr("Enter a valid date.");
+            setConverted(formatHijri(toHijri([+m[1], +m[2], +m[3]])));
+        } else {
+            const g = hijriToGregorian(hYear, hMonth, hDay);
+            if (!g) return setConvertErr("That Hijri date doesn't exist in the Umm al-Qura calendar (some months have 29 days).");
+            setConverted(new Date(Date.UTC(g[0], g[1] - 1, g[2], 12)).toLocaleDateString("en-US", { timeZone: "UTC", weekday: "long", year: "numeric", month: "long", day: "numeric" }));
+        }
     };
 
     return (
@@ -95,11 +53,9 @@ export default function CalendarPage() {
                         <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
                             Calendar & Events
                         </h1>
-                        {todayHijri && (
-                            <p className="text-base text-slate-600 dark:text-slate-300">
-                                Today: <span className="font-semibold">{todayHijri.formatted || todayHijri.date}</span>
-                            </p>
-                        )}
+                        <p className="text-base text-slate-600 dark:text-slate-300">
+                            Today: <span className="font-semibold">{formatHijri(todayHijri)}</span>
+                        </p>
                     </div>
 
                     {/* Converter */}
@@ -121,8 +77,8 @@ export default function CalendarPage() {
                                         <label className="text-xs text-slate-500 font-medium">Gregorian date</label>
                                         <Input type="date" value={gDate} onChange={(e) => setGDate(e.target.value)} className="mt-1 h-11" />
                                     </div>
-                                    <Button onClick={convert} disabled={convertLoading} className="bg-indigo-600 hover:bg-indigo-700 text-white h-11">
-                                        {convertLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRightLeft className="h-4 w-4" />}
+                                    <Button onClick={convert} className="bg-indigo-600 hover:bg-indigo-700 text-white h-11">
+                                        <ArrowRightLeft className="h-4 w-4" />
                                         <span className="ml-2">Convert</span>
                                     </Button>
                                 </div>
@@ -130,7 +86,7 @@ export default function CalendarPage() {
                                 <div className="flex gap-3 flex-wrap items-end">
                                     <div className="flex-1 min-w-[100px]">
                                         <label className="text-xs text-slate-500 font-medium">Hijri year</label>
-                                        <Input type="number" value={hYear} onChange={(e) => setHYear(parseInt(e.target.value) || 1447)} className="mt-1 h-11" />
+                                        <Input type="number" value={hYear} onChange={(e) => setHYear(parseInt(e.target.value) || todayHijri.year)} className="mt-1 h-11" />
                                     </div>
                                     <div className="flex-1 min-w-[80px]">
                                         <label className="text-xs text-slate-500 font-medium">Month</label>
@@ -140,8 +96,8 @@ export default function CalendarPage() {
                                         <label className="text-xs text-slate-500 font-medium">Day</label>
                                         <Input type="number" min={1} max={30} value={hDay} onChange={(e) => setHDay(parseInt(e.target.value) || 1)} className="mt-1 h-11" />
                                     </div>
-                                    <Button onClick={convert} disabled={convertLoading} className="bg-indigo-600 hover:bg-indigo-700 text-white h-11">
-                                        {convertLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRightLeft className="h-4 w-4" />}
+                                    <Button onClick={convert} className="bg-indigo-600 hover:bg-indigo-700 text-white h-11">
+                                        <ArrowRightLeft className="h-4 w-4" />
                                         <span className="ml-2">Convert</span>
                                     </Button>
                                 </div>
@@ -164,67 +120,48 @@ export default function CalendarPage() {
                     {/* Moon phase widget */}
                     <MoonPhaseWidget />
 
-                    {loadingCore && (
-                        <div className="flex justify-center py-8">
-                            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
+                            Upcoming Islamic Events
+                        </h2>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                            {events.map((e) => (
+                                <Card key={e.hijri} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                                    <CardContent className="p-4 space-y-1">
+                                        <p className="font-semibold text-slate-900 dark:text-white">{e.name}</p>
+                                        <p className="text-sm text-indigo-600 dark:text-indigo-400">
+                                            {e.hijri} · {new Date(Date.UTC(e.date[0], e.date[1] - 1, e.date[2], 12)).toLocaleDateString("en-US", { timeZone: "UTC", month: "long", day: "numeric", year: "numeric" })}
+                                        </p>
+                                        <p className="text-xs text-slate-500">{e.daysUntil === 0 ? "Today" : e.daysUntil === 1 ? "Tomorrow" : `in ${e.daysUntil} days`}</p>
+                                    </CardContent>
+                                </Card>
+                            ))}
                         </div>
-                    )}
+                    </div>
 
-                    {!loadingCore && (
-                        <>
-                            {/* Islamic events */}
-                            {events.length > 0 && (
-                                <div className="space-y-4">
-                                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                                        Islamic Events
-                                    </h2>
-                                    <div className="grid sm:grid-cols-2 gap-3">
-                                        {events.map((e, i) => (
-                                            <Card key={i} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                                                <CardContent className="p-4 space-y-1">
-                                                    <p className="font-semibold text-slate-900 dark:text-white">{e.name}</p>
-                                                    <p className="text-sm text-indigo-600 dark:text-indigo-400">{e.hijri_date || `${e.month}/${e.day}`}</p>
-                                                    {typeof e.days_until === "number" && e.days_until > 0 && (
-                                                        <p className="text-xs text-slate-500">in {e.days_until} days</p>
-                                                    )}
-                                                </CardContent>
-                                            </Card>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Islamic months */}
-                            {months.length > 0 && (
-                                <div className="space-y-4">
-                                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                                        The 12 Islamic Months
-                                    </h2>
-                                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-                                        {months.map((m) => (
-                                            <Card key={m.number} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                                                <CardContent className="p-4 space-y-2">
-                                                    <div className="flex items-center justify-between">
-                                                        <span className="text-xs font-mono text-slate-400">#{m.number}</span>
-                                                        {m.days && <span className="text-xs text-slate-500">{m.days} days</span>}
-                                                    </div>
-                                                    <p className="font-semibold text-slate-900 dark:text-white">{m.name_english}</p>
-                                                    {m.name_arabic && <p className="font-amiri text-lg text-indigo-700 dark:text-indigo-400" dir="rtl">{m.name_arabic}</p>}
-                                                    {m.significance && <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{m.significance}</p>}
-                                                </CardContent>
-                                            </Card>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </>
-                    )}
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
+                            The 12 Islamic Months
+                        </h2>
+                        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            {HIJRI_MONTHS.map((m) => (
+                                <Card key={m.number} className={`border bg-white dark:bg-slate-900 ${m.number === todayHijri.month ? "border-indigo-300 dark:border-indigo-700" : "border-slate-200 dark:border-slate-800"}`}>
+                                    <CardContent className="p-4 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-slate-400">#{m.number}</span>
+                                            {m.number === todayHijri.month && <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">This month</span>}
+                                        </div>
+                                        <p className="font-semibold text-slate-900 dark:text-white">{m.name}</p>
+                                        <p className="text-lg text-indigo-700 dark:text-indigo-400" style={{ fontFamily: "'Amiri', serif" }} lang="ar" dir="rtl">{m.arabic}</p>
+                                        {m.note && <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{m.note}</p>}
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
 
                     <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-                        Data from{" "}
-                        <a href="https://ummahapi.com" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
-                            UmmahAPI
-                        </a>.
+                        Dates follow the Umm al-Qura calendar, calculated on your device. Communities that follow local moon sighting may be a day earlier or later.
                     </p>
                 </div>
             </section>

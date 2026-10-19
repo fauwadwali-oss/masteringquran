@@ -103,6 +103,7 @@ function App() {
                       <Route path="/hadith" element={<Hadith />} />
                       <Route path="/ask" element={<Ask />} />
                       <Route path="/prayer-times" element={<PrayerTimes />} />
+                      <Route path="/prayer-times/:city" element={<PrayerTimes />} />
                       <Route path="/qibla" element={<Qibla />} />
                       <Route path="/names" element={<Names />} />
                       <Route path="/duas" element={<Duas />} />

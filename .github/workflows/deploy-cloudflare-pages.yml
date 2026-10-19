@@ -1,22 +1,35 @@
-name: Validate build
+name: Build and deploy
+
+# The Pages project "masteringquran" is a Direct Upload project (not connected to
+# GitHub), so this workflow is the only thing that publishes main. It also rebuilds
+# on the 1st of each month so the prerendered city timetables show the new month.
+#
+# Needs repository secrets:
+#   CLOUDFLARE_API_TOKEN     Cloudflare API token with "Cloudflare Pages: Edit"
+#   VITE_GA_MEASUREMENT_ID   GA4 measurement ID baked into the bundle
 
 on:
   push:
     branches:
       - main
+  schedule:
+    - cron: "0 3 1 * *"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: validate-main
-  cancel-in-progress: true
+  group: cloudflare-pages-production
+  cancel-in-progress: false
 
 jobs:
-  validate:
-    name: Type check, test, and build
+  deploy:
+    name: Type check, test, build and deploy
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_ACCOUNT_ID: 402e7028e499c1e1d5a60ad3dd4340be
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -33,10 +46,23 @@ jobs:
       - name: Type check
         run: npm run check
 
-      - name: Test study navigation
+      - name: Test
         run: npm test
 
       - name: Build
         env:
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
-        run: npm run build
+        run: |
+          if [ -z "$VITE_GA_MEASUREMENT_ID" ]; then
+            echo "::error::VITE_GA_MEASUREMENT_ID secret is empty; refusing to ship a build without analytics."
+            exit 1
+          fi
+          npm run build
+
+      - name: Deploy to Cloudflare Pages
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN secret is not set, so main was not deployed. Add a token with Cloudflare Pages: Edit."
+            exit 1
+          fi
+          npx --yes wrangler@3.114.17 pages deploy dist/public --project-name masteringquran --branch main --commit-hash "$GITHUB_SHA"

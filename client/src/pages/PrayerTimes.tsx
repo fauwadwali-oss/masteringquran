@@ -1,355 +1,381 @@
-import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, MapPin, Moon, Sun, Sunrise, Sunset } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { BellRing, Compass, MapPin, Moon, Pencil, Sun, Sunrise, Sunset } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { downloadPrayerCalendar } from "@/lib/prayer-ics";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SEO from "@/components/SEO";
+import LocationPicker from "@/components/LocationPicker";
+import {
+    HUB_DESCRIPTION,
+    HUB_TITLE,
+    METHODS,
+    cityDescription,
+    cityTitle,
+    countryName,
+    PRAYERS,
+    PRAYER_ARABIC,
+    PRAYER_LABELS,
+    currentAndNext,
+    defaultSettings,
+    formatCountdown,
+    formatTime,
+    hijriDate,
+    loadCities,
+    loadPlace,
+    loadSettings,
+    placeLabel,
+    qiblaBearing,
+    savePlace,
+    saveSettings,
+    timesFor,
+    ymdInZone,
+    type MadhabId,
+    type MethodId,
+    type Place,
+    type PrayerKey,
+    type PrayerSettings,
+} from "@/lib/prayer";
 
-interface Location {
-    latitude: number;
-    longitude: number;
-    label?: string;
-}
+const ICONS: Record<PrayerKey, typeof Sun> = { fajr: Sunrise, sunrise: Sun, dhuhr: Sun, asr: Sun, maghrib: Sunset, isha: Moon };
 
-interface PrayerTimes {
-    imsak?: string;
-    fajr: string;
-    sunrise: string;
-    dhuhr: string;
-    asr: string;
-    maghrib: string;
-    isha: string;
-}
-
-interface PrayerData {
-    date: string;
-    timezone: string;
-    calculation_method: string;
-    madhab: string;
-    prayer_times: PrayerTimes;
-    hijri?: { formatted?: string; date?: string };
-}
-
-const METHODS = [
-    "MuslimWorldLeague",
-    "ISNA",
-    "Egyptian",
-    "Karachi",
-    "UmmAlQura",
-    "Dubai",
-    "MoonsightingCommittee",
-    "NorthAmerica",
-    "Kuwait",
-    "Qatar",
-    "Singapore",
-    "Tehran",
-    "Turkey",
+const POPULAR: [string, string][] = [
+    ["makkah-sa", "Makkah"], ["madinah-sa", "Madinah"], ["london-gb", "London"], ["new-york-city-us", "New York"],
+    ["houston-us", "Houston"], ["chicago-us", "Chicago"], ["toronto-ca", "Toronto"], ["birmingham-gb", "Birmingham"],
+    ["karachi-pk", "Karachi"], ["lahore-pk", "Lahore"], ["dhaka-bd", "Dhaka"], ["dubai-ae", "Dubai"],
+    ["istanbul-tr", "Istanbul"], ["cairo-eg", "Cairo"], ["jakarta-id", "Jakarta"], ["kuala-lumpur-my", "Kuala Lumpur"],
 ];
 
-const MADHABS = ["Shafi", "Hanafi"];
-
-const PRAYER_ORDER: { key: keyof PrayerTimes; label: string; icon: typeof Sunrise }[] = [
-    { key: "imsak", label: "Imsak", icon: Moon },
-    { key: "fajr", label: "Fajr", icon: Sunrise },
-    { key: "sunrise", label: "Sunrise", icon: Sun },
-    { key: "dhuhr", label: "Dhuhr", icon: Sun },
-    { key: "asr", label: "Asr", icon: Sun },
-    { key: "maghrib", label: "Maghrib", icon: Sunset },
-    { key: "isha", label: "Isha", icon: Moon },
-];
-
-interface MonthDay {
-    day: number;
-    date: string;
-    day_name?: string;
-    prayer_times: PrayerTimes;
-}
+const compassPoint = (deg: number) => ["N", "NE", "E", "SE", "S", "SW", "W", "NW"][Math.round(deg / 45) % 8];
 
 export default function PrayerTimes() {
-    const [location, setLocation] = useState<Location | null>(null);
-    const [data, setData] = useState<PrayerData | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [method, setMethod] = useState("MuslimWorldLeague");
-    const [madhab, setMadhab] = useState("Shafi");
-    const [hijri, setHijri] = useState<string | null>(null);
-
-    // Month view
+    const { city } = useParams<{ city?: string }>();
+    const navigate = useNavigate();
+    const [place, setPlace] = useState<Place | null>(() => (city ? null : loadPlace()));
+    const [cityMissing, setCityMissing] = useState(false);
+    const [savedSettings, setSavedSettings] = useState<PrayerSettings | null>(() => loadSettings());
+    const [editing, setEditing] = useState(false);
     const [mode, setMode] = useState<"today" | "month">("today");
-    const [monthDays, setMonthDays] = useState<MonthDay[]>([]);
-    const [monthLoading, setMonthLoading] = useState(false);
+    const [now, setNow] = useState(() => new Date());
 
-    const requestLocation = () => {
-        setError(null);
-        if (!navigator.geolocation) {
-            setError("Your browser does not support location. Enter coordinates manually.");
+    // City pages: resolve the slug from the city list.
+    useEffect(() => {
+        if (!city) {
+            setCityMissing(false);
+            setPlace(loadPlace());
             return;
         }
-        setLoading(true);
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                setLocation({
-                    latitude: Number(pos.coords.latitude.toFixed(4)),
-                    longitude: Number(pos.coords.longitude.toFixed(4)),
-                });
-            },
-            (err) => {
-                setLoading(false);
-                setError(
-                    err.code === 1
-                        ? "Location permission denied. You'll need to allow location access to use this page."
-                        : "Could not determine your location.",
-                );
-            },
-            { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 },
-        );
-    };
-
-    useEffect(() => {
-        if (!location) return;
-        setLoading(true);
-        setError(null);
-        const url = `https://ummahapi.com/api/prayer-times?latitude=${location.latitude}&longitude=${location.longitude}&madhab=${madhab}&method=${method}`;
-        fetch(url)
-            .then(async (r) => {
-                if (!r.ok) throw new Error(`status ${r.status}`);
-                const d: any = await r.json();
-                // Shape: either top-level fields or .data
-                const payload = d.data || d;
-                setData({
-                    date: payload.date,
-                    timezone: payload.timezone,
-                    calculation_method: payload.calculation_method,
-                    madhab: payload.madhab,
-                    prayer_times: payload.prayer_times,
-                });
-                setLoading(false);
+        let cancelled = false;
+        loadCities()
+            .then((cities) => {
+                if (cancelled) return;
+                const found = cities.find((c) => c.slug === city) ?? null;
+                setCityMissing(!found);
+                setPlace(found);
             })
-            .catch(() => {
-                setError("Failed to fetch prayer times. Please try again.");
-                setLoading(false);
-            });
-    }, [location, method, madhab]);
+            .catch(() => !cancelled && setCityMissing(true));
+        return () => {
+            cancelled = true;
+        };
+    }, [city]);
 
-    // Fetch Hijri date once
     useEffect(() => {
-        fetch("https://ummahapi.com/api/today-hijri")
-            .then((r) => r.json())
-            .then((d: any) => setHijri(d?.data?.hijri?.formatted || null))
-            .catch(() => { });
+        const id = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(id);
     }, []);
 
-    // Fetch monthly table when mode switches to month
-    useEffect(() => {
-        if (!location || mode !== "month") return;
-        setMonthLoading(true);
-        const now = new Date();
-        const url = `https://ummahapi.com/api/prayer-times/month?latitude=${location.latitude}&longitude=${location.longitude}&madhab=${madhab}&method=${method}&month=${now.getMonth() + 1}&year=${now.getFullYear()}`;
-        fetch(url)
-            .then(async (r) => {
-                if (!r.ok) throw new Error("failed");
-                const d: any = await r.json();
-                const payload = d.data || d;
-                const rawDays = payload.prayer_times || payload.days || [];
-                setMonthDays(Array.isArray(rawDays) ? rawDays : []);
-            })
-            .catch(() => setMonthDays([]))
-            .finally(() => setMonthLoading(false));
-    }, [location, mode, method, madhab]);
+    // The user's own choices win; otherwise follow what mosques in that country usually use.
+    const settings = savedSettings ?? defaultSettings(place?.countryCode);
+    const updateSettings = (patch: Partial<PrayerSettings>) => {
+        const next = { ...settings, ...patch };
+        setSavedSettings(next);
+        saveSettings(next);
+    };
+
+    const choose = (p: Place) => {
+        savePlace(p);
+        setEditing(false);
+        if (p.hasPage && p.slug) navigate(`/prayer-times/${p.slug}`);
+        else {
+            if (city) navigate("/prayer-times");
+            setPlace(p);
+        }
+    };
+
+    const info = useMemo(() => (place ? currentAndNext(place, settings, now) : null), [place, settings, now]);
+    const today = place ? ymdInZone(now, place.timeZone) : null;
+    const monthRows = useMemo(() => {
+        if (!place || mode !== "month" || !today) return [];
+        const [y, m] = today;
+        const days = new Date(Date.UTC(y, m, 0)).getUTCDate();
+        return Array.from({ length: days }, (_, i) => {
+            const ymd: [number, number, number] = [y, m, i + 1];
+            return { ymd, times: timesFor(place, settings, ymd) };
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [place, settings, mode, today?.[0], today?.[1]]);
+
+    const fmt = (d: Date) => formatTime(d, place!.timeZone, settings.hour12);
+    const dateLine = place
+        ? now.toLocaleDateString("en-US", { timeZone: place.timeZone, weekday: "long", month: "long", day: "numeric", year: "numeric" })
+        : now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+    const hijri = hijriDate(now, place?.timeZone);
+    const qibla = place ? qiblaBearing(place.latitude, place.longitude) : null;
+
+    // Share of the day between today's Fajr and Isha that has passed, for the progress bar.
+    const progress = info
+        ? Math.min(1, Math.max(0, (now.getTime() - info.today.fajr.getTime()) / (info.today.isha.getTime() - info.today.fajr.getTime())))
+        : 0;
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-indigo-50/30 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 font-sans">
-            <SEO
-                title="Prayer Times - Mastering Quran"
-                description="Accurate five daily prayer times for your location, with multiple calculation methods and Hanafi/Shafi madhab support."
-            />
-            <section className="py-12 px-6">
-                <div className="max-w-3xl mx-auto">
-                    <div className="text-center mb-8 space-y-2">
-                        <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            Prayer Times
+        <div className="min-h-screen font-sans">
+            {/* On a city page, keep the prerendered head until the city has loaded. */}
+            {(!city || place) && (
+                <SEO
+                    title={city && place ? cityTitle(place) : HUB_TITLE}
+                    description={city && place ? cityDescription(place) : HUB_DESCRIPTION}
+                    canonicalPath={city ? `/prayer-times/${city}` : "/prayer-times"}
+                />
+            )}
+            <section className="px-4 py-10 md:py-14">
+                <div className="mx-auto max-w-3xl space-y-6">
+                    <header className="space-y-2 text-center">
+                        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                            {hijri}
+                            {hijri && " · "}
+                            {dateLine}
+                        </p>
+                        <h1 className="text-4xl font-bold leading-tight text-slate-950 dark:text-white md:text-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+                            {place ? `Prayer times in ${place.name}` : "Prayer Times"}
                         </h1>
-                        {hijri && <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">{hijri}</p>}
-                        <p className="text-slate-600 dark:text-slate-300">Five daily prayers, calculated for your location.</p>
-                    </div>
+                        {place && (
+                            <p className="flex items-center justify-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+                                <MapPin className="h-3.5 w-3.5" aria-hidden />
+                                {placeLabel(place)}
+                                <button type="button" onClick={() => setEditing((e) => !e)} className="ml-2 inline-flex items-center gap-1 font-medium text-emerald-700 hover:underline dark:text-emerald-400">
+                                    <Pencil className="h-3.5 w-3.5" aria-hidden /> Change
+                                </button>
+                            </p>
+                        )}
+                    </header>
 
-                    {!location && (
-                        <Card className="border border-indigo-200 dark:border-indigo-900/40 bg-gradient-to-br from-indigo-50/60 to-white dark:from-indigo-950/20 dark:to-slate-900">
-                            <CardContent className="p-8 text-center space-y-4">
-                                <div className="w-14 h-14 mx-auto bg-indigo-100 dark:bg-indigo-900/40 rounded-2xl flex items-center justify-center">
-                                    <MapPin className="h-7 w-7 text-indigo-600 dark:text-indigo-400" />
-                                </div>
-                                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Share your location</h2>
-                                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
-                                    We use your browser's location to calculate accurate prayer times. Your coordinates are never stored or sent to our servers.
-                                </p>
-                                <Button onClick={requestLocation} disabled={loading} className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                                    {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Locating…</> : "Use my location"}
-                                </Button>
-                                {error && <p className="text-sm text-red-600 dark:text-red-400 pt-2">{error}</p>}
-                            </CardContent>
-                        </Card>
+                    {cityMissing && (
+                        <p className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300">
+                            We don't have a page for that city. Search for it below.
+                        </p>
                     )}
 
-                    {location && (
-                        <>
-                            {/* View mode tabs */}
-                            <Tabs value={mode} onValueChange={(v) => setMode(v as "today" | "month")} className="w-full mb-6">
-                                <TabsList className="grid grid-cols-2 max-w-xs mx-auto bg-indigo-50 dark:bg-indigo-950/30 p-1 rounded-xl">
-                                    <TabsTrigger value="today" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 rounded-lg">Today</TabsTrigger>
-                                    <TabsTrigger value="month" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 rounded-lg">This Month</TabsTrigger>
-                                </TabsList>
-                            </Tabs>
-
-                            {/* Controls */}
-                            <div className="grid sm:grid-cols-2 gap-4 mb-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">Calculation Method</label>
-                                    <Select value={method} onValueChange={setMethod}>
-                                        <SelectTrigger className="h-11 bg-white dark:bg-slate-800 rounded-xl">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {METHODS.map((m) => (
-                                                <SelectItem key={m} value={m}>{m}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                    {(!place || editing) && (
+                        <div className="rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/80 md:p-6">
+                            {!place && (
+                                <p className="mb-4 text-sm text-slate-600 dark:text-slate-300">
+                                    Find your city to see today's prayer times. Times are calculated on your device, and your location is never sent anywhere.
+                                </p>
+                            )}
+                            <LocationPicker onSelect={choose} autoFocus={editing} />
+                            {!place && (
+                                <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-800">
+                                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Popular cities</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {POPULAR.map(([slug, name]) => (
+                                            <Link key={slug} to={`/prayer-times/${slug}`} className="rounded-full border border-slate-200 px-3 py-1.5 text-sm text-slate-700 transition hover:border-emerald-300 hover:text-emerald-800 dark:border-slate-700 dark:text-slate-300 dark:hover:border-emerald-700 dark:hover:text-emerald-300">
+                                                {name}
+                                            </Link>
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-500 dark:text-slate-400">Madhab (for Asr)</label>
-                                    <Select value={madhab} onValueChange={setMadhab}>
-                                        <SelectTrigger className="h-11 bg-white dark:bg-slate-800 rounded-xl">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {MADHABS.map((m) => (
-                                                <SelectItem key={m} value={m}>{m}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                            )}
+                        </div>
+                    )}
+
+                    {place && info && (
+                        <>
+                            {/* Next prayer */}
+                            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-800 via-emerald-900 to-slate-950 p-6 text-white shadow-xl shadow-emerald-950/20 md:p-8" aria-live="polite">
+                                <div className="flex items-start justify-between gap-4">
+                                    <div>
+                                        <p className="text-sm font-medium uppercase tracking-wider text-emerald-200/80">Next prayer</p>
+                                        <p className="mt-1 text-4xl font-bold md:text-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                            {PRAYER_LABELS[info.next]}
+                                        </p>
+                                        <p className="mt-1 text-emerald-100/90">at {fmt(info.nextAt)}</p>
+                                    </div>
+                                    <p className="text-3xl text-emerald-100/90 md:text-4xl" style={{ fontFamily: "'Amiri', serif" }} lang="ar" dir="rtl">
+                                        {PRAYER_ARABIC[info.next]}
+                                    </p>
+                                </div>
+                                <p className="mt-6 text-3xl font-semibold tabular-nums tracking-tight md:text-4xl">in {formatCountdown(info.nextAt.getTime() - now.getTime())}</p>
+                                <div className="mt-6" aria-hidden>
+                                    <div className="relative h-1.5 rounded-full bg-white/15">
+                                        <div className="absolute inset-y-0 left-0 rounded-full bg-emerald-300" style={{ width: `${progress * 100}%` }} />
+                                        <div className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-emerald-900 bg-white" style={{ left: `${progress * 100}%` }} />
+                                    </div>
+                                    <div className="relative mt-2 h-4 text-[11px] text-emerald-100/70">
+                                        {(() => {
+                                            // Labels at each prayer's real position; drop one that would collide (Isha always stays).
+                                            const span = info.today.isha.getTime() - info.today.fajr.getTime();
+                                            const kept: { k: PrayerKey; at: number }[] = [];
+                                            for (const k of ["fajr", "dhuhr", "asr", "maghrib", "isha"] as PrayerKey[]) {
+                                                const at = (info.today[k].getTime() - info.today.fajr.getTime()) / span;
+                                                const last = kept[kept.length - 1];
+                                                if (last && at - last.at < 0.16) {
+                                                    if (k === "isha") kept[kept.length - 1] = { k, at };
+                                                    continue;
+                                                }
+                                                kept.push({ k, at });
+                                            }
+                                            return kept.map(({ k, at }) => (
+                                                <span key={k} className="absolute -translate-x-1/2 first:translate-x-0 last:-translate-x-full" style={{ left: `${at * 100}%` }}>
+                                                    {PRAYER_LABELS[k]}
+                                                </span>
+                                            ));
+                                        })()}
+                                    </div>
                                 </div>
                             </div>
 
-                            {loading && (
-                                <div className="flex flex-col items-center justify-center py-16 gap-3">
-                                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-                                    <p className="text-slate-500 text-sm">Calculating…</p>
-                                </div>
+                            <Tabs value={mode} onValueChange={(v) => setMode(v as "today" | "month")}>
+                                <TabsList className="mx-auto grid max-w-xs grid-cols-2 rounded-xl">
+                                    <TabsTrigger value="today" className="rounded-lg">Today</TabsTrigger>
+                                    <TabsTrigger value="month" className="rounded-lg">This month</TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+
+                            {mode === "today" && (
+                                <ol className="divide-y divide-slate-100 overflow-hidden rounded-3xl border border-slate-200 bg-white dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-900">
+                                    {PRAYERS.map((k) => {
+                                        const Icon = ICONS[k];
+                                        const isNext = k === info.next && info.nextAt.getTime() === info.today[k].getTime();
+                                        const isNow = k === info.current && k !== "sunrise" && now >= info.today.fajr;
+                                        return (
+                                            <li
+                                                key={k}
+                                                className={`flex items-center justify-between px-5 py-4 ${isNext ? "bg-emerald-50 dark:bg-emerald-950/30" : ""} ${k === "sunrise" ? "text-slate-500 dark:text-slate-400" : ""}`}
+                                            >
+                                                <span className="flex items-center gap-3">
+                                                    <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${isNext ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"}`}>
+                                                        <Icon className="h-4.5 w-4.5" aria-hidden />
+                                                    </span>
+                                                    <span>
+                                                        <span className={`block font-semibold ${k === "sunrise" ? "" : "text-slate-900 dark:text-white"}`}>{PRAYER_LABELS[k]}</span>
+                                                        {isNext && <span className="block text-xs font-medium text-emerald-700 dark:text-emerald-400">Next</span>}
+                                                        {isNow && !isNext && <span className="block text-xs text-slate-500 dark:text-slate-400">Now</span>}
+                                                    </span>
+                                                </span>
+                                                <span className={`text-lg tabular-nums ${isNext ? "font-bold text-emerald-800 dark:text-emerald-300" : "font-semibold text-slate-700 dark:text-slate-200"}`}>
+                                                    {fmt(info.today[k])}
+                                                </span>
+                                            </li>
+                                        );
+                                    })}
+                                </ol>
                             )}
 
-                            {error && !loading && (
-                                <div className="text-center py-8">
-                                    <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
-                                    <p className="text-red-600 dark:text-red-400">{error}</p>
-                                </div>
-                            )}
-
-                            {mode === "today" && data && !loading && (
-                                <>
-                                    <div className="flex flex-wrap items-center justify-between gap-2 mb-5 text-xs text-slate-500 dark:text-slate-400">
-                                        <span>{data.date} · {data.timezone}</span>
-                                        <span>
-                                            {location.latitude.toFixed(3)}, {location.longitude.toFixed(3)} · {data.calculation_method} · {data.madhab}
-                                        </span>
-                                    </div>
-
-                                    <div className="grid sm:grid-cols-2 gap-3">
-                                        {PRAYER_ORDER.map(({ key, label, icon: Icon }) => {
-                                            const time = data.prayer_times[key];
-                                            if (!time) return null;
-                                            const isMain = key === "fajr" || key === "dhuhr" || key === "asr" || key === "maghrib" || key === "isha";
-                                            return (
-                                                <Card
-                                                    key={key}
-                                                    className={
-                                                        isMain
-                                                            ? "border-2 border-indigo-200 dark:border-indigo-900/40 bg-gradient-to-br from-indigo-50/60 to-white dark:from-indigo-950/20 dark:to-slate-900"
-                                                            : "border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60"
-                                                    }
-                                                >
-                                                    <CardContent className="p-5 flex items-center justify-between">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isMain ? "bg-indigo-100 dark:bg-indigo-900/40" : "bg-slate-200 dark:bg-slate-800"}`}>
-                                                                <Icon className={`h-5 w-5 ${isMain ? "text-indigo-600 dark:text-indigo-400" : "text-slate-500"}`} />
-                                                            </div>
-                                                            <span className={`font-semibold ${isMain ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-400"}`}>
-                                                                {label}
-                                                            </span>
-                                                        </div>
-                                                        <span className={`font-mono text-lg font-semibold ${isMain ? "text-indigo-700 dark:text-indigo-300" : "text-slate-500 dark:text-slate-400"}`}>
-                                                            {time}
-                                                        </span>
-                                                    </CardContent>
-                                                </Card>
-                                            );
-                                        })}
-                                    </div>
-
-                                    <div className="text-center mt-8">
-                                        <Button variant="ghost" size="sm" onClick={requestLocation}>
-                                            Update location
-                                        </Button>
-                                    </div>
-                                </>
-                            )}
-
-                            {/* Monthly table */}
                             {mode === "month" && (
-                                <>
-                                    {monthLoading ? (
-                                        <div className="flex flex-col items-center justify-center py-16 gap-3">
-                                            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-                                            <p className="text-slate-500 text-sm">Loading the month…</p>
-                                        </div>
-                                    ) : monthDays.length === 0 ? (
-                                        <div className="text-center py-8 text-slate-500">No timetable available for this month.</div>
-                                    ) : (
-                                        <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
-                                            <div className="overflow-x-auto">
-                                                <table className="w-full text-sm">
-                                                    <thead className="bg-slate-50 dark:bg-slate-800/60">
-                                                        <tr>
-                                                            <th className="text-left px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Date</th>
-                                                            <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Fajr</th>
-                                                            <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300 hidden sm:table-cell">Sunrise</th>
-                                                            <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Dhuhr</th>
-                                                            <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Asr</th>
-                                                            <th className="text-right px-3 py-3 font-semibold text-indigo-700 dark:text-indigo-400">Maghrib</th>
-                                                            <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Isha</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {monthDays.map((d, i) => (
-                                                            <tr key={i} className="border-t border-slate-100 dark:border-slate-800 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/10">
-                                                                <td className="px-3 py-2">
-                                                                    <div className="font-medium text-slate-900 dark:text-white">{d.day}</div>
-                                                                    <div className="text-[11px] text-slate-400">{d.day_name || ""}</div>
+                                <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <caption className="sr-only">Prayer times in {place.name} this month</caption>
+                                            <thead className="bg-slate-50 text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
+                                                <tr>
+                                                    <th className="px-3 py-3 text-left font-semibold">Date</th>
+                                                    {PRAYERS.map((k) => (
+                                                        <th key={k} className={`px-3 py-3 text-right font-semibold ${k === "sunrise" ? "hidden sm:table-cell" : ""}`}>{PRAYER_LABELS[k]}</th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {monthRows.map(({ ymd, times }) => {
+                                                    const isToday = today && ymd[2] === today[2];
+                                                    const d = new Date(Date.UTC(ymd[0], ymd[1] - 1, ymd[2], 12));
+                                                    return (
+                                                        <tr key={ymd[2]} className={`border-t border-slate-100 dark:border-slate-800 ${isToday ? "bg-emerald-50 font-semibold dark:bg-emerald-950/30" : ""}`}>
+                                                            <td className="px-3 py-2 whitespace-nowrap text-slate-900 dark:text-white">
+                                                                {d.toLocaleDateString("en-US", { timeZone: "UTC", weekday: "short", day: "numeric" })}
+                                                            </td>
+                                                            {PRAYERS.map((k) => (
+                                                                <td key={k} className={`px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300 ${k === "sunrise" ? "hidden sm:table-cell" : ""}`}>
+                                                                    {fmt(times[k])}
                                                                 </td>
-                                                                <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300">{d.prayer_times?.fajr || "—"}</td>
-                                                                <td className="px-3 py-2 text-right font-mono text-slate-500 hidden sm:table-cell">{d.prayer_times?.sunrise || "—"}</td>
-                                                                <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300">{d.prayer_times?.dhuhr || "—"}</td>
-                                                                <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300">{d.prayer_times?.asr || "—"}</td>
-                                                                <td className="px-3 py-2 text-right font-mono font-semibold text-indigo-700 dark:text-indigo-400">{d.prayer_times?.maghrib || "—"}</td>
-                                                                <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300">{d.prayer_times?.isha || "—"}</td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </Card>
-                                    )}
-                                </>
+                                                            ))}
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Settings */}
+                            <div className="rounded-3xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 md:p-6">
+                                <div className="mb-4 flex items-baseline justify-between gap-3">
+                                    <h2 className="font-semibold text-slate-900 dark:text-white">Calculation</h2>
+                                    <span className="text-xs text-slate-500 dark:text-slate-400">{savedSettings ? "Saved on this device" : `Usual method in ${countryName(place.countryCode) || "your area"}`}</span>
+                                </div>
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <label className="space-y-1.5">
+                                        <span className="text-sm text-slate-500 dark:text-slate-400">Method</span>
+                                        <Select value={settings.method} onValueChange={(v) => updateSettings({ method: v as MethodId })}>
+                                            <SelectTrigger className="h-11 w-full rounded-xl"><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                {METHODS.map((m) => <SelectItem key={m.id} value={m.id}>{m.label}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                    </label>
+                                    <label className="space-y-1.5">
+                                        <span className="text-sm text-slate-500 dark:text-slate-400">Asr</span>
+                                        <Select value={settings.madhab} onValueChange={(v) => updateSettings({ madhab: v as MadhabId })}>
+                                            <SelectTrigger className="h-11 w-full rounded-xl"><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Shafi">Standard (Shafi, Maliki, Hanbali)</SelectItem>
+                                                <SelectItem value="Hanafi">Hanafi (later Asr)</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </label>
+                                </div>
+                                <label className="mt-4 flex items-center justify-between gap-3 text-sm text-slate-600 dark:text-slate-300">
+                                    24-hour clock
+                                    <Switch checked={!settings.hour12} onCheckedChange={(on) => updateSettings({ hour12: !on })} />
+                                </label>
+                            </div>
+
+                            {/* Reminders */}
+                            <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center sm:justify-between md:p-6">
+                                <div className="flex items-start gap-3">
+                                    <BellRing className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700 dark:text-emerald-400" aria-hidden />
+                                    <div>
+                                        <h2 className="font-semibold text-slate-900 dark:text-white">Prayer reminders</h2>
+                                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                                            Add the next 30 days to your phone's calendar. It alerts you at each prayer, even with this site closed.
+                                        </p>
+                                    </div>
+                                </div>
+                                <Button onClick={() => downloadPrayerCalendar(place, settings)} className="shrink-0 bg-emerald-700 text-white hover:bg-emerald-800">
+                                    Add to calendar
+                                </Button>
+                            </div>
+
+                            {qibla !== null && (
+                                <Link to="/qibla" className="flex items-center justify-between gap-3 rounded-3xl border border-slate-200 bg-white px-5 py-4 transition hover:border-emerald-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-emerald-800">
+                                    <span className="flex items-center gap-3">
+                                        <Compass className="h-5 w-5 text-emerald-700 dark:text-emerald-400" aria-hidden />
+                                        <span className="text-slate-700 dark:text-slate-200">Qibla from {place.name}</span>
+                                    </span>
+                                    <span className="font-semibold tabular-nums text-slate-900 dark:text-white">{qibla.toFixed(1)}° {compassPoint(qibla)}</span>
+                                </Link>
                             )}
                         </>
                     )}
 
-                    <p className="text-center mt-12 text-xs text-slate-500 dark:text-slate-400">
-                        Data from{" "}
-                        <a href="https://ummahapi.com" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
-                            UmmahAPI
-                        </a>.
+                    <p className="pt-4 text-center text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                        Calculated on your device with the open-source{" "}
+                        <a href="https://github.com/batoulapps/adhan-js" target="_blank" rel="noopener noreferrer" className="underline">adhan</a> library.
+                        City data from{" "}
+                        <a href="https://www.geonames.org/" target="_blank" rel="noopener noreferrer" className="underline">GeoNames</a>.
+                        Your local mosque's timetable may differ by a few minutes.
                     </p>
                 </div>
             </section>

@@ -7,6 +7,7 @@
 // replaces #root on load and the reader takes over at the same URL.
 import fs from "node:fs";
 import path from "node:path";
+import { renderPrayerPages } from "./prayer-pages.mjs";
 
 // The Capacitor apps bundle dist/public, and 6,000+ crawler pages don't belong there.
 if (process.env.SKIP_PRERENDER) {
@@ -62,7 +63,7 @@ const setBody = (html, body) => {
 };
 
 // Minimal styling for the moment before the app loads (and for no-JS visitors).
-const STYLE = `.mqp{max-width:760px;margin:0 auto;padding:32px 16px 64px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;line-height:1.6}.mqp a{color:#047857}.mqp nav{font-size:14px;margin-bottom:16px}.mqp h1{font-size:28px;line-height:1.25;margin:0 0 4px}.mqp .meta{color:#475569;font-size:14px;margin:0 0 24px}.mqp .ar{font-size:30px;line-height:2.1;text-align:right;margin:0 0 12px}.mqp .en{font-size:17px;margin:0}.mqp .src{color:#64748b;font-size:13px}.mqp section{border-top:1px solid #e2e8f0;padding:20px 0}.mqp blockquote{margin:8px 0;padding-left:14px;border-left:3px solid #a7f3d0}.mqp .pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:24px}.mqp ol{list-style:none;padding:0;margin:0}@media(prefers-color-scheme:dark){.mqp{color:#e2e8f0}.mqp .meta,.mqp .src{color:#94a3b8}.mqp a{color:#34d399}.mqp section{border-color:#1e293b}}`;
+const STYLE = `.mqp{max-width:760px;margin:0 auto;padding:32px 16px 64px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;line-height:1.6}.mqp a{color:#047857}.mqp nav{font-size:14px;margin-bottom:16px}.mqp h1{font-size:28px;line-height:1.25;margin:0 0 4px}.mqp .meta{color:#475569;font-size:14px;margin:0 0 24px}.mqp .ar{font-size:30px;line-height:2.1;text-align:right;margin:0 0 12px}.mqp .en{font-size:17px;margin:0}.mqp .src{color:#64748b;font-size:13px}.mqp section{border-top:1px solid #e2e8f0;padding:20px 0}.mqp blockquote{margin:8px 0;padding-left:14px;border-left:3px solid #a7f3d0}.mqp .pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:24px}.mqp ol{list-style:none;padding:0;margin:0}.mqp table{border-collapse:collapse;width:100%;font-size:14px}.mqp th,.mqp td{padding:6px 8px;text-align:right;border-bottom:1px solid #e2e8f0;white-space:nowrap}.mqp th:first-child,.mqp td:first-child{text-align:left}@media(prefers-color-scheme:dark){.mqp{color:#e2e8f0}.mqp .meta,.mqp .src{color:#94a3b8}.mqp a{color:#34d399}.mqp section{border-color:#1e293b}}`;
 
 const crumbs = (items) => ({
     "@context": "https://schema.org",
@@ -145,7 +146,9 @@ for (const s of surahs) {
     }
 }
 
-// Sitemap: keep the hand-written static routes, add every surah and ayah page.
+const prayer = await renderPrayerPages({ ROOT, ORIGIN, template, setHead, setBody, esc, write });
+
+// Sitemap: keep the hand-written static routes, add every surah, ayah and city page.
 const sitemapFile = path.join(DIST, "sitemap.xml");
 const sitemap = fs.readFileSync(sitemapFile, "utf8");
 const entries = surahs
@@ -154,7 +157,7 @@ const entries = surahs
         ...s.verses.map((v) => `  <url><loc>${ORIGIN}/quran/${s.number}/${v.n}</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>`),
     ])
     .join("\n");
-fs.writeFileSync(sitemapFile, sitemap.replace("</urlset>", `${entries}\n</urlset>`));
+fs.writeFileSync(sitemapFile, sitemap.replace("</urlset>", `${entries}\n${prayer.sitemap.join("\n")}\n</urlset>`));
 
 // Routing: rewrite only the app's real routes to the SPA shell, so unknown paths
 // get 404.html with a 404 status instead of a soft 200. /quran/S and /quran/S/A
@@ -162,7 +165,7 @@ fs.writeFileSync(sitemapFile, sitemap.replace("</urlset>", `${entries}\n</urlset
 const appSource = fs.readFileSync(path.join(ROOT, "client", "src", "App.tsx"), "utf8");
 const routes = [...appSource.matchAll(/<Route path="([^"]+)"/g)]
     .map((m) => m[1])
-    .filter((p) => p !== "/" && p !== "*" && !p.includes(":"));
+    .filter((p) => p !== "/" && p !== "*" && !p.includes(":") && !prayer.staticRoutes.has(p));
 if (routes.length < 20) throw new Error(`only found ${routes.length} routes in App.tsx`);
 fs.writeFileSync(path.join(DIST, "_redirects"), routes.map((p) => `${p} / 200`).join("\n") + "\n");
 
@@ -177,4 +180,4 @@ write(
 );
 
 const total = surahs.reduce((n, s) => n + s.verses.length, 0);
-console.log(`prerendered ${surahs.length} surah pages and ${total} ayah pages; ${routes.length} SPA routes; 404.html`);
+console.log(`prerendered ${surahs.length} surah, ${total} ayah and ${prayer.count} city pages; ${routes.length} SPA routes; 404.html`);

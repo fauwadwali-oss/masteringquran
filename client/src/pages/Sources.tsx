@@ -95,7 +95,9 @@ export default function Sources() {
                         <li><SourceLink href="https://github.com/fauwadwali-oss/nwv-islamic-data">Our tafsir and hadith data mirror</SourceLink> — dataset layout, attribution and corrections.</li>
                         <li><SourceLink href="https://github.com/spa5k/tafsir_api">Upstream tafsir dataset</SourceLink> — edition provenance and available source details.</li>
                         <li><SourceLink href="https://github.com/fawazahmed0/hadith-api">Upstream hadith dataset</SourceLink> — edition metadata and numbering. Hadith numbers can differ between editions; use the displayed collection and book reference.</li>
-                        <li><SourceLink href="https://ummahapi.com">UmmahAPI</SourceLink> — duas, Names of Allah and calendar information. Dua references are displayed when provided.</li>
+                        <li><SourceLink href="https://ummahapi.com">UmmahAPI</SourceLink> — duas and Names of Allah. Dua references are displayed when provided.</li>
+                        <li><SourceLink href="https://github.com/batoulapps/adhan-js">adhan</SourceLink> — prayer times and Qibla, calculated on your device. Hijri dates use the Umm al-Qura calendar built into your browser.</li>
+                        <li><SourceLink href="https://www.geonames.org/">GeoNames</SourceLink> — city names, coordinates and time zones (CC BY 4.0).</li>
                     </ul>
                     <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">Daily cards rotate at midnight UTC. The hadith card rotates through the 42 entries in the an-Nawawi dataset. Selections link to their full text; excerpts are not standalone rulings.</p>
                 </section>

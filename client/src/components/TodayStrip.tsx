@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { BookOpen, Library, Heart, Star, Calendar, Loader2 } from "lucide-react";
 import { dailyIndex, dailyVerseKey } from "@/lib/daily-selection";
 import { Card, CardContent } from "@/components/ui/card";
+import { upcomingEvents } from "@/lib/hijri";
 
 interface VerseOfDay {
     verse_key: string;
@@ -96,13 +97,13 @@ export default function TodayStrip() {
         const nameTask = json(`https://ummahapi.com/api/asma-ul-husna/${dailyIndex(day, 99) + 1}`)
             .then(d => { const n = d.data?.name || d.data; if (!n?.arabic) throw new Error("Missing name"); setName(n); })
             .catch(() => failed("name"));
-        const eventTask = json("https://ummahapi.com/api/islamic-events")
-            .then(d => setEvent(d.data?.next_event ?? null)).catch(() => {});
+        const next = upcomingEvents(undefined, 1)[0];
+        setEvent(next ? { name: next.name, hijri_date: next.hijri, days_until: next.daysUntil } : null);
         const timeout = window.setTimeout(() => {
             controller.abort();
             setErrors({ verse: true, hadith: true, dua: true, name: true });
         }, 15_000);
-        void Promise.allSettled([verseTask, hadithTask, duaTask, nameTask, eventTask]).then(() => window.clearTimeout(timeout));
+        void Promise.allSettled([verseTask, hadithTask, duaTask, nameTask]).then(() => window.clearTimeout(timeout));
         return () => { window.clearTimeout(timeout); controller.abort(); };
     }, [dateKey, retry]);
 
