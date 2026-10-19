@@ -97,6 +97,8 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Home />} />
                       <Route path="/quran" element={<Quran />} />
+                      <Route path="/quran/:surah" element={<Quran />} />
+                      <Route path="/quran/:surah/:ayah" element={<Quran />} />
                       <Route path="/search" element={<SearchPage />} />
                       <Route path="/hadith" element={<Hadith />} />
                       <Route path="/ask" element={<Ask />} />

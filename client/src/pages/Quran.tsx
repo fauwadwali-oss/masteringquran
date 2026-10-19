@@ -1,6 +1,6 @@
 import { TRANSLATIONS, TAFSIRS } from "@/lib/study-editions";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, useParams, useNavigate, Link } from "react-router-dom";
 import { Search, Play, Pause, BookOpen, Loader2, AlertCircle, Bookmark, BookmarkCheck, Volume2, VolumeX, SkipForward, SkipBack, ChevronLeft, ChevronRight, Star, X, Mic, Moon, Languages, Layers, Copy, Share2, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,15 +94,24 @@ const normalizeAudioUrl = (url: string | undefined | null): string | undefined =
 
 export default function Quran() {
     const [searchParams] = useSearchParams();
+    const params = useParams<{ surah?: string; ayah?: string }>();
+    const navigate = useNavigate();
 
-    // Parse optional ?verse=SURAH:AYAH query param (e.g. from Prophets / Seerah / Share)
+    // Target verse comes from the path (/quran/2 or /quran/2/255, the prerendered pages)
+    // or from the legacy ?verse=SURAH:AYAH query param (e.g. from Prophets / Seerah / Share).
+    const targetFromPath = (() => {
+        if (!params.surah || !/^\d{1,3}$/.test(params.surah)) return null;
+        const ayah = params.ayah && /^\d{1,3}$/.test(params.ayah) ? parseInt(params.ayah, 10) : null;
+        return { surah: parseInt(params.surah, 10), ayah };
+    })();
     const verseParam = searchParams.get("verse");
     const targetFromQuery = (() => {
         if (!verseParam) return null;
         const m = /^(\d{1,3}):(\d{1,3})$/.exec(verseParam.trim());
         if (!m) return null;
-        return { surah: parseInt(m[1], 10), ayah: parseInt(m[2], 10) };
+        return { surah: parseInt(m[1], 10), ayah: parseInt(m[2], 10) as number | null };
     })();
+    const target = targetFromPath ?? targetFromQuery;
 
     // State
     const [surahs, setSurahs] = useState<Surah[]>([]);
@@ -110,7 +119,7 @@ export default function Quran() {
     const [verses, setVerses] = useState<VerseData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [highlightVerse, setHighlightVerse] = useState<number | null>(targetFromQuery?.ayah ?? null);
+    const [highlightVerse, setHighlightVerse] = useState<number | null>(target?.ayah ?? null);
 
     // Search state
     const [searchQuery, setSearchQuery] = useState("");
@@ -263,8 +272,8 @@ export default function Quran() {
                     setSurahs(mapped);
                     // Priority: ?verse=S:A query param > lastViewedSurah > Fatiha
                     let initialSurahNumber: number;
-                    if (targetFromQuery?.surah) {
-                        initialSurahNumber = targetFromQuery.surah;
+                    if (target?.surah) {
+                        initialSurahNumber = target.surah;
                     } else {
                         const lastViewed = localStorage.getItem("lastViewedSurah");
                         initialSurahNumber = lastViewed ? parseInt(lastViewed) : 1;
@@ -304,7 +313,7 @@ export default function Quran() {
     // Scroll to and highlight the ayah when the URL carries ?verse=S:A and the verses have loaded.
     useEffect(() => {
         if (!highlightVerse || !verses.length || !currentSurah) return;
-        if (currentSurah.number !== targetFromQuery?.surah) return;
+        if (currentSurah.number !== target?.surah) return;
         // Defer until the DOM renders the card
         const id = `ayah-${currentSurah.number}-${highlightVerse}`;
         const t = setTimeout(() => {
@@ -319,7 +328,35 @@ export default function Quran() {
             clearTimeout(t);
             clearTimeout(t2);
         };
-    }, [verses, highlightVerse, currentSurah, targetFromQuery?.surah]);
+    }, [verses, highlightVerse, currentSurah, target?.surah]);
+
+    // Follow the URL when it changes while the reader stays mounted (internal links,
+    // back/forward, search results and bookmarks all navigate to /quran/S/A).
+    useEffect(() => {
+        if (!target || !surahs.length) return;
+        if (currentSurah?.number !== target.surah) {
+            const s = surahs.find((x) => x.number === target.surah);
+            if (s) {
+                setCurrentSurah(s);
+                setViewMode("surah");
+            }
+        }
+        if (target.ayah) setHighlightVerse(target.ayah);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [target?.surah, target?.ayah, surahs.length]);
+
+    // Keep the URL on the surah being read so it can be shared and matches the
+    // prerendered page. Legacy ?verse=S:A links are rewritten to /quran/S/A.
+    useEffect(() => {
+        if (viewMode !== "surah" || !currentSurah) return;
+        if (!targetFromPath && targetFromQuery && targetFromQuery.surah === currentSurah.number) {
+            navigate(`/quran/${targetFromQuery.surah}/${targetFromQuery.ayah}`, { replace: true });
+            return;
+        }
+        if (targetFromPath?.surah === currentSurah.number) return;
+        navigate(`/quran/${currentSurah.number}`, { replace: true });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentSurah, viewMode]);
 
     // Map Quran.com verses payload to our VerseData shape
     const mapQuranComVerses = (verses: any[]): VerseData[] =>
@@ -618,22 +655,16 @@ export default function Quran() {
     };
 
     const goToSearchResult = (result: SearchResult) => {
-        const surah = surahs.find(s => s.number === result.surah.number);
-        if (surah) {
-            setCurrentSurah(surah);
-            setViewMode("surah");
-            setShowSearchResults(false);
-            setSearchQuery("");
-        }
+        setViewMode("surah");
+        setShowSearchResults(false);
+        setSearchQuery("");
+        navigate(`/quran/${result.surah.number}/${result.numberInSurah}`);
     };
 
     const goToBookmark = (bookmark: Bookmark) => {
-        const surah = surahs.find(s => s.number === bookmark.surahNumber);
-        if (surah) {
-            setCurrentSurah(surah);
-            setViewMode("surah");
-            setShowBookmarks(false);
-        }
+        setViewMode("surah");
+        setShowBookmarks(false);
+        navigate(`/quran/${bookmark.surahNumber}/${bookmark.verseNumber}`);
     };
 
     // Get current translation names
@@ -675,9 +706,27 @@ export default function Quran() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/20 pb-32">
             <SEO
-                title={currentSurah ? `${currentSurah.englishName} - Quran Reader with Translation and Tafsir` : "Quran Reader | Word-by-Word Translation and Tafsir"}
-                description="Read the Holy Quran in Uthmani script with word-by-word study, tajweed, audio recitation, 17 translations, bookmarks, notes, and 10 English tafsirs."
-                canonicalPath="/quran"
+                title={
+                    currentSurah && viewMode === "surah" && targetFromPath?.ayah && targetFromPath.surah === currentSurah.number
+                        ? `Surah ${currentSurah.englishName} ${currentSurah.number}:${targetFromPath.ayah} - Translation and Tafsir | Mastering Quran`
+                        : currentSurah && viewMode === "surah"
+                          ? `Surah ${currentSurah.englishName} (${currentSurah.number}) - Arabic, Translation and Tafsir | Mastering Quran`
+                          : "Quran Reader | Word-by-Word Translation and Tafsir"
+                }
+                description={
+                    currentSurah && viewMode === "surah" && targetFromPath?.ayah && targetFromPath.surah === currentSurah.number
+                        ? `Read Quran ${currentSurah.number}:${targetFromPath.ayah} from Surah ${currentSurah.englishName} in Arabic with English translation, word-by-word study, audio recitation and 10 tafsirs.`
+                        : currentSurah && viewMode === "surah"
+                          ? `Read Surah ${currentSurah.englishName} (${currentSurah.englishNameTranslation}), chapter ${currentSurah.number} of the Quran, ${currentSurah.numberOfAyahs} verses, in Arabic with English translation, word-by-word study, audio recitation and 10 tafsirs.`
+                          : "Read the Holy Quran in Uthmani script with word-by-word study, tajweed, audio recitation, 17 translations, bookmarks, notes, and 10 English tafsirs."
+                }
+                canonicalPath={
+                    currentSurah && viewMode === "surah"
+                        ? targetFromPath?.ayah && targetFromPath.surah === currentSurah.number
+                            ? `/quran/${currentSurah.number}/${targetFromPath.ayah}`
+                            : `/quran/${currentSurah.number}`
+                        : "/quran"
+                }
             />
 
             {/* Reader hero */}
