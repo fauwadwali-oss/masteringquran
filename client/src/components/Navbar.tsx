@@ -81,11 +81,11 @@ export default function Navbar() {
 
     return (
         <nav className="w-full sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 px-4 py-3 text-slate-900 shadow-sm shadow-slate-900/5 backdrop-blur-xl transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/88 dark:text-slate-100 sm:px-6">
-            <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+            <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-4">
                 <div className="font-bold text-lg tracking-tight flex items-center">
                     <Link to="/" className="flex items-center gap-3" onClick={() => setIsOpen(false)}>
                         <img src="/mq-logo-mark.svg" alt="Mastering Quran Logo" className="h-9 w-auto sm:h-10" />
-                        <span className="whitespace-nowrap text-base leading-tight sm:text-lg">Mastering Quran</span>
+                        <span className="whitespace-nowrap text-base leading-tight max-[359px]:hidden sm:text-lg">Mastering Quran</span>
                     </Link>
                 </div>
 
