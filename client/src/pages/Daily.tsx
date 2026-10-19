@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { trackDailyEmailSubscription } from "@/lib/conversion";
 import SEO from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -229,6 +230,7 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
         }
         setSaving(true);
         try {
+            const wasActive = Boolean(sub?.active);
             const s = await upsertEmailSubscription(userId, {
                 email,
                 delivery_hour: hour,
@@ -236,6 +238,7 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
                 active: true,
             });
             setSub(s);
+            if (!wasActive && s.active) trackDailyEmailSubscription(userId);
             toast.success("Subscribed, your first verse will arrive within a day.");
         } catch (e: any) {
             toast.error(e?.message ?? "Couldn't save subscription");
