@@ -41,12 +41,20 @@ export const NAMES_SOURCE = namesData.source;
 export const DUAS = duasData.duas as Dua[];
 export const DUA_CATEGORIES = duasData.categories as DuaCategory[];
 
-const fold = (s: string) => s.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const fold = (s: string) =>
+    s
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/g, "")
+        .toLowerCase();
+
+export function searchNames(query: string): DivineName[] {
+    const q = fold(query.trim());
+    if (!q) return NAMES;
+    return NAMES.filter(n => [String(n.number), n.arabic, n.transliteration, n.english, n.explanation].some(value => value && fold(value).includes(q)));
+}
 
 export function searchDuas(query: string): Dua[] {
     const q = fold(query.trim());
     if (!q) return [];
-    return DUAS.filter((d) =>
-        [d.title, d.translation, d.transliteration, d.reference].some((t) => t && fold(t).includes(q)),
-    );
+    return DUAS.filter(d => [d.title, d.translation, d.transliteration, d.reference].some(t => t && fold(t).includes(q)));
 }

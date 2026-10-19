@@ -4,6 +4,7 @@ interface SEOProps {
     title: string;
     description: string;
     canonicalPath?: string;
+    jsonLd?: Record<string, unknown>;
 }
 
 function upsertMeta(selector: string, attr: "name" | "property", key: string, content: string) {
@@ -16,7 +17,7 @@ function upsertMeta(selector: string, attr: "name" | "property", key: string, co
     meta.setAttribute("content", content);
 }
 
-export default function SEO({ title, description, canonicalPath }: SEOProps) {
+export default function SEO({ title, description, canonicalPath, jsonLd }: SEOProps) {
     useEffect(() => {
         document.title = title;
 
@@ -35,7 +36,20 @@ export default function SEO({ title, description, canonicalPath }: SEOProps) {
         }
         canonical.setAttribute("href", canonicalUrl);
         upsertMeta('meta[property="og:url"]', "property", "og:url", canonicalUrl);
-    }, [title, description, canonicalPath]);
+
+        if (jsonLd) {
+            let structuredData = document.querySelector("script[data-page-json-ld]");
+            if (!structuredData) {
+                structuredData = document.createElement("script");
+                structuredData.setAttribute("type", "application/ld+json");
+                structuredData.setAttribute("data-page-json-ld", "");
+                document.head.appendChild(structuredData);
+            }
+            structuredData.textContent = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
+
+            return () => structuredData?.remove();
+        }
+    }, [title, description, canonicalPath, jsonLd]);
 
     return null;
 }

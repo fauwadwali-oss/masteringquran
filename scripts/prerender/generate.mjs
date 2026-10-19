@@ -19,15 +19,15 @@ const ROOT = path.resolve(import.meta.dirname, "..", "..");
 const DIST = path.join(ROOT, "dist", "public");
 const ORIGIN = "https://masteringquran.com";
 const snapshot = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, "data", "quran-snapshot.json"), "utf8"));
+const namesData = JSON.parse(fs.readFileSync(path.join(ROOT, "client", "src", "data", "names.json"), "utf8"));
 const template = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
 
-const esc = (s) =>
-    String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 // Titles and descriptions must match what client/src/pages/Quran.tsx sets after load.
-const surahTitle = (s) => `Surah ${s.nameSimple} (${s.number}) - Arabic, Translation and Tafsir | Mastering Quran`;
+const surahTitle = s => `Surah ${s.nameSimple} (${s.number}) - Arabic, Translation and Tafsir | Mastering Quran`;
 const ayahTitle = (s, a) => `Surah ${s.nameSimple} ${s.number}:${a} - Translation and Tafsir | Mastering Quran`;
-const surahDescription = (s) =>
+const surahDescription = s =>
     `Read Surah ${s.nameSimple} (${s.nameTranslated}), chapter ${s.number} of the Quran, ${s.versesCount} verses, in Arabic with English translation, word-by-word study, audio recitation and 10 tafsirs.`;
 const ayahDescription = (s, a) =>
     `Read Quran ${s.number}:${a} from Surah ${s.nameSimple} in Arabic with English translation, word-by-word study, audio recitation and 10 tafsirs.`;
@@ -51,7 +51,7 @@ function setHead(html, { title, description, pathname, jsonLd, noindex }) {
     }
     const extra = [
         noindex ? `<meta name="robots" content="noindex" />` : "",
-        jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, "\\u003c")}</script>` : "",
+        jsonLd ? `<script type="application/ld+json" data-page-json-ld>${JSON.stringify(jsonLd).replace(/</g, "\\u003c")}</script>` : "",
         `<style>${STYLE}</style>`,
     ].join("");
     return html.replace("</head>", `${extra}</head>`);
@@ -63,12 +63,17 @@ const setBody = (html, body) => {
 };
 
 // Minimal styling for the moment before the app loads (and for no-JS visitors).
-const STYLE = `.mqp{max-width:760px;margin:0 auto;padding:32px 16px 64px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;line-height:1.6}.mqp a{color:#047857}.mqp nav{font-size:14px;margin-bottom:16px}.mqp h1{font-size:28px;line-height:1.25;margin:0 0 4px}.mqp .meta{color:#475569;font-size:14px;margin:0 0 24px}.mqp .ar{font-size:30px;line-height:2.1;text-align:right;margin:0 0 12px}.mqp .en{font-size:17px;margin:0}.mqp .src{color:#64748b;font-size:13px}.mqp section{border-top:1px solid #e2e8f0;padding:20px 0}.mqp blockquote{margin:8px 0;padding-left:14px;border-left:3px solid #a7f3d0}.mqp .pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:24px}.mqp ol{list-style:none;padding:0;margin:0}.mqp table{border-collapse:collapse;width:100%;font-size:14px}.mqp th,.mqp td{padding:6px 8px;text-align:right;border-bottom:1px solid #e2e8f0;white-space:nowrap}.mqp th:first-child,.mqp td:first-child{text-align:left}@media(prefers-color-scheme:dark){.mqp{color:#e2e8f0}.mqp .meta,.mqp .src{color:#94a3b8}.mqp a{color:#34d399}.mqp section{border-color:#1e293b}}`;
+const STYLE = `.mqp{max-width:760px;margin:0 auto;padding:32px 16px 64px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;line-height:1.6}.mqp a{color:#047857}.mqp nav{font-size:14px;margin-bottom:16px}.mqp h1{font-size:28px;line-height:1.25;margin:0 0 4px}.mqp .meta{color:#475569;font-size:14px;margin:0 0 24px}.mqp .ar{font-size:30px;line-height:2.1;text-align:right;margin:0 0 12px}.mqp .en{font-size:17px;margin:0}.mqp .src{color:#64748b;font-size:13px}.mqp section{border-top:1px solid #e2e8f0;padding:20px 0}.mqp blockquote{margin:8px 0;padding-left:14px;border-left:3px solid #a7f3d0}.mqp .pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:24px}.mqp ol{list-style:none;padding:0;margin:0}.mqp .names{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mqp .names li{border:1px solid #e2e8f0;border-radius:12px;padding:14px}.mqp .names h2{font-size:17px;margin:0}.mqp .names .ar{font-size:26px;margin:0}.mqp .names .en{font-size:14px}.mqp table{border-collapse:collapse;width:100%;font-size:14px}.mqp th,.mqp td{padding:6px 8px;text-align:right;border-bottom:1px solid #e2e8f0;white-space:nowrap}.mqp th:first-child,.mqp td:first-child{text-align:left}@media(max-width:560px){.mqp .names{grid-template-columns:1fr}}@media(prefers-color-scheme:dark){.mqp{color:#e2e8f0}.mqp .meta,.mqp .src{color:#94a3b8}.mqp a{color:#34d399}.mqp section,.mqp .names li{border-color:#1e293b}}`;
 
-const crumbs = (items) => ({
+const crumbs = items => ({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: items.map(([name, p], i) => ({ "@type": "ListItem", position: i + 1, name, item: `${ORIGIN}${p}` })),
+    itemListElement: items.map(([name, p], i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name,
+        item: `${ORIGIN}${p}`,
+    })),
 });
 
 const { translation, tafsir } = snapshot;
@@ -82,13 +87,34 @@ const write = (rel, html) => {
 // Public FAQ: ship the questions and answers in the first response so search
 // engines and no-JavaScript readers do not receive an empty app shell.
 const faqItems = [
-    ["Is Mastering Quran really free?", "Yes. The site has no ads, no paywalls, no advertising tracking, and no account requirement for core features. A free account adds synced bookmarks, notes, and memorization tracking."],
-    ["Which Quran translations are available?", "There are 17 selectable resources across 7 languages, including a Latin transliteration. The selected translation or transliteration edition is identified in the reader."],
-    ["Which tafsirs are included?", "Ten English tafsir editions are available, including abridged Ibn Kathir, al-Jalalayn, Ma'arif al-Qur'an, Tazkirul Quran, and the other editions named on the Sources page."],
-    ["Which hadith collections are included?", "Ten English collection datasets are available. Collection, book, number, and grade are shown where the source dataset provides them."],
-    ["How does the AI avoid fabricated citations?", "The AI is required to fetch Quran, hadith, or tafsir source text before making factual claims and to show references. Users should still open and verify the cited sources."],
-    ["What is the AI scoped to?", "The AI is scoped to Quran text and meaning, authentic hadith, and classical tafsir. It declines fatwas, personal religious guidance, theological disputes, and matters requiring qualified scholarly judgment."],
-    ["Does Mastering Quran replace a qualified scholar?", "No. Mastering Quran supports learning and reflection. It does not replace qualified teachers, scholars, or local religious authorities for personal rulings, fatwas, or urgent guidance."],
+    [
+        "Is Mastering Quran really free?",
+        "Yes. The site has no ads, no paywalls, no advertising tracking, and no account requirement for core features. A free account adds synced bookmarks, notes, and memorization tracking.",
+    ],
+    [
+        "Which Quran translations are available?",
+        "There are 17 selectable resources across 7 languages, including a Latin transliteration. The selected translation or transliteration edition is identified in the reader.",
+    ],
+    [
+        "Which tafsirs are included?",
+        "Ten English tafsir editions are available, including abridged Ibn Kathir, al-Jalalayn, Ma'arif al-Qur'an, Tazkirul Quran, and the other editions named on the Sources page.",
+    ],
+    [
+        "Which hadith collections are included?",
+        "Ten English collection datasets are available. Collection, book, number, and grade are shown where the source dataset provides them.",
+    ],
+    [
+        "How does the AI avoid fabricated citations?",
+        "The AI is required to fetch Quran, hadith, or tafsir source text before making factual claims and to show references. Users should still open and verify the cited sources.",
+    ],
+    [
+        "What is the AI scoped to?",
+        "The AI is scoped to Quran text and meaning, authentic hadith, and classical tafsir. It declines fatwas, personal religious guidance, theological disputes, and matters requiring qualified scholarly judgment.",
+    ],
+    [
+        "Does Mastering Quran replace a qualified scholar?",
+        "No. Mastering Quran supports learning and reflection. It does not replace qualified teachers, scholars, or local religious authorities for personal rulings, fatwas, or urgent guidance.",
+    ],
 ];
 const faqPath = "/faq";
 const faqDescription = "Answers about Mastering Quran translations, tafsir editions, hadith collections, AI citations, privacy, and source methodology.";
@@ -110,8 +136,8 @@ write(
                 })),
             },
         }),
-        faqBody,
-    ),
+        faqBody
+    )
 );
 
 for (const s of surahs) {
@@ -122,8 +148,8 @@ for (const s of surahs) {
     // Surah page: every verse, each linking to its own page.
     const verseList = s.verses
         .map(
-            (v) =>
-                `<li><section id="ayah-${s.number}-${v.n}"><p class="ar" lang="ar" dir="rtl">${esc(v.ar)}</p><p class="en"><a href="${surahPath}/${v.n}">${s.number}:${v.n}</a> ${esc(v.en)}</p></section></li>`,
+            v =>
+                `<li><section id="ayah-${s.number}-${v.n}"><p class="ar" lang="ar" dir="rtl">${esc(v.ar)}</p><p class="en"><a href="${surahPath}/${v.n}">${s.number}:${v.n}</a> ${esc(v.en)}</p></section></li>`
         )
         .join("");
     const surahBody =
@@ -140,10 +166,13 @@ for (const s of surahs) {
                 title: surahTitle(s),
                 description: surahDescription(s),
                 pathname: surahPath,
-                jsonLd: crumbs([["Quran", "/quran"], [`Surah ${s.nameSimple}`, surahPath]]),
+                jsonLd: crumbs([
+                    ["Quran", "/quran"],
+                    [`Surah ${s.nameSimple}`, surahPath],
+                ]),
             }),
-            surahBody,
-        ),
+            surahBody
+        )
     );
 
     // Ayah pages.
@@ -175,21 +204,80 @@ for (const s of surahs) {
                         [`${s.number}:${v.n}`, ayahPath],
                     ]),
                 }),
-                body,
-            ),
+                body
+            )
         );
     }
 }
 
-const prayer = await renderPrayerPages({ ROOT, ORIGIN, template, setHead, setBody, esc, write });
+// 99 Names: render the complete sourced list for crawlers and no-JavaScript visitors.
+const namesPath = "/names";
+const namesTitle = "99 Names of Allah (Asma ul-Husna) | Mastering Quran";
+const namesDescription =
+    "Explore the traditional 99 Names of Allah list in Arabic with transliteration and sourced English renderings, plus clear notes on the hadith evidence.";
+const namesItems = namesData.names
+    .map(
+        name =>
+            `<li id="name-${name.number}"><span class="src">${name.number} of 99</span>` +
+            `<p class="ar" lang="ar" dir="rtl">${esc(name.arabic)}</p>` +
+            `<h2>${esc(name.transliteration)}</h2>` +
+            (name.english ? `<p class="en">${esc(name.english)}</p>` : "") +
+            (name.explanation ? `<blockquote>${esc(name.explanation)}</blockquote>` : "") +
+            `<p class="src">Source: ${esc(name.englishSource || "No reliable sourced English rendering")}</p></li>`
+    )
+    .join("");
+const namesBody =
+    `<nav><a href="/">Mastering Quran</a> / 99 Names of Allah</nav>` +
+    `<h1>99 Names of Allah <span lang="ar" dir="rtl">الأسماء الحسنى</span></h1>` +
+    `<p class="meta">Arabic, transliteration and sourced English renderings</p>` +
+    `<p>“And to Allāh belong the best names, so invoke Him by them.” <a href="/quran/7/180">Quran 7:180</a>, Saheeh International.</p>` +
+    `<section><h2>What is this list?</h2><p>This page presents the traditional enumeration in <a href="https://sunnah.com/tirmidhi:3507">Jami\` at-Tirmidhi 3507</a>. The hadith that Allah has ninety-nine names is authentic (<a href="https://sunnah.com/bukhari:7392">Sahih al-Bukhari 7392</a> and <a href="https://sunnah.com/muslim:2677a">Sahih Muslim 2677</a>), but those narrations do not enumerate the names.</p><p>The Tirmidhi enumeration is graded <em>da'if</em> (weak). This page does not claim that Allah's names are limited to only ninety-nine. Each English rendering identifies its source; where no reliable sourced rendering was available, none is supplied.</p></section>` +
+    `<p class="src">99 of 99 names</p><ol class="names">${namesItems}</ol>`;
+const namesJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "99 Names of Allah (Asma ul-Husna)",
+    description: "The traditional 99-name enumeration in Jami` at-Tirmidhi 3507, with Arabic, transliteration and sourced English renderings.",
+    numberOfItems: namesData.names.length,
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    itemListElement: namesData.names.map(name => ({
+        "@type": "ListItem",
+        position: name.number,
+        url: `${ORIGIN}/names#name-${name.number}`,
+        name: name.transliteration,
+        ...(name.english ? { description: name.english } : {}),
+    })),
+};
+write(
+    "names.html",
+    setBody(
+        setHead(template, {
+            title: namesTitle,
+            description: namesDescription,
+            pathname: namesPath,
+            jsonLd: namesJsonLd,
+        }),
+        namesBody
+    )
+);
+
+const prayer = await renderPrayerPages({
+    ROOT,
+    ORIGIN,
+    template,
+    setHead,
+    setBody,
+    esc,
+    write,
+});
 
 // Sitemap: keep the hand-written static routes, add every surah, ayah and city page.
 const sitemapFile = path.join(DIST, "sitemap.xml");
 const sitemap = fs.readFileSync(sitemapFile, "utf8");
 const entries = surahs
-    .flatMap((s) => [
+    .flatMap(s => [
         `  <url><loc>${ORIGIN}/quran/${s.number}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>`,
-        ...s.verses.map((v) => `  <url><loc>${ORIGIN}/quran/${s.number}/${v.n}</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>`),
+        ...s.verses.map(v => `  <url><loc>${ORIGIN}/quran/${s.number}/${v.n}</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>`),
     ])
     .join("\n");
 fs.writeFileSync(sitemapFile, sitemap.replace("</urlset>", `${entries}\n${prayer.sitemap.join("\n")}\n</urlset>`));
@@ -199,10 +287,16 @@ fs.writeFileSync(sitemapFile, sitemap.replace("</urlset>", `${entries}\n${prayer
 // are served by the static files above; an out-of-range one is a true 404.
 const appSource = fs.readFileSync(path.join(ROOT, "client", "src", "App.tsx"), "utf8");
 const routes = [...appSource.matchAll(/<Route path="([^"]+)"/g)]
-    .map((m) => m[1])
-    .filter((p) => p !== "/" && p !== "*" && !p.includes(":") && !prayer.staticRoutes.has(p));
+    .map(m => m[1])
+    .filter(p => p !== "/" && p !== "*" && p !== namesPath && !p.includes(":") && !prayer.staticRoutes.has(p));
 if (routes.length < 20) throw new Error(`only found ${routes.length} routes in App.tsx`);
-fs.writeFileSync(path.join(DIST, "_redirects"), routes.filter((p) => p !== faqPath).map((p) => `${p} / 200`).join("\n") + "\n");
+fs.writeFileSync(
+    path.join(DIST, "_redirects"),
+    routes
+        .filter(p => p !== faqPath)
+        .map(p => `${p} / 200`)
+        .join("\n") + "\n"
+);
 
 write(
     "404.html",
@@ -211,8 +305,10 @@ write(
         description: "The page you are looking for does not exist.",
         pathname: "/404",
         noindex: true,
-    }).replace(/<link rel="canonical"[^>]*>\s*/, ""),
+    }).replace(/<link rel="canonical"[^>]*>\s*/, "")
 );
 
 const total = surahs.reduce((n, s) => n + s.verses.length, 0);
-console.log(`prerendered ${surahs.length} surah, ${total} ayah, ${prayer.count} prayer-time and ${prayer.count} Ramadan ${prayer.ramadanYear} city pages; ${routes.length} SPA routes; 404.html`);
+console.log(
+    `prerendered ${surahs.length} surah, ${total} ayah, 99 Names, ${prayer.count} prayer-time and ${prayer.count} Ramadan ${prayer.ramadanYear} city pages; ${routes.length} SPA routes; 404.html`
+);
