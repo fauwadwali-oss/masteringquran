@@ -18,11 +18,12 @@ export default function AuthButton() {
             <>
                 <Button
                     onClick={() => setShowLogin(true)}
+                    aria-label="Sign in"
                     variant="outline"
                     size="sm"
-                    className="h-9 px-4 rounded-lg gap-2 border-emerald-300 text-emerald-700 dark:text-emerald-400 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                    className="h-9 px-4 max-[359px]:px-2 rounded-lg gap-2 border-emerald-300 text-emerald-700 dark:text-emerald-400 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
                 >
-                    <LogIn className="h-4 w-4" /> Sign in
+                    <LogIn className="h-4 w-4" /> <span className="max-[359px]:hidden">Sign in</span>
                 </Button>
                 <LoginModal open={showLogin} onClose={() => setShowLogin(false)} />
             </>
