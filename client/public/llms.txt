@@ -1,0 +1,27 @@
+# Mastering Quran
+
+> Free Quran study site with no ads: the Uthmani Arabic text of every verse with English and other translations, word-by-word study, audio, 10 English tafsirs, hadith collections, a 12-lesson Arabic course, and prayer-time tools. Run by Nusrat Wali Ventures LLC (Houston, TX).
+
+## Quran
+- [Quran reader](https://masteringquran.com/quran): all 114 surahs with translations, tafsir and audio
+- Surah pages: https://masteringquran.com/quran/{surah}, e.g. [Al-Baqarah](https://masteringquran.com/quran/2)
+- Verse pages: https://masteringquran.com/quran/{surah}/{ayah}, e.g. [Ayat al-Kursi, 2:255](https://masteringquran.com/quran/2/255). Each shows the Arabic, the Saheeh International translation and a quoted Tafsir al-Jalalayn excerpt with its source.
+
+## Prayer
+- [Prayer times](https://masteringquran.com/prayer-times): Fajr, Sunrise, Dhuhr, Asr, Maghrib and Isha for any city, 12 calculation methods, Hanafi or standard Asr
+- City pages: https://masteringquran.com/prayer-times/{city}-{country}, e.g. [Houston](https://masteringquran.com/prayer-times/houston-us), [London](https://masteringquran.com/prayer-times/london-gb), [Karachi](https://masteringquran.com/prayer-times/karachi-pk)
+- [Qibla direction](https://masteringquran.com/qibla)
+- [Ramadan timetable](https://masteringquran.com/ramadan): Suhoor and Iftar for every day of Ramadan
+- [Islamic calendar](https://masteringquran.com/calendar): Hijri dates (Umm al-Qura) and upcoming events
+
+## Learn
+- [Learn Arabic](https://masteringquran.com/learn-arabic): 12 lessons from the alphabet to reading five surahs
+- [Hadith library](https://masteringquran.com/hadith)
+- [Duas](https://masteringquran.com/duas), [99 Names of Allah](https://masteringquran.com/names), [Stories of the Prophets](https://masteringquran.com/prophets), [Seerah](https://masteringquran.com/seerah), [Glossary](https://masteringquran.com/glossary)
+
+## Sources
+- [Sources and methodology](https://masteringquran.com/sources): text providers, translation and tafsir editions, and how to report a correction
+- Prayer times are calculated with the open-source adhan library; city data from GeoNames.
+
+## Optional
+- [Sitemap](https://masteringquran.com/sitemap.xml)

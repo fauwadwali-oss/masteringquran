@@ -22,9 +22,9 @@ async function fetchVerseInline(verseKey: string): Promise<VerseInlineData> {
     if (inflight) return inflight;
 
     const p = (async () => {
-        // Translation 203 = Al-Hilali & Khan
+        // Translation 20 = Saheeh International
         const r = await fetch(
-            `https://api.quran.com/api/v4/verses/by_key/${verseKey}?translations=203&language=en&fields=text_uthmani`,
+            `https://api.quran.com/api/v4/verses/by_key/${verseKey}?translations=20&language=en&fields=text_uthmani`,
         );
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const j = await r.json();
@@ -139,7 +139,7 @@ export default function VerseInline({ verseKey, compact = false }: Props) {
                     >
                         &ldquo;{data.translation}&rdquo;
                     </p>
-                    <p className="text-[10px] text-slate-400">Al-Hilali &amp; Khan</p>
+                    <p className="text-[10px] text-slate-400">Saheeh International</p>
                 </div>
             )}
         </div>

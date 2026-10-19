@@ -134,7 +134,22 @@ export default function Quran() {
     const [selectedReciter, setSelectedReciter] = useState("3");
 
     // Translation state
-    const [selectedTranslation, setSelectedTranslation] = useState("22");
+    // Saheeh International by default (matches the prerendered pages and the Shorts); the reader's choice is remembered.
+    const [selectedTranslation, setSelectedTranslationState] = useState(() => {
+        try {
+            return localStorage.getItem("mq-translation") || "20";
+        } catch {
+            return "20";
+        }
+    });
+    const setSelectedTranslation = (id: string) => {
+        setSelectedTranslationState(id);
+        try {
+            localStorage.setItem("mq-translation", id);
+        } catch {
+            /* storage blocked */
+        }
+    };
     const [secondaryTranslation, setSecondaryTranslation] = useState("57");
 
     // Navigation state

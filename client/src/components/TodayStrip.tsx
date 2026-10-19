@@ -74,9 +74,9 @@ export default function TodayStrip() {
         const verseTask = (async () => {
             const { chapters } = await json("https://api.quran.com/api/v4/chapters?language=en");
             const key = dailyVerseKey(day, chapters);
-            const { verse: v } = await json(`https://api.quran.com/api/v4/verses/by_key/${key}?translations=22&language=en&fields=text_uthmani`);
+            const { verse: v } = await json(`https://api.quran.com/api/v4/verses/by_key/${key}?translations=20&language=en&fields=text_uthmani`);
             if (!v?.text_uthmani || !v.translations?.[0]?.text) throw new Error("Missing verse");
-            setVerse({ verse_key: v.verse_key, arabic: v.text_uthmani, english: v.translations[0].text.replace(/<[^>]+>/g, ""), surahName: `Surah ${key.split(":")[0]}` });
+            setVerse({ verse_key: v.verse_key, arabic: v.text_uthmani, english: v.translations[0].text.replace(/<sup[^>]*>.*?<\/sup>/g, "").replace(/<[^>]+>/g, ""), surahName: `Surah ${key.split(":")[0]}` });
         })().catch(() => failed("verse"));
         const hadithTask = (async () => {
             const data = await json("https://cdn.jsdelivr.net/gh/fauwadwali-oss/nwv-islamic-data@main/hadith/editions/eng-nawawi.min.json");
@@ -146,7 +146,7 @@ export default function TodayStrip() {
                                         <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-4">
                                             {clampText(verse.english, 160)}
                                         </p>
-                                        <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">— Quran {verse.verse_key} · Yusuf Ali</p>
+                                        <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">— Quran {verse.verse_key} · Saheeh International</p>
                                     </>
                                 ) : (
                                     placeholder("verse")
