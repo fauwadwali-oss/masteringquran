@@ -78,6 +78,41 @@ const write = (rel, html) => {
     fs.writeFileSync(file, html);
 };
 
+// Public FAQ: ship the questions and answers in the first response so search
+// engines and no-JavaScript readers do not receive an empty app shell.
+const faqItems = [
+    ["Is Mastering Quran really free?", "Yes. The site has no ads, no paywalls, no advertising tracking, and no account requirement for core features. A free account adds synced bookmarks, notes, and memorization tracking."],
+    ["Which Quran translations are available?", "There are 17 selectable resources across 7 languages, including a Latin transliteration. The selected translation or transliteration edition is identified in the reader."],
+    ["Which tafsirs are included?", "Ten English tafsir editions are available, including abridged Ibn Kathir, al-Jalalayn, Ma'arif al-Qur'an, Tazkirul Quran, and the other editions named on the Sources page."],
+    ["Which hadith collections are included?", "Ten English collection datasets are available. Collection, book, number, and grade are shown where the source dataset provides them."],
+    ["How does the AI avoid fabricated citations?", "The AI is required to fetch Quran, hadith, or tafsir source text before making factual claims and to show references. Users should still open and verify the cited sources."],
+    ["What is the AI scoped to?", "The AI is scoped to Quran text and meaning, authentic hadith, and classical tafsir. It declines fatwas, personal religious guidance, theological disputes, and matters requiring qualified scholarly judgment."],
+    ["Does Mastering Quran replace a qualified scholar?", "No. Mastering Quran supports learning and reflection. It does not replace qualified teachers, scholars, or local religious authorities for personal rulings, fatwas, or urgent guidance."],
+];
+const faqPath = "/faq";
+const faqDescription = "Answers about Mastering Quran translations, tafsir editions, hadith collections, AI citations, privacy, and source methodology.";
+const faqBody = `<nav><a href="/">Mastering Quran</a> / FAQ</nav><h1>Frequently asked questions</h1><p class="meta">Translations, tafsir, hadith, AI citations, and study boundaries.</p>${faqItems.map(([q, a]) => `<section><h2>${esc(q)}</h2><p>${esc(a)}</p></section>`).join("")}<p><a href="/sources">Review sources and methodology</a></p>`;
+write(
+    "faq.html",
+    setBody(
+        setHead(template, {
+            title: "FAQ - Mastering Quran",
+            description: faqDescription,
+            pathname: faqPath,
+            jsonLd: {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: faqItems.map(([q, a]) => ({
+                    "@type": "Question",
+                    name: q,
+                    acceptedAnswer: { "@type": "Answer", text: a },
+                })),
+            },
+        }),
+        faqBody,
+    ),
+);
+
 for (const s of surahs) {
     const prev = surahs[s.number - 2];
     const next = surahs[s.number];
@@ -164,7 +199,7 @@ const routes = [...appSource.matchAll(/<Route path="([^"]+)"/g)]
     .map((m) => m[1])
     .filter((p) => p !== "/" && p !== "*" && !p.includes(":"));
 if (routes.length < 20) throw new Error(`only found ${routes.length} routes in App.tsx`);
-fs.writeFileSync(path.join(DIST, "_redirects"), routes.map((p) => `${p} / 200`).join("\n") + "\n");
+fs.writeFileSync(path.join(DIST, "_redirects"), routes.filter((p) => p !== faqPath).map((p) => `${p} / 200`).join("\n") + "\n");
 
 write(
     "404.html",

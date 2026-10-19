@@ -16,7 +16,7 @@ const FAQS: QA[] = [
     },
     {
         q: "Which Quran translations do you use?",
-        a: "17 translations across 8 languages. Defaults are Yusuf Ali (English) and Latin transliteration, but you can switch to Saheeh International, Pickthall, Abdel Haleem, Maududi, Hilali & Khan, Taqi Usmani, Jalandhari, Junagarhi, Maududi (Tafheem), Wahiduddin Khan, Hamidullah (French), Abu Reda (German), Diyanet (Turkish), Indonesian Ministry, or Taisirul Quran (Bengali).",
+        a: "17 selectable resources across 7 languages, including a Latin transliteration. Defaults are Yusuf Ali (English) and Latin transliteration, but you can switch to Saheeh International, Pickthall, Abdel Haleem, Maududi, Hilali & Khan, Taqi Usmani, Jalandhari, Junagarhi, Maududi (Tafheem), Wahiduddin Khan, Hamidullah (French), Abu Reda (German), Diyanet (Turkish), Indonesian Ministry, or Taisirul Quran (Bengali).",
     },
     {
         q: "Which tafsirs are included?",
@@ -24,7 +24,7 @@ const FAQS: QA[] = [
     },
     {
         q: "Which hadith collections are included?",
-        a: "Ten canonical English collections: Sahih al-Bukhari, Sahih Muslim, Sunan Abi Dawud, Jami' at-Tirmidhi, Sunan an-Nasa'i, Sunan Ibn Majah, Muwatta Malik, 40 Hadith of an-Nawawi, 40 Hadith Qudsi, and 40 Hadith of Shah Waliullah Dehlawi.",
+        a: "Ten English collection datasets: Sahih al-Bukhari, Sahih Muslim, Sunan Abi Dawud, Jami' at-Tirmidhi, Sunan an-Nasa'i, Sunan Ibn Majah, Muwatta Malik, 40 Hadith of an-Nawawi, 40 Hadith Qudsi, and 40 Hadith of Shah Waliullah Dehlawi. Collection, book, number, and grade are shown where the source dataset provides them.",
     },
     {
         q: "How does the AI avoid fabricated citations?",
