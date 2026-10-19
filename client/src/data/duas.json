@@ -1,0 +1,836 @@
+{
+ "categories": [
+  {
+   "id": "morning-evening",
+   "name": "Morning & Evening"
+  },
+  {
+   "id": "sleep",
+   "name": "Sleep & Waking"
+  },
+  {
+   "id": "prayer",
+   "name": "Wudu & Prayer"
+  },
+  {
+   "id": "home-masjid",
+   "name": "Home, Masjid & Daily Life"
+  },
+  {
+   "id": "food",
+   "name": "Food & Fasting"
+  },
+  {
+   "id": "travel",
+   "name": "Travel"
+  },
+  {
+   "id": "distress",
+   "name": "Distress, Grief & Anxiety"
+  },
+  {
+   "id": "forgiveness",
+   "name": "Forgiveness"
+  },
+  {
+   "id": "illness",
+   "name": "Illness & Healing"
+  },
+  {
+   "id": "protection",
+   "name": "Protection"
+  },
+  {
+   "id": "guidance",
+   "name": "Guidance & Knowledge"
+  },
+  {
+   "id": "family",
+   "name": "Parents, Marriage & Children"
+  },
+  {
+   "id": "special",
+   "name": "Special Days & Occasions"
+  },
+  {
+   "id": "dhikr",
+   "name": "Dhikr"
+  },
+  {
+   "id": "quran",
+   "name": "Duas from the Quran"
+  }
+ ],
+ "duas": [
+  {
+   "id": "morning-bika-asbahna",
+   "category": "morning-evening",
+   "title": "In the morning",
+   "arabic": "اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ",
+   "transliteration": "Allāhumma bika aṣbaḥnā wa bika amsainā wa bika naḥyā wa bika namūtu wa ilaikal-maṣīr",
+   "reference": "Jami` at-Tirmidhi 3391",
+   "url": "https://sunnah.com/tirmidhi:3391",
+   "grades": [
+    "Sahih (Ahmad Muhammad Shakir)",
+    "Sahih (Al-Albani)",
+    "Hasan (Bashar Awad Maarouf)",
+    "Hasan (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Jami` at-Tirmidhi"
+  },
+  {
+   "id": "evening-bika-amsayna",
+   "category": "morning-evening",
+   "title": "In the evening",
+   "arabic": "اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ",
+   "translation": "O Allah, by You we enter the evening, and by You we enter the morning, and by You we live, and by You we die, and to You is the Resurrection",
+   "transliteration": "Allāhumma bika amsainā wa bika aṣbaḥnā wa bika naḥyā wa bika namūtu wa ilaikan-nushūr",
+   "reference": "Jami` at-Tirmidhi 3391",
+   "url": "https://sunnah.com/tirmidhi:3391",
+   "grades": [
+    "Sahih (Ahmad Muhammad Shakir)",
+    "Sahih (Al-Albani)",
+    "Hasan (Bashar Awad Maarouf)",
+    "Hasan (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Jami` at-Tirmidhi"
+  },
+  {
+   "id": "evening-amsayna",
+   "category": "morning-evening",
+   "title": "In the evening: the kingdom belongs to Allah",
+   "arabic": "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ … لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَىْءٍ قَدِيرٌ اللَّهُمَّ أَسْأَلُكَ خَيْرَ هَذِهِ اللَّيْلَةِ وَأَعُوذُ بِكَ مِنْ شَرِّ هَذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ",
+   "translation": "We entered upon evening and the whole Kingdom of Allah also entered upon evening and praise is due to Allah. There is no god but Allah, the One Who has no partner with Him. … His is the Sovereignty and Praise is due to Him, and He is Potent over everything. O Allah, I beg of Thee the good of this night and I seek refuge in Thee from the evil of this night and the evil which follows it. O Allah, I seek refuge in Thee from sloth, from the evil of vanity. O Allah, I seek refuge in Thee from torment in the Hell-Fire and from torment in the grave",
+   "reference": "Sahih Muslim 2723",
+   "url": "https://sunnah.com/muslim:2723",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim",
+   "narrationOmitted": true
+  },
+  {
+   "id": "bismillah-la-yadurr",
+   "category": "morning-evening",
+   "title": "For protection, three times morning and evening",
+   "arabic": "بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَىْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+   "translation": "In the name of Allah, when Whose name is mentioned nothing on Earth or in Heaven can cause harm, and He is the Hearer, the Knower",
+   "reference": "Sunan Abi Dawud 5088",
+   "url": "https://sunnah.com/abudawud:5088",
+   "grades": [
+    "Sahih (Al-Albani)",
+    "Sahih (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Sunan Abi Dawud",
+   "count": 3
+  },
+  {
+   "id": "sleep-bismika",
+   "category": "sleep",
+   "title": "Going to bed",
+   "arabic": "بِاسْمِكَ أَمُوتُ وَأَحْيَا",
+   "transliteration": "Bismika amutu wa ahya",
+   "reference": "Sahih al-Bukhari 6312",
+   "url": "https://sunnah.com/bukhari:6312",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "waking-alhamdulillah",
+   "category": "sleep",
+   "title": "Waking up",
+   "arabic": "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+   "transliteration": "Al-hamdu li l-lahil-ladhi ahyana ba'da ma amatana wa ilaihin-nushur",
+   "reference": "Sahih al-Bukhari 6312",
+   "url": "https://sunnah.com/bukhari:6312",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "sleep-aslamtu",
+   "category": "sleep",
+   "title": "The last words before sleep",
+   "arabic": "اللَّهُمَّ أَسْلَمْتُ وَجْهِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَغْبَةً وَرَهْبَةً إِلَيْكَ، لاَ مَلْجَأَ وَلاَ مَنْجَا مِنْكَ إِلاَّ إِلَيْكَ، اللَّهُمَّ آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ، وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ",
+   "translation": "O Allah! I surrender to You and entrust all my affairs to You and depend upon You for Your Blessings both with hope and fear of You. There is no fleeing from You, and there is no place of protection and safety except with You O Allah! I believe in Your Book (the Qur'an) which You have revealed and in Your Prophet (Muhammad) whom You have sent",
+   "transliteration": "Allahumma aslamtu wajhi ilaika, wa fauwadtu `Amri ilaika, wa alja'tu Zahri ilaika raghbatan wa rahbatan ilaika. La Malja'a wa la manja minka illa ilaika. Allahumma amantu bikitabika-l-ladhi anzalta wa bina-biyika-l ladhi arsalta",
+   "reference": "Sahih al-Bukhari 247",
+   "url": "https://sunnah.com/bukhari:247",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "after-wudu",
+   "category": "prayer",
+   "title": "After wudu",
+   "arabic": "أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ اللَّهُ وَأَنَّ مُحَمَّدًا عَبْدُ اللَّهِ وَرَسُولُهُ",
+   "translation": "I testify that there is no god but Allah and that Muhammad is the servant of Allah and His Messenger",
+   "reference": "Sahih Muslim 234",
+   "url": "https://sunnah.com/muslim:234",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim"
+  },
+  {
+   "id": "opening-baid",
+   "category": "prayer",
+   "title": "Opening the prayer",
+   "arabic": "اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَاىَ كَمَا بَاعَدْتَ بَيْنَ الْمَشْرِقِ وَالْمَغْرِبِ، اللَّهُمَّ نَقِّنِي مِنَ الْخَطَايَا كَمَا يُنَقَّى الثَّوْبُ الأَبْيَضُ مِنَ الدَّنَسِ، اللَّهُمَّ اغْسِلْ خَطَايَاىَ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ",
+   "translation": "O Allah! Set me apart from my sins (faults) as the East and West are set apart from each other and clean me from sins as a white garment is cleaned of dirt (after thorough washing). O Allah! Wash off my sins with water, snow and hail",
+   "transliteration": "Allahumma, baa`id baini wa baina khatayaya kama baa`adta baina l-mashriqi wa l-maghrib. Allahumma, naqqini min khatayaya kama yunaqqa th-thawbu l-abyadu mina d-danas. Allahumma, ighsil khatayaya bi l-maa'i wa th-thalji wa l-barad",
+   "reference": "Sahih al-Bukhari 744",
+   "url": "https://sunnah.com/bukhari:744",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "after-salam-antas-salam",
+   "category": "prayer",
+   "title": "After the salam",
+   "arabic": "اللَّهُمَّ أَنْتَ السَّلاَمُ وَمِنْكَ السَّلاَمُ تَبَارَكْتَ ذَا الْجَلاَلِ وَالإِكْرَامِ",
+   "translation": "O Allah! Thou art Peace, and peace comes from Thee; Blessed art Thou, O Possessor of Glory and Honour",
+   "reference": "Sahih Muslim 591",
+   "url": "https://sunnah.com/muslim:591",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim"
+  },
+  {
+   "id": "after-prayer-aini",
+   "category": "prayer",
+   "title": "After every prayer",
+   "arabic": "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ",
+   "translation": "O Allah, help me in remembering You, in giving You thanks, and worshipping You well.",
+   "reference": "Sunan Abi Dawud 1522",
+   "url": "https://sunnah.com/abudawud:1522",
+   "grades": [
+    "Sahih (Al-Albani)",
+    "Sahih (Muhammad Muhyi Al-Din Abdul Hamid)",
+    "Sahih (Shuaib Al Arnaut)",
+    "Isnaad Sahih (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Sunan Abi Dawud"
+  },
+  {
+   "id": "leaving-home",
+   "category": "home-masjid",
+   "title": "Leaving home",
+   "arabic": "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ",
+   "translation": "In the name of Allah, I trust in Allah; there is no might and no power but in Allah",
+   "reference": "Sunan Abi Dawud 5095",
+   "url": "https://sunnah.com/abudawud:5095",
+   "grades": [
+    "Sahih (Al-Albani)",
+    "Sahih (Muhammad Muhyi Al-Din Abdul Hamid)",
+    "Hasan (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Sunan Abi Dawud"
+  },
+  {
+   "id": "entering-masjid",
+   "category": "home-masjid",
+   "title": "Entering the masjid",
+   "arabic": "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ",
+   "translation": "O Allah! open for me the doors of Thy mercy",
+   "reference": "Sahih Muslim 713",
+   "url": "https://sunnah.com/muslim:713",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim"
+  },
+  {
+   "id": "leaving-masjid",
+   "category": "home-masjid",
+   "title": "Leaving the masjid",
+   "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ",
+   "translation": "O Allah! I beg of Thee Thy Grace",
+   "reference": "Sahih Muslim 713",
+   "url": "https://sunnah.com/muslim:713",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim"
+  },
+  {
+   "id": "entering-toilet",
+   "category": "home-masjid",
+   "title": "Entering the toilet",
+   "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ",
+   "transliteration": "Allahumma inni a`udhu bika min al-khubuthi wal khaba'ith",
+   "reference": "Sahih al-Bukhari 6322",
+   "url": "https://sunnah.com/bukhari:6322",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "food-forgot-bismillah",
+   "category": "food",
+   "title": "If you forgot Bismillah before eating",
+   "arabic": "بِسْمِ اللَّهِ أَوَّلَهُ وَآخِرَهُ",
+   "translation": "In the name of Allah at the beginning and at the end of it",
+   "reference": "Sunan Abi Dawud 3767",
+   "url": "https://sunnah.com/abudawud:3767",
+   "grades": [
+    "Sahih (Al-Albani)",
+    "Sahih (Muhammad Muhyi Al-Din Abdul Hamid)",
+    "Sahih Lighairihi (Shuaib Al Arnaut)",
+    "Isnaad Sahih (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Sunan Abi Dawud"
+  },
+  {
+   "id": "after-eating",
+   "category": "food",
+   "title": "After eating",
+   "arabic": "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا الطَّعَامَ وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلاَ قُوَّةٍ",
+   "translation": "Praise be to Allah Who has fed me with this food and provided me with it through no might and power on my part",
+   "reference": "Sunan Abi Dawud 4023",
+   "url": "https://sunnah.com/abudawud:4023",
+   "grades": [
+    "Hasan (Al-Albani)",
+    "Hasan (Muhammad Muhyi Al-Din Abdul Hamid)",
+    "Hasan (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Sunan Abi Dawud"
+  },
+  {
+   "id": "breaking-fast",
+   "category": "food",
+   "title": "Breaking the fast",
+   "arabic": "ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللَّهُ",
+   "translation": "Thirst has gone, the arteries are moist, and the reward is sure, if Allah wills",
+   "reference": "Sunan Abi Dawud 2357",
+   "url": "https://sunnah.com/abudawud:2357",
+   "grades": [
+    "Hasan (Al-Albani)",
+    "Hasan (Muhammad Muhyi Al-Din Abdul Hamid)",
+    "Hasan (Shuaib Al Arnaut)",
+    "Isnaad Hasan (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Sunan Abi Dawud"
+  },
+  {
+   "id": "travel",
+   "category": "travel",
+   "title": "Setting out on a journey",
+   "arabic": "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا الْبِرَّ وَالتَّقْوَى وَمِنَ الْعَمَلِ مَا تَرْضَى اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ وَالْخَلِيفَةُ فِي الأَهْلِ اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ وَكَآبَةِ الْمَنْظَرِ وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالأَهْلِ",
+   "translation": "Hallowed is He Who subdued for us this (ride) and we were not ourselves powerful enough to use It as a ride, and we are going to return to our Lord. O Allah, we seek virtue and piety from Thee in this journey of ours and the act which pleaseth Thee. O Allah, lighten this journey of ours, and make its distance easy for us. O Allah, Thou art (our) companion during the journey, and guardian of (our) family. O Allah, I seek refuge with Thee from hardships of the journey, gloominess of the sights, and finding of evil changes in property and family on return.",
+   "reference": "Sahih Muslim 1342",
+   "url": "https://sunnah.com/muslim:1342",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim"
+  },
+  {
+   "id": "travel-return",
+   "category": "travel",
+   "title": "Words added when returning from a journey",
+   "arabic": "آيِبُونَ تَائِبُونَ عَابِدُونَ لِرَبِّنَا حَامِدُونَ",
+   "translation": "We are returning, repentant, worshipping our Lord. and praising Him",
+   "reference": "Sahih Muslim 1342",
+   "url": "https://sunnah.com/muslim:1342",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim"
+  },
+  {
+   "id": "distress-karb",
+   "category": "distress",
+   "title": "In times of distress",
+   "arabic": "لاَ إِلَهَ إِلاَّ اللَّهُ الْعَظِيمُ الْحَلِيمُ، لاَ إِلَهَ إِلاَّ اللَّهُ رَبُّ السَّمَوَاتِ وَالأَرْضِ، رَبُّ الْعَرْشِ الْعَظِيمِ",
+   "transliteration": "La ilaha illal-lahu Al-`Azim, al- Halim, La ilaha illal-lahu Rabbu-s-samawati wal-ard wa Rabbu-l-arsh il-azim",
+   "reference": "Sahih al-Bukhari 6345",
+   "url": "https://sunnah.com/bukhari:6345",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "anxiety-hamm",
+   "category": "distress",
+   "title": "For worry, grief and debt",
+   "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْجُبْنِ وَالْبُخْلِ، وَضَلَعِ الدَّيْنِ، وَغَلَبَةِ الرِّجَالِ",
+   "translation": "O Allah! I seek refuge with You from worry and grief, from incapacity and laziness, from cowardice and miserliness, from being heavily in debt and from being overpowered by (other) men.",
+   "reference": "Sahih al-Bukhari 6369",
+   "url": "https://sunnah.com/bukhari:6369",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "calamity-istirja",
+   "category": "distress",
+   "title": "When afflicted by a calamity",
+   "arabic": "إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي وَأَخْلِفْ لِي خَيْرًا مِنْهَا",
+   "translation": "We belong to Allah and to Him shall we return; O Allah, reward me for my affliction and give me something better than it in exchange for it",
+   "reference": "Sahih Muslim 918",
+   "url": "https://sunnah.com/muslim:918",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim"
+  },
+  {
+   "id": "debt-ikfini",
+   "category": "distress",
+   "title": "For debt and provision",
+   "arabic": "اللَّهُمَّ اكْفِنِي بِحَلاَلِكَ عَنْ حَرَامِكَ وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ",
+   "translation": "O Allah, suffice me with Your lawful against Your prohibited, and make me independent of all those besides You",
+   "transliteration": "Allāhummakfinī biḥalālika `an ḥarāmika, wa aghninī bi faḍlika `amman siwāka",
+   "reference": "Jami` at-Tirmidhi 3563",
+   "url": "https://sunnah.com/tirmidhi:3563",
+   "grades": [
+    "Hasan (Ahmad Muhammad Shakir)",
+    "Hasan (Al-Albani)",
+    "Hasan (Bashar Awad Maarouf)",
+    "Hasan (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Jami` at-Tirmidhi"
+  },
+  {
+   "id": "sayyid-al-istighfar",
+   "category": "forgiveness",
+   "title": "Sayyid al-Istighfar, the best way to ask forgiveness",
+   "arabic": "اللَّهُمَّ أَنْتَ رَبِّي، لاَ إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَىَّ وَأَبُوءُ لَكَ بِذَنْبِي، فَاغْفِرْ لِي، فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ",
+   "transliteration": "Allahumma anta Rabbi la ilaha illa anta, Khalaqtani wa ana `Abduka, wa ana `ala `ahdika wa wa`dika mastata`tu, A`udhu bika min Sharri ma sana`tu, abu'u Laka bini`matika `alaiya, wa abu'u laka bidhanbi faghfir lee fa innahu la yaghfiru adhdhunuba illa anta",
+   "reference": "Sahih al-Bukhari 6306",
+   "url": "https://sunnah.com/bukhari:6306",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "rabbighfirli-wa-tub",
+   "category": "forgiveness",
+   "title": "Asking forgiveness, said a hundred times in one sitting",
+   "arabic": "رَبِّ اغْفِرْ لِي وَتُبْ عَلَىَّ إِنَّكَ أَنْتَ التَّوَّابُ الْغَفُورُ",
+   "translation": "O my Lord, forgive me, and accept my repentance. Verily, You are the Oft-Returning, the Most Forgiving",
+   "transliteration": "Rabbighfirlī watub `alayya innaka antat-Tawwābul-Ghafūr",
+   "reference": "Jami` at-Tirmidhi 3434",
+   "url": "https://sunnah.com/tirmidhi:3434",
+   "grades": [
+    "Sahih (Ahmad Muhammad Shakir)",
+    "Sahih (Al-Albani)",
+    "Hasan Sahih (Bashar Awad Maarouf)",
+    "Sahih (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Jami` at-Tirmidhi",
+   "count": 100
+  },
+  {
+   "id": "visiting-sick",
+   "category": "illness",
+   "title": "Visiting someone who is ill",
+   "arabic": "لاَ بَأْسَ طَهُورٌ إِنْ شَاءَ اللَّهُ",
+   "translation": "Don't worry, if Allah will, it will be expiation (for your sins)",
+   "reference": "Sahih al-Bukhari 5656",
+   "url": "https://sunnah.com/bukhari:5656",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "healing-rabb-an-nas",
+   "category": "illness",
+   "title": "Asking Allah to heal",
+   "arabic": "اللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَاسَ، اشْفِهِ وَأَنْتَ الشَّافِي، لاَ شِفَاءَ إِلاَّ شِفَاؤُكَ، شِفَاءً لاَ يُغَادِرُ سَقَمًا",
+   "translation": "O Allah, the Lord of the people! Remove the trouble and heal the patient, for You are the Healer. No healing is of any avail but Yours; healing that will leave behind no ailment",
+   "reference": "Sahih al-Bukhari 5743",
+   "url": "https://sunnah.com/bukhari:5743",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "kalimat-tammat",
+   "category": "protection",
+   "title": "When stopping at a place",
+   "arabic": "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+   "translation": "I seek refuge in the Perfect Word of Allah from the evil of what He has created",
+   "reference": "Sahih Muslim 2708",
+   "url": "https://sunnah.com/muslim:2708",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim"
+  },
+  {
+   "id": "guidance-huda",
+   "category": "guidance",
+   "title": "For guidance, piety, chastity and freedom from need",
+   "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى",
+   "translation": "O Allah. I beg of Thee the right guidance, safeguard against evils, chastity and freedom from want",
+   "reference": "Sahih Muslim 2721",
+   "url": "https://sunnah.com/muslim:2721",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim"
+  },
+  {
+   "id": "steadfast-heart",
+   "category": "guidance",
+   "title": "For a steadfast heart",
+   "arabic": "يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ",
+   "translation": "O Changer of the Hearts! Strengthen my heart upon Your Religion.",
+   "transliteration": "Ya Muqallibal-qulub, thabbit qalbi 'ala dinik",
+   "reference": "Jami` at-Tirmidhi 2140",
+   "url": "https://sunnah.com/tirmidhi:2140",
+   "grades": [
+    "Sahih (Ahmad Muhammad Shakir)",
+    "Sahih (Al-Albani)",
+    "Daif (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": true,
+   "englishEdition": "hadith-api English edition of Jami` at-Tirmidhi"
+  },
+  {
+   "id": "beneficial-knowledge",
+   "category": "guidance",
+   "title": "For beneficial knowledge, and refuge from the Fire",
+   "arabic": "اللَّهُمَّ انْفَعْنِي بِمَا عَلَّمْتَنِي وَعَلِّمْنِي مَا يَنْفَعُنِي وَزِدْنِي عِلْمًا الْحَمْدُ لِلَّهِ عَلَى كُلِّ حَالٍ وَأَعُوذُ بِاللَّهِ مِنْ حَالِ أَهْلِ النَّارِ",
+   "translation": "O Allah, benefit me with that which You have taught me, and teach me that which will benefit me, and increase me in knowledge. All praise is due to Allah in every condition, and I seek refuge in Allah from the condition of the people of the Fire",
+   "transliteration": "Allāhummanfa`nī bimā `allamtanī wa `allimnī mā yanfa`unī, wa zidnī `ilma, al-ḥamdulillāhi `alā kulli ḥālin, wa a`ūdhu billāhi min ḥāli ahlin-nār",
+   "reference": "Jami` at-Tirmidhi 3599",
+   "url": "https://sunnah.com/tirmidhi:3599",
+   "grades": [
+    "Sahih (Ahmad Muhammad Shakir)",
+    "Sahih (Al-Albani)",
+    "Daif (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": true,
+   "englishEdition": "hadith-api English edition of Jami` at-Tirmidhi"
+  },
+  {
+   "id": "marriage-barakallah",
+   "category": "family",
+   "title": "Congratulating someone on their marriage",
+   "arabic": "بَارَكَ اللَّهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ",
+   "translation": "May Allah bless for you, and may He bless on you, and combine both of you in good (works)",
+   "reference": "Sunan Abi Dawud 2130",
+   "url": "https://sunnah.com/abudawud:2130",
+   "grades": [
+    "Sahih (Al-Albani)",
+    "Sahih (Muhammad Muhyi Al-Din Abdul Hamid)",
+    "Hasan Sahih (Shuaib Al Arnaut)",
+    "Isnaad Sahih (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Sunan Abi Dawud"
+  },
+  {
+   "id": "children-protection",
+   "category": "family",
+   "title": "Seeking protection for children",
+   "arabic": "أُعِيذُكُمَا بِكَلِمَاتِ اللَّهِ التَّامَّةِ مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ وَمِنْ كُلِّ عَيْنٍ لاَمَّةٍ",
+   "translation": "I seek refuge for the two of you in the Perfect Words of Allah, from every devil and every poisonous pest, and from every harmful eye",
+   "transliteration": "U'idhukuma bikalimatillahi-tammati,min kulli shaitanin wa hammatin, wa minkulli'ainin lammah",
+   "reference": "Jami` at-Tirmidhi 2060",
+   "url": "https://sunnah.com/tirmidhi:2060",
+   "grades": [
+    "Sahih (Ahmad Muhammad Shakir)",
+    "Sahih (Al-Albani)",
+    "Hasan Sahih (Bashar Awad Maarouf)",
+    "Sahih Bukhari (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Jami` at-Tirmidhi"
+  },
+  {
+   "id": "laylat-al-qadr",
+   "category": "special",
+   "title": "On Laylat al-Qadr",
+   "arabic": "اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
+   "translation": "O Allah, You are Forgiving and love forgiveness, so forgive me",
+   "transliteration": "Allahumma innaka 'afuwwun tuhibbul-'afwa, fa'fu 'anni",
+   "reference": "Sunan Ibn Majah 3850",
+   "url": "https://sunnah.com/ibnmajah:3850",
+   "grades": [
+    "Sahih (Al-Albani)",
+    "Sahih (Muhammad Fouad Abd al-Baqi)",
+    "Hasan Sahih (Shuaib Al Arnaut)",
+    "Daif (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": true,
+   "englishEdition": "hadith-api English edition of Sunan Ibn Majah"
+  },
+  {
+   "id": "day-of-arafah",
+   "category": "special",
+   "title": "On the Day of Arafah",
+   "arabic": "لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+   "translation": "None has the right to be worshipped but Allah, Alone, without partner, to Him belongs all that exists, and to Him belongs the Praise, and He is powerful over all things.",
+   "transliteration": "Lā ilāha illallāh, waḥdahu lā sharīka lahu, lahul-mulku wa lahul-ḥamdu, wa huwa `alā kulli shai’in qadīr",
+   "reference": "Jami` at-Tirmidhi 3585",
+   "url": "https://sunnah.com/tirmidhi:3585",
+   "grades": [
+    "Hasan (Ahmad Muhammad Shakir)",
+    "Hasan (Al-Albani)",
+    "Daif (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": true,
+   "englishEdition": "hadith-api English edition of Jami` at-Tirmidhi"
+  },
+  {
+   "id": "new-moon",
+   "category": "special",
+   "title": "On seeing the new moon",
+   "arabic": "اللَّهُمَّ أَهْلِلْهُ عَلَيْنَا بِالْيُمْنِ وَالإِيمَانِ وَالسَّلاَمَةِ وَالإِسْلاَمِ رَبِّي وَرَبُّكَ اللَّهُ",
+   "translation": "O Allah, bring it over us with blessing and faith, and security and Islam. My Lord and your Lord is Allah",
+   "transliteration": "Allāhumma ahlilhu `alainā bil-yumni wal-Īmān, was-salāmati wal-Islām, rabbī wa rabbuk Allāh",
+   "reference": "Jami` at-Tirmidhi 3451",
+   "url": "https://sunnah.com/tirmidhi:3451",
+   "grades": [
+    "Sahih (Ahmad Muhammad Shakir)",
+    "Sahih (Al-Albani)",
+    "Daif (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": true,
+   "englishEdition": "hadith-api English edition of Jami` at-Tirmidhi"
+  },
+  {
+   "id": "rain",
+   "category": "special",
+   "title": "When it rains",
+   "arabic": "اللَّهُمَّ اجْعَلْهُ صَيِّبًا نَافِعًا",
+   "translation": "O Allah, make it beneficial rain",
+   "transliteration": "Allahummaj'alhu Sayyiban nafi`a",
+   "reference": "Sunan an-Nasa'i 1523",
+   "url": "https://sunnah.com/nasai:1523",
+   "grades": [
+    "Sahih (Abu Ghuddah)",
+    "Sahih (Al-Albani)",
+    "Isnaad Sahih (Zubair Ali Zai)"
+   ],
+   "gradingDiffers": false,
+   "englishEdition": "hadith-api English edition of Sunan an-Nasa'i"
+  },
+  {
+   "id": "talbiyah",
+   "category": "special",
+   "title": "The Talbiyah of Hajj and Umrah",
+   "arabic": "لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لاَ شَرِيكَ لَكَ لَبَّيْكَ، إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، لاَ شَرِيكَ لَكَ",
+   "translation": "I respond to Your call O Allah, I respond to Your call, and I am obedient to Your orders, You have no partner, I respond to Your call All the praises and blessings are for You, All the sovereignty is for You, And You have no partners with You",
+   "transliteration": "Labbaika Allahumma labbaik, Labbaika la sharika Laka labbaik, Inna-l-hamda wan-ni'mata Laka walmulk, La sharika Laka",
+   "reference": "Sahih al-Bukhari 1549",
+   "url": "https://sunnah.com/bukhari:1549",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari"
+  },
+  {
+   "id": "subhanallah-wa-bihamdihi",
+   "category": "dhikr",
+   "title": "Glorifying Allah, a hundred times a day",
+   "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+   "transliteration": "Subhan Allah wa bihamdihi",
+   "reference": "Sahih al-Bukhari 6405",
+   "url": "https://sunnah.com/bukhari:6405",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari",
+   "count": 100
+  },
+  {
+   "id": "q-2-127",
+   "category": "quran",
+   "title": "Our Lord, accept from us",
+   "arabic": "رَبَّنَا تَقَبَّلْ مِنَّآ ۖ إِنَّكَ أَنتَ ٱلسَّمِيعُ ٱلْعَلِيمُ",
+   "translation": "Our Lord, accept [this] from us. Indeed, You are the Hearing, the Knowing.",
+   "reference": "Quran 2:127",
+   "url": "https://quran.com/2/127",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-2-201",
+   "category": "quran",
+   "title": "Good in this world and the Hereafter",
+   "arabic": "رَبَّنَآ ءَاتِنَا فِى ٱلدُّنْيَا حَسَنَةً وَفِى ٱلْـَٔاخِرَةِ حَسَنَةً وَقِنَا عَذَابَ ٱلنَّارِ",
+   "translation": "Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire.",
+   "reference": "Quran 2:201",
+   "url": "https://quran.com/2/201",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-2-286",
+   "category": "quran",
+   "title": "Do not burden us",
+   "arabic": "رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَـٰفِرِينَ",
+   "translation": "Our Lord, do not impose blame upon us if we have forgotten or erred. Our Lord, and lay not upon us a burden like that which You laid upon those before us. Our Lord, and burden us not with that which we have no ability to bear. And pardon us; and forgive us; and have mercy upon us. You are our protector, so give us victory over the disbelieving people.",
+   "reference": "Quran 2:286",
+   "url": "https://quran.com/2/286",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-3-8",
+   "category": "quran",
+   "title": "Do not let our hearts deviate",
+   "arabic": "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ ٱلْوَهَّابُ",
+   "translation": "Our Lord, let not our hearts deviate after You have guided us and grant us from Yourself mercy. Indeed, You are the Bestower.",
+   "reference": "Quran 3:8",
+   "url": "https://quran.com/3/8",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-3-173",
+   "category": "quran",
+   "title": "Allah is sufficient for us",
+   "arabic": "حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ",
+   "translation": "Sufficient for us is Allāh, and [He is] the best Disposer of affairs.",
+   "reference": "Quran 3:173",
+   "url": "https://quran.com/3/173",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-7-23",
+   "category": "quran",
+   "title": "The dua of Adam and Hawwa",
+   "arabic": "رَبَّنَا ظَلَمْنَآ أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ ٱلْخَـٰسِرِينَ",
+   "translation": "Our Lord, we have wronged ourselves, and if You do not forgive us and have mercy upon us, we will surely be among the losers.",
+   "reference": "Quran 7:23",
+   "url": "https://quran.com/7/23",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-14-40-41",
+   "category": "quran",
+   "title": "For prayer, parents and believers",
+   "arabic": "رَبِّ ٱجْعَلْنِى مُقِيمَ ٱلصَّلَوٰةِ وَمِن ذُرِّيَّتِى ۚ رَبَّنَا وَتَقَبَّلْ دُعَآءِ رَبَّنَا ٱغْفِرْ لِى وَلِوَٰلِدَىَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ ٱلْحِسَابُ",
+   "translation": "My Lord, make me an establisher of prayer, and [many] from my descendants. Our Lord, and accept my supplication. Our Lord, forgive me and my parents and the believers the Day the account is established.",
+   "reference": "Quran 14:40-41",
+   "url": "https://quran.com/14/40-41",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-17-24",
+   "category": "quran",
+   "title": "For one's parents",
+   "arabic": "رَّبِّ ٱرْحَمْهُمَا كَمَا رَبَّيَانِى صَغِيرًا",
+   "translation": "My Lord, have mercy upon them as they brought me up [when I was] small.",
+   "reference": "Quran 17:24",
+   "url": "https://quran.com/17/24",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-18-10",
+   "category": "quran",
+   "title": "Mercy and right guidance",
+   "arabic": "رَبَّنَآ ءَاتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا",
+   "translation": "Our Lord, grant us from Yourself mercy and prepare for us from our affair right guidance.",
+   "reference": "Quran 18:10",
+   "url": "https://quran.com/18/10",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-20-114",
+   "category": "quran",
+   "title": "Increase me in knowledge",
+   "arabic": "رَّبِّ زِدْنِى عِلْمًا",
+   "translation": "My Lord, increase me in knowledge.",
+   "reference": "Quran 20:114",
+   "url": "https://quran.com/20/114",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-21-87",
+   "category": "quran",
+   "title": "The dua of Yunus",
+   "arabic": "لَّآ إِلَـٰهَ إِلَّآ أَنتَ سُبْحَـٰنَكَ إِنِّى كُنتُ مِنَ ٱلظَّـٰلِمِينَ",
+   "translation": "There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.",
+   "reference": "Quran 21:87",
+   "url": "https://quran.com/21/87",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-23-118",
+   "category": "quran",
+   "title": "Forgive and have mercy",
+   "arabic": "رَّبِّ ٱغْفِرْ وَٱرْحَمْ وَأَنتَ خَيْرُ ٱلرَّٰحِمِينَ",
+   "translation": "My Lord, forgive and have mercy, and You are the best of the merciful.",
+   "reference": "Quran 23:118",
+   "url": "https://quran.com/23/118",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-25-74",
+   "category": "quran",
+   "title": "For spouses and children",
+   "arabic": "رَبَّنَا هَبْ لَنَا مِنْ أَزْوَٰجِنَا وَذُرِّيَّـٰتِنَا قُرَّةَ أَعْيُنٍ وَٱجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا",
+   "translation": "Our Lord, grant us from among our wives and offspring comfort to our eyes and make us a leader [i.e., example] for the righteous.",
+   "reference": "Quran 25:74",
+   "url": "https://quran.com/25/74",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-28-24",
+   "category": "quran",
+   "title": "In need of any good",
+   "arabic": "رَبِّ إِنِّى لِمَآ أَنزَلْتَ إِلَىَّ مِنْ خَيْرٍ فَقِيرٌ",
+   "translation": "My Lord, indeed I am, for whatever good You would send down to me, in need.",
+   "reference": "Quran 28:24",
+   "url": "https://quran.com/28/24",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-46-15",
+   "category": "quran",
+   "title": "Gratitude, parents and offspring",
+   "arabic": "رَبِّ أَوْزِعْنِىٓ أَنْ أَشْكُرَ نِعْمَتَكَ ٱلَّتِىٓ أَنْعَمْتَ عَلَىَّ وَعَلَىٰ وَٰلِدَىَّ وَأَنْ أَعْمَلَ صَـٰلِحًا تَرْضَىٰهُ وَأَصْلِحْ لِى فِى ذُرِّيَّتِىٓ ۖ إِنِّى تُبْتُ إِلَيْكَ وَإِنِّى مِنَ ٱلْمُسْلِمِينَ",
+   "translation": "My Lord, enable me to be grateful for Your favor which You have bestowed upon me and upon my parents and to work righteousness of which You will approve and make righteous for me my offspring. Indeed, I have repented to You, and indeed, I am of the Muslims.",
+   "reference": "Quran 46:15",
+   "url": "https://quran.com/46/15",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  },
+  {
+   "id": "q-59-10",
+   "category": "quran",
+   "title": "For believers who preceded us in faith",
+   "arabic": "رَبَّنَا ٱغْفِرْ لَنَا وَلِإِخْوَٰنِنَا ٱلَّذِينَ سَبَقُونَا بِٱلْإِيمَـٰنِ وَلَا تَجْعَلْ فِى قُلُوبِنَا غِلًّا لِّلَّذِينَ ءَامَنُوا۟ رَبَّنَآ إِنَّكَ رَءُوفٌ رَّحِيمٌ",
+   "translation": "Our Lord, forgive us and our brothers who preceded us in faith and put not in our hearts [any] resentment toward those who have believed. Our Lord, indeed You are Kind and Merciful.",
+   "reference": "Quran 59:10",
+   "url": "https://quran.com/59/10",
+   "grades": [],
+   "gradingDiffers": false,
+   "englishEdition": "Saheeh International"
+  }
+ ]
+}

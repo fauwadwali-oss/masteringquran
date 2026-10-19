@@ -4,6 +4,7 @@ import { BookOpen, Library, Heart, Star, Calendar, Loader2 } from "lucide-react"
 import { dailyIndex, dailyVerseKey } from "@/lib/daily-selection";
 import { Card, CardContent } from "@/components/ui/card";
 import { upcomingEvents } from "@/lib/hijri";
+import { DUAS, DUA_CATEGORIES, NAMES } from "@/lib/islamic-data";
 
 interface VerseOfDay {
     verse_key: string;
@@ -18,7 +19,7 @@ interface HadithOfDay {
     text: string;
 }
 interface DuaOfDay {
-    id: number;
+    id: string;
     categoryId: string;
     source?: string;
     title: string;
@@ -29,7 +30,7 @@ interface NameOfDay {
     number: number;
     arabic: string;
     transliteration: string;
-    english: string;
+    english: string | null;
 }
 interface NextEvent {
     name: string;
@@ -84,26 +85,24 @@ export default function TodayStrip() {
             if (!h?.text) throw new Error("Missing hadith");
             setHadith({ collection: data.metadata.name, slug: "nawawi", number: String(h.hadithnumber), text: h.text });
         })().catch(() => failed("hadith"));
-        const duaTask = (async () => {
-            const { data } = await json("https://ummahapi.com/api/duas/categories");
-            const categories = [...data.categories].sort((a, b) => a.id.localeCompare(b.id));
-            const category = categories[dailyIndex(day, categories.length)];
-            const result = await json(`https://ummahapi.com/api/duas/category/${encodeURIComponent(category.id)}`);
-            const duas = [...result.data.duas].sort((a, b) => a.id - b.id);
-            const du = duas[dailyIndex(day, duas.length)];
-            if (!du?.translation) throw new Error("Missing dua");
-            setDua({ id: du.id, categoryId: category.id, title: du.title, category: category.name, translation: du.translation, source: du.source });
-        })().catch(() => failed("dua"));
-        const nameTask = json(`https://ummahapi.com/api/asma-ul-husna/${dailyIndex(day, 99) + 1}`)
-            .then(d => { const n = d.data?.name || d.data; if (!n?.arabic) throw new Error("Missing name"); setName(n); })
-            .catch(() => failed("name"));
+        // Dua and Name of the day come from our own sourced datasets (no network).
+        const du = DUAS[dailyIndex(day, DUAS.length)];
+        setDua({
+            id: du.id,
+            categoryId: du.category,
+            title: du.title,
+            category: DUA_CATEGORIES.find((c) => c.id === du.category)?.name ?? du.category,
+            translation: du.translation ?? du.transliteration ?? "",
+            source: du.reference,
+        });
+        setName(NAMES[dailyIndex(day, NAMES.length)]);
         const next = upcomingEvents(undefined, 1)[0];
         setEvent(next ? { name: next.name, hijri_date: next.hijri, days_until: next.daysUntil } : null);
         const timeout = window.setTimeout(() => {
             controller.abort();
             setErrors({ verse: true, hadith: true, dua: true, name: true });
         }, 15_000);
-        void Promise.allSettled([verseTask, hadithTask, duaTask, nameTask]).then(() => window.clearTimeout(timeout));
+        void Promise.allSettled([verseTask, hadithTask]).then(() => window.clearTimeout(timeout));
         return () => { window.clearTimeout(timeout); controller.abort(); };
     }, [dateKey, retry]);
 
@@ -215,7 +214,7 @@ export default function TodayStrip() {
                                         </p>
                                         <div>
                                             <p className="font-semibold text-slate-900 dark:text-white italic">{name.transliteration}</p>
-                                            <p className="text-sm text-amber-600 dark:text-amber-400">{name.english}</p>
+                                            {name.english && <p className="text-sm text-amber-600 dark:text-amber-400">{name.english}</p>}
                                         </div>
                                         <p className="text-xs text-slate-400 font-mono">#{name.number} of 99</p>
                                     </>

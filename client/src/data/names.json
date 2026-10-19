@@ -1,0 +1,712 @@
+{
+ "source": {
+  "list": "Jami` at-Tirmidhi 3507",
+  "listGrade": "The enumeration's chain is graded da'if (weak) by Ahmad Shakir, al-Albani and Zubair Ali Zai",
+  "countEvidence": [
+   "Sahih al-Bukhari 7392",
+   "Sahih Muslim 2677"
+  ],
+  "countEvidenceNote": "These authentic hadith state that Allah has ninety-nine names; they do not list them.",
+  "arabicEdition": "fawazahmed0/hadith-api ara-tirmidhi",
+  "englishEdition": "fawazahmed0/hadith-api eng-tirmidhi"
+ },
+ "names": [
+  {
+   "number": 1,
+   "arabic": "اللَّهُ",
+   "transliteration": "Allāh",
+   "english": "The one whom there is none worthy of worship except for Him",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 2,
+   "arabic": "الرَّحْمَنُ",
+   "transliteration": "Ar-Raḥmān",
+   "english": "The Most Merciful (to the creation)",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 3,
+   "arabic": "الرَّحِيمُ",
+   "transliteration": "Ar-Raḥīm",
+   "english": "The Most Beneficent (to the believers)",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 4,
+   "arabic": "الْمَلِكُ",
+   "transliteration": "Al-Malik",
+   "english": "The King",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 5,
+   "arabic": "الْقُدُّوسُ",
+   "transliteration": "Al-Quddūs",
+   "english": "The Free of Deficiencies",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 6,
+   "arabic": "السَّلاَمُ",
+   "transliteration": "As-Salām",
+   "english": "The Granter of Safety",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 7,
+   "arabic": "الْمُؤْمِنُ",
+   "transliteration": "Al-Mu’min",
+   "english": "The Granter of Security",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 8,
+   "arabic": "الْمُهَيْمِنُ",
+   "transliteration": "Al-Muhaimin",
+   "english": "The Watcher",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 9,
+   "arabic": "الْعَزِيزُ",
+   "transliteration": "Al-`Azīz",
+   "english": "The Mighty",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 10,
+   "arabic": "الْجَبَّارُ",
+   "transliteration": "Al-Jabbār",
+   "english": "The Compeller",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 11,
+   "arabic": "الْمُتَكَبِّرُ",
+   "transliteration": "Al-Mutakabbir",
+   "english": "The Supreme",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 12,
+   "arabic": "الْخَالِقُ",
+   "transliteration": "Al-Khāliq",
+   "english": "The Creator",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 13,
+   "arabic": "الْبَارِئُ",
+   "transliteration": "Al-Bāri’",
+   "english": "The Originator",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 14,
+   "arabic": "الْمُصَوِّرُ",
+   "transliteration": "Al-Muṣawwir",
+   "english": "The Fashioner",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 15,
+   "arabic": "الْغَفَّارُ",
+   "transliteration": "Al-Ghaffār",
+   "english": "The Pardoner",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 16,
+   "arabic": "الْقَهَّارُ",
+   "transliteration": "Al-Qahhār",
+   "english": "The Overwhelming",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 17,
+   "arabic": "الْوَهَّابُ",
+   "transliteration": "Al-Wahhāb",
+   "english": "The Giving",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 18,
+   "arabic": "الرَّزَّاقُ",
+   "transliteration": "Ar-Razzāq",
+   "english": "The Provider",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 19,
+   "arabic": "الْفَتَّاحُ",
+   "transliteration": "Al-Fattāḥ",
+   "english": "The Opener",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 20,
+   "arabic": "الْعَلِيمُ",
+   "transliteration": "Al-`Alīm",
+   "english": "The Knowing",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 21,
+   "arabic": "الْقَابِضُ",
+   "transliteration": "Al-Qābiḍ",
+   "english": "The Taker",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 22,
+   "arabic": "الْبَاسِطُ",
+   "transliteration": "Al-Bāsiṭ",
+   "english": "The Giver",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 23,
+   "arabic": "الْخَافِضُ",
+   "transliteration": "Al-Khāfiḍ",
+   "english": "The Abaser",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 24,
+   "arabic": "الرَّافِعُ",
+   "transliteration": "Ar-Rāfi`",
+   "english": "The Exalter",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 25,
+   "arabic": "الْمُعِزُّ",
+   "transliteration": "Al-Mu`izz",
+   "english": "The One who grants honor",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 26,
+   "arabic": "الْمُذِلُّ",
+   "transliteration": "Al-Mudhil",
+   "english": "The One who humiliates",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 27,
+   "arabic": "السَّمِيعُ",
+   "transliteration": "As-Samī`",
+   "english": "The Hearing",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 28,
+   "arabic": "الْبَصِيرُ",
+   "transliteration": "Al-Baṣīr",
+   "english": "The Seeing",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 29,
+   "arabic": "الْحَكَمُ",
+   "transliteration": "Al-Ḥakam",
+   "english": "The Judge",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 30,
+   "arabic": "الْعَدْلُ",
+   "transliteration": "Al-`Adl",
+   "english": "The Just",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 31,
+   "arabic": "اللَّطِيفُ",
+   "transliteration": "Al-Laṭīf",
+   "english": "The Kind",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 32,
+   "arabic": "الْخَبِيرُ",
+   "transliteration": "Al-Khabīr",
+   "english": "The Aware",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 33,
+   "arabic": "الْحَلِيمُ",
+   "transliteration": "Al-Ḥalīm",
+   "english": "The Forbearing",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 34,
+   "arabic": "الْعَظِيمُ",
+   "transliteration": "Al-`Aẓīm",
+   "english": "The Magnificent",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 35,
+   "arabic": "الْغَفُورُ",
+   "transliteration": "Al-Ghafūr",
+   "english": "The Oft-Forgiving",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 36,
+   "arabic": "الشَّكُورُ",
+   "transliteration": "Ash-Shakūr",
+   "english": "Appreciative",
+   "englishSource": "Quran 35:30, Saheeh International"
+  },
+  {
+   "number": 37,
+   "arabic": "الْعَلِيُّ",
+   "transliteration": "Al-`Aliyy",
+   "english": "The Most High",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 38,
+   "arabic": "الْكَبِيرُ",
+   "transliteration": "Al-Kabīr",
+   "english": "The Great",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 39,
+   "arabic": "الْحَفِيظُ",
+   "transliteration": "Al-Ḥafīẓ",
+   "english": "The Guardian",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 40,
+   "arabic": "الْمُقِيتُ",
+   "transliteration": "Al-Muqīt",
+   "english": "Keeper",
+   "englishSource": "Quran 4:85, Saheeh International"
+  },
+  {
+   "number": 41,
+   "arabic": "الْحَسِيبُ",
+   "transliteration": "Al-Ḥasīb",
+   "english": "The Reckoner",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 42,
+   "arabic": "الْجَلِيلُ",
+   "transliteration": "Al-Jalīl",
+   "english": "The Glorious",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 43,
+   "arabic": "الْكَرِيمُ",
+   "transliteration": "Al-Karīm",
+   "english": "The Generous",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 44,
+   "arabic": "الرَّقِيبُ",
+   "transliteration": "Ar-Raqīb",
+   "english": "The Watcher",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 45,
+   "arabic": "الْمُجِيبُ",
+   "transliteration": "Al-Mujīb",
+   "english": "The Responder",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 46,
+   "arabic": "الْوَاسِعُ",
+   "transliteration": "Al-Wāsi`",
+   "english": "The Liberal Giver",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 47,
+   "arabic": "الْحَكِيمُ",
+   "transliteration": "Al-Ḥakīm",
+   "english": "The Wise",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 48,
+   "arabic": "الْوَدُودُ",
+   "transliteration": "Al-Wadūd",
+   "english": "The Loving",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 49,
+   "arabic": "الْمَجِيدُ",
+   "transliteration": "Al-Majīd",
+   "english": "The Majestic",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 50,
+   "arabic": "الْبَاعِثُ",
+   "transliteration": "Al-Bā`ith",
+   "english": "The Reviver",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 51,
+   "arabic": "الشَّهِيدُ",
+   "transliteration": "Ash-Shahīd",
+   "english": "The Witness",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 52,
+   "arabic": "الْحَقُّ",
+   "transliteration": "Al-Ḥaqq",
+   "english": "The Truth",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 53,
+   "arabic": "الْوَكِيلُ",
+   "transliteration": "Al-Wakīl",
+   "english": "Disposer of affairs",
+   "englishSource": "Quran 3:173, Saheeh International"
+  },
+  {
+   "number": 54,
+   "arabic": "الْقَوِيُّ",
+   "transliteration": "Al-Qawiyy",
+   "english": "The Strong",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 55,
+   "arabic": "الْمَتِينُ",
+   "transliteration": "Al-Matīn",
+   "english": "The Firm",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 56,
+   "arabic": "الْوَلِيُّ",
+   "transliteration": "Al-Waliyy",
+   "english": "The One Who Aids",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 57,
+   "arabic": "الْحَمِيدُ",
+   "transliteration": "Al-Ḥamīd",
+   "english": "The Praiseworthy",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 58,
+   "arabic": "الْمُحْصِي",
+   "transliteration": "Al-Muḥṣi",
+   "english": "The Encompasser",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 59,
+   "arabic": "الْمُبْدِئُ",
+   "transliteration": "Al-Mubdi’",
+   "english": "The One Who Begins things",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 60,
+   "arabic": "الْمُعِيدُ",
+   "transliteration": "Al-Mu`īd",
+   "english": "The One Who brings things back",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 61,
+   "arabic": "الْمُحْيِي",
+   "transliteration": "Al-Muḥyi",
+   "english": "The One Who gives life",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 62,
+   "arabic": "الْمُمِيتُ",
+   "transliteration": "Al-Mumīt",
+   "english": "The One Who causes death",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 63,
+   "arabic": "الْحَىُّ",
+   "transliteration": "Al-Ḥayyu",
+   "english": "The Living",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 64,
+   "arabic": "الْقَيُّومُ",
+   "transliteration": "Al-Qayyūm",
+   "english": "The Self-Sustaining",
+   "englishSource": "Quran 2:255, Saheeh International"
+  },
+  {
+   "number": 65,
+   "arabic": "الْوَاجِدُ",
+   "transliteration": "Al-Wājid",
+   "english": null,
+   "englishSource": null
+  },
+  {
+   "number": 66,
+   "arabic": "الْمَاجِدُ",
+   "transliteration": "Al-Mājid",
+   "english": "The Illustrious",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 67,
+   "arabic": "الْوَاحِدُ",
+   "transliteration": "Al-Wāḥid",
+   "english": "The One",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 68,
+   "arabic": "الصَّمَدُ",
+   "transliteration": "Aṣ-Ṣamad",
+   "english": "The Master",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 69,
+   "arabic": "الْقَادِرُ",
+   "transliteration": "Al-Qādir",
+   "english": "The Able",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 70,
+   "arabic": "الْمُقْتَدِرُ",
+   "transliteration": "Al-Muqtadir",
+   "english": "The Powerful",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 71,
+   "arabic": "الْمُقَدِّمُ",
+   "transliteration": "Al-Muqaddim",
+   "english": "The One who hastens",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 72,
+   "arabic": "الْمُؤَخِّرُ",
+   "transliteration": "Al-Mu’akhkhir",
+   "english": "The One who delays",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 73,
+   "arabic": "الأَوَّلُ",
+   "transliteration": "Al-Awwal",
+   "english": "The First",
+   "explanation": "Thou art the First, there is naught before Thee",
+   "englishSource": "Sahih Muslim 2713"
+  },
+  {
+   "number": 74,
+   "arabic": "الآخِرُ",
+   "transliteration": "Al-Ākhir",
+   "english": "The Last",
+   "explanation": "Thou art the Last and there is naught after Thee",
+   "englishSource": "Sahih Muslim 2713"
+  },
+  {
+   "number": 75,
+   "arabic": "الظَّاهِرُ",
+   "transliteration": "Aẓ-Ẓāhir",
+   "english": "The Evident",
+   "explanation": "Thou art Evident and there is nothing above Thee",
+   "englishSource": "Sahih Muslim 2713"
+  },
+  {
+   "number": 76,
+   "arabic": "الْبَاطِنُ",
+   "transliteration": "Al-Bāṭin",
+   "english": "The Innermost",
+   "explanation": "Thou art Innermost and there is nothing beyond Thee",
+   "englishSource": "Sahih Muslim 2713"
+  },
+  {
+   "number": 77,
+   "arabic": "الْوَالِي",
+   "transliteration": "Al-Wāli",
+   "english": "The Owner",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 78,
+   "arabic": "الْمُتَعَالِي",
+   "transliteration": "Al-Muta`āli",
+   "english": "The Exalted",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 79,
+   "arabic": "الْبَرُّ",
+   "transliteration": "Al-Barr",
+   "english": "The Doer of Good",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 80,
+   "arabic": "التَّوَّابُ",
+   "transliteration": "At-Tawwāb",
+   "english": "The Acceptor of repentance",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 81,
+   "arabic": "الْمُنْتَقِمُ",
+   "transliteration": "Al-Muntaqim",
+   "english": "The Owner of Retribution",
+   "englishSource": "Quran 3:4, Saheeh International, rendering ذُو ٱنتِقَامٍ"
+  },
+  {
+   "number": 82,
+   "arabic": "الْعَفُوُّ",
+   "transliteration": "Al-`Afuww",
+   "english": "The Pardoning",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 83,
+   "arabic": "الرَّءُوفُ",
+   "transliteration": "Ar-Ra’ūf",
+   "english": "The Kind",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 84,
+   "arabic": "مَالِكُ الْمُلْكِ",
+   "transliteration": "Mālikul-Mulk",
+   "english": "The Owner of Dominion",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 85,
+   "arabic": "ذُو الْجَلاَلِ وَالإِكْرَامِ",
+   "transliteration": "Dhul Jalāli wal Ikrām",
+   "english": "Owner of Majesty and Honor",
+   "englishSource": "Quran 55:27, Saheeh International"
+  },
+  {
+   "number": 86,
+   "arabic": "الْمُقْسِطُ",
+   "transliteration": "Al-Muqsiṭ",
+   "english": "The One who does justice",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 87,
+   "arabic": "الْجَامِعُ",
+   "transliteration": "Al-Jāmi`",
+   "english": "The Gatherer",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 88,
+   "arabic": "الْغَنِيُّ",
+   "transliteration": "Al-Ghaniyy",
+   "english": "The Free of need",
+   "englishSource": "Quran 35:15, Saheeh International"
+  },
+  {
+   "number": 89,
+   "arabic": "الْمُغْنِي",
+   "transliteration": "Al-Mughni",
+   "english": "The Enricher",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 90,
+   "arabic": "الْمَانِعُ",
+   "transliteration": "Al-Māni`",
+   "english": "The Preventer",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 91,
+   "arabic": "الضَّارُّ",
+   "transliteration": "Aḍ-Ḍār",
+   "english": null,
+   "englishSource": null
+  },
+  {
+   "number": 92,
+   "arabic": "النَّافِعُ",
+   "transliteration": "An-Nāfi`",
+   "english": "The One who benefits",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 93,
+   "arabic": "النُّورُ",
+   "transliteration": "An-Nūr",
+   "english": "The Light",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 94,
+   "arabic": "الْهَادِي",
+   "transliteration": "Al-Hādi",
+   "english": "The Guide",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 95,
+   "arabic": "الْبَدِيعُ",
+   "transliteration": "Al-Badī`",
+   "english": "The Originator",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 96,
+   "arabic": "الْبَاقِي",
+   "transliteration": "Al-Bāqi",
+   "english": "The Lasting",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 97,
+   "arabic": "الْوَارِثُ",
+   "transliteration": "Al-Wārith",
+   "english": "The Inheritor",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 98,
+   "arabic": "الرَّشِيدُ",
+   "transliteration": "Ar-Rashīd",
+   "english": "The Guide",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  },
+  {
+   "number": 99,
+   "arabic": "الصَّبُورُ",
+   "transliteration": "Aṣ-Ṣabūr",
+   "english": "The Tolerant",
+   "englishSource": "Jami` at-Tirmidhi 3507, English edition"
+  }
+ ]
+}

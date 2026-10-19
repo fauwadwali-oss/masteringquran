@@ -3,6 +3,7 @@ import { Trophy, CheckCircle2, XCircle, RotateCcw, Sparkles, Loader2 } from "luc
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
+import { NAMES } from "@/lib/islamic-data";
 
 const SURAH_NAMES: Record<number, string> = {
     1: "Al-Fatihah", 2: "Al-Baqarah", 3: "Aal-Imran", 4: "An-Nisa", 5: "Al-Ma'idah",
@@ -62,23 +63,18 @@ async function fetchVerseQuestion(): Promise<VerseQ> {
 }
 
 async function fetchNameQuestion(): Promise<NameQ> {
-    // pick a random 1-99
-    const n = Math.floor(Math.random() * 99) + 1;
-    const r = await fetch(`https://ummahapi.com/api/asma-ul-husna/${n}`);
-    const d: any = await r.json();
-    const target = d.data?.name || d.data;
-    // Fetch all to build distractors
-    const all = await fetch("https://ummahapi.com/api/asma-ul-husna").then((x) => x.json());
-    const allList = Array.isArray(all.data) ? all.data : all.data?.names || [];
-    const distractors = shuffle(allList.filter((x: any) => x.number !== target.number))
+    // Only names with a sourced English rendering can be quizzed on their meaning.
+    const withEnglish = NAMES.filter((x) => x.english);
+    const target = withEnglish[Math.floor(Math.random() * withEnglish.length)];
+    const distractors = shuffle(withEnglish.filter((x) => x.number !== target.number && x.english !== target.english))
         .slice(0, 3)
-        .map((x: any) => x.english as string);
+        .map((x) => x.english as string);
     return {
         number: target.number,
         arabic: target.arabic,
         transliteration: target.transliteration,
-        correctEnglish: target.english,
-        options: shuffle([target.correctEnglish || target.english, ...distractors]),
+        correctEnglish: target.english as string,
+        options: shuffle([target.english as string, ...distractors]),
     };
 }
 

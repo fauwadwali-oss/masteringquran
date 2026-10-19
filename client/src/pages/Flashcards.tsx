@@ -3,6 +3,7 @@ import { Sparkles, ArrowLeft, ArrowRight, RotateCcw, Loader2, Shuffle, Star } fr
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
+import { NAMES } from "@/lib/islamic-data";
 
 type Deck = "names" | "roots" | "surahs";
 
@@ -59,19 +60,15 @@ const DECKS: Record<Deck, { label: string; emoji: string; color: string; getCard
         label: "99 Names of Allah",
         emoji: "✨",
         color: "amber",
-        getCards: async () => {
-            const r = await fetch("https://ummahapi.com/api/asma-ul-husna");
-            const d: any = await r.json();
-            const list = Array.isArray(d.data) ? d.data : d.data?.names || [];
-            return list.map((n: any) => ({
+        getCards: () =>
+            NAMES.map((n) => ({
                 front: n.arabic,
                 frontSub: n.transliteration,
-                back: n.english,
-                backSub: n.meaning,
-                reference: `#${n.number} of 99`,
+                back: n.english ?? n.transliteration,
+                backSub: n.explanation ?? n.englishSource ?? "No reliable sourced English rendering",
+                reference: `#${n.number} of 99 · Jami\` at-Tirmidhi 3507`,
                 dir: "rtl" as const,
-            }));
-        },
+            })),
     },
     roots: {
         label: "Arabic roots",

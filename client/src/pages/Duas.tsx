@@ -1,130 +1,96 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Loader2, AlertCircle, Search, BookOpen, ArrowLeft } from "lucide-react";
+import { Search, BookOpen, ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SEO from "@/components/SEO";
 import PageHero from "@/components/PageHero";
+import { DUAS, DUA_CATEGORIES, searchDuas, type Dua, type DuaCategory } from "@/lib/islamic-data";
 
-interface Category {
-    id: string;
-    name: string;
-    description: string;
-    count: number;
-}
-
-interface Dua {
-    id: number;
-    title: string;
-    category: string;
-    arabic: string;
-    transliteration: string;
-    translation: string;
-    source?: string;
-    repeat?: number;
+function DuaCard({ d, showCategory }: { d: Dua; showCategory?: boolean }) {
+    const category = DUA_CATEGORIES.find((c) => c.id === d.category);
+    return (
+        <Card id={d.id} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 scroll-mt-24">
+            <CardContent className="p-6 space-y-4">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{d.title}</h3>
+                    <div className="flex flex-wrap gap-2">
+                        {showCategory && category && (
+                            <span className="text-xs bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-1 rounded-full border border-slate-200 dark:border-slate-700">
+                                {category.name}
+                            </span>
+                        )}
+                        {d.count && d.count > 1 && (
+                            <span className="text-xs bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 px-2 py-1 rounded-full border border-teal-200 dark:border-teal-900/40">
+                                ×{d.count}
+                            </span>
+                        )}
+                    </div>
+                </div>
+                <p className="font-amiri text-2xl md:text-3xl leading-loose text-slate-900 dark:text-slate-100 text-right" dir="rtl" lang="ar">
+                    {d.arabic}
+                </p>
+                {d.transliteration && <p className="text-sm italic text-slate-500 dark:text-slate-400">{d.transliteration}</p>}
+                {d.translation && <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{d.translation}</p>}
+                <div className="space-y-1 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <a href={d.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-medium text-teal-700 hover:underline dark:text-teal-400">
+                            {d.reference} <ExternalLink className="h-3 w-3" aria-hidden />
+                        </a>
+                        {d.gradingDiffers && (
+                            <span className="rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+                                Grading differs
+                            </span>
+                        )}
+                    </p>
+                    {d.grades.length > 0 && <p>Grades: {d.grades.join(" · ")}</p>}
+                    <p>
+                        {d.translation ? "English" : "Transliteration"} quoted from the {d.englishEdition}.
+                        {!d.translation && " That translation gives this dua in transliteration only."}
+                        {d.narrationOmitted && " The … marks a narrator's comment left out."}
+                    </p>
+                </div>
+            </CardContent>
+        </Card>
+    );
 }
 
 export default function Duas() {
     const [params, setParams] = useSearchParams();
     const targetCategory = params.get("category");
     const targetDua = params.get("dua");
-    const [categories, setCategories] = useState<Category[]>([]);
-    const selected = categories.find(c => c.id === targetCategory) ?? null;
-    const setSelected = (category: Category | null) => setParams(category ? { category: category.id } : {});
-    const [duas, setDuas] = useState<Dua[]>([]);
-    const [loadingCats, setLoadingCats] = useState(true);
-    const [loadingDuas, setLoadingDuas] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const selected = DUA_CATEGORIES.find((c) => c.id === targetCategory) ?? null;
+    const setSelected = (category: DuaCategory | null) => setParams(category ? { category: category.id } : {});
     const [search, setSearch] = useState("");
 
-    // Global search results (when no category selected and search is non-empty)
-    const [globalResults, setGlobalResults] = useState<Dua[]>([]);
-    const [globalSearching, setGlobalSearching] = useState(false);
-
-    // Debounced global search across ALL duas when on picker view
-    useEffect(() => {
-        if (selected || !search.trim()) {
-            setGlobalResults([]);
-            return;
-        }
-        const timer = setTimeout(() => {
-            setGlobalSearching(true);
-            fetch(`https://ummahapi.com/api/duas/search?q=${encodeURIComponent(search)}`)
-                .then(async (r) => {
-                    if (!r.ok) throw new Error("failed");
-                    const d: any = await r.json();
-                    setGlobalResults(d.data?.results || []);
-                })
-                .catch(() => setGlobalResults([]))
-                .finally(() => setGlobalSearching(false));
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [search, selected]);
-
-    useEffect(() => {
-        fetch("https://ummahapi.com/api/duas/categories")
-            .then(async (r) => {
-                if (!r.ok) throw new Error("failed");
-                const d: any = await r.json();
-                setCategories(d.data?.categories || []);
-                setLoadingCats(false);
-            })
-            .catch(() => {
-                setError("Failed to load categories. Please try again.");
-                setLoadingCats(false);
-            });
+    const counts = useMemo(() => {
+        const m = new Map<string, number>();
+        for (const d of DUAS) m.set(d.category, (m.get(d.category) ?? 0) + 1);
+        return m;
     }, []);
 
-    useEffect(() => {
-        if (!selected) return;
-        setError(null);
-        setLoadingDuas(true);
-        setDuas([]);
-        setSearch("");
-        const controller = new AbortController();
-        fetch(`https://ummahapi.com/api/duas/category/${encodeURIComponent(selected.id)}`, { signal: controller.signal })
-            .then(async (r) => {
-                if (!r.ok) throw new Error("failed");
-                const d: any = await r.json();
-                setDuas(d.data?.duas || []);
-                setLoadingDuas(false);
-            })
-            .catch(() => {
-                if (controller.signal.aborted) return;
-                setError("Failed to load duas from this category.");
-                setLoadingDuas(false);
-            });
-        return () => controller.abort();
-    }, [selected]);
+    const globalResults = useMemo(() => (selected ? [] : searchDuas(search)), [search, selected]);
 
-    const filteredCats = useMemo(() => {
-        if (!search.trim() || selected) return categories;
-        const q = search.toLowerCase();
-        return categories.filter(
-            (c) => c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q),
-        );
-    }, [categories, search, selected]);
-
-    const filteredDuas = useMemo(() => {
-        if (targetDua) return duas.filter(d => String(d.id) === targetDua);
-        if (!search.trim()) return duas;
-        const q = search.toLowerCase();
-        return duas.filter(
-            (d) =>
-                d.title?.toLowerCase().includes(q) ||
-                d.translation?.toLowerCase().includes(q) ||
-                d.transliteration?.toLowerCase().includes(q),
-        );
-    }, [duas, search, targetDua]);
+    const categoryDuas = useMemo(() => {
+        if (!selected) return [];
+        const inCategory = DUAS.filter((d) => d.category === selected.id);
+        if (targetDua) {
+            const one = inCategory.filter((d) => d.id === targetDua);
+            if (one.length) return one;
+        }
+        if (!search.trim()) return inCategory;
+        const ids = new Set(searchDuas(search).map((d) => d.id));
+        return inCategory.filter((d) => ids.has(d.id));
+    }, [selected, targetDua, search]);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-teal-50/30 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 font-sans">
             <SEO
-                title={selected ? `${selected.name} - Duas - Mastering Quran` : "Duas - Mastering Quran"}
-                description="Authentic supplications (duas) from the Quran and Sunnah across 27 categories: morning adhkar, evening adhkar, wudu, travel, food, sleep, and more."
+                title={selected ? `${selected.name} - Duas - Mastering Quran` : "Duas from the Quran and Sunnah - Mastering Quran"}
+                description={`${DUAS.length} supplications quoted exactly from the Quran and the hadith collections, each with its reference and grading.`}
             />
-            <section className="py-12 px-6">
+            <section className="py-12 px-4 md:px-6">
                 <div className="max-w-4xl mx-auto">
                     {selected && (
                         <Button
@@ -143,19 +109,27 @@ export default function Duas() {
                         <PageHero
                             eyebrow={selected ? "Dua category" : "Daily supplications"}
                             title={selected ? selected.name : "Duas & Supplications"}
-                            description={selected ? selected.description : "126 authentic supplications from the Quran and Sunnah across 27 categories."}
+                            description={
+                                selected
+                                    ? `${counts.get(selected.id) ?? 0} duas, each quoted from its source.`
+                                    : `${DUAS.length} supplications quoted exactly from the Quran and the hadith collections, each with its reference.`
+                            }
                             icon={BookOpen}
                             accent="teal"
                         />
                     </div>
 
-                    {targetDua && selected && <button onClick={() => setSelected(selected)} className="mb-4 min-h-11 font-semibold text-teal-700 dark:text-teal-300 hover:underline">Browse all {selected.name} duas</button>}
-                    {/* Search */}
+                    {targetDua && selected && (
+                        <button onClick={() => setSelected(selected)} className="mb-4 min-h-11 font-semibold text-teal-700 dark:text-teal-300 hover:underline">
+                            Browse all {selected.name} duas
+                        </button>
+                    )}
+
                     <div className="max-w-md mx-auto mb-8">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
                             <Input
-                                placeholder={selected ? "Search duas by word…" : "Search categories…"}
+                                placeholder={selected ? "Search these duas…" : "Search all duas, e.g. sleep, travel, forgiveness…"}
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 className="pl-10 h-11 bg-white dark:bg-slate-800 rounded-xl"
@@ -163,141 +137,62 @@ export default function Duas() {
                         </div>
                     </div>
 
-                    {error && (
-                        <div className="text-center py-12">
-                            <AlertCircle className="h-10 w-10 text-red-500 mx-auto mb-3" />
-                            <p className="text-red-600 dark:text-red-400">{error}</p>
+                    {!selected &&
+                        (search.trim() ? (
+                            <>
+                                <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+                                    {globalResults.length} {globalResults.length === 1 ? "dua matches" : "duas match"} "{search}"
+                                </p>
+                                {globalResults.length === 0 && (
+                                    <Card className="p-12 text-center">
+                                        <p className="text-slate-500">No duas match this search. Try different words or browse the categories.</p>
+                                    </Card>
+                                )}
+                                <div className="space-y-4">
+                                    {globalResults.map((d) => (
+                                        <DuaCard key={d.id} d={d} showCategory />
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {DUA_CATEGORIES.map((c) => (
+                                    <Card
+                                        key={c.id}
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() => setSelected(c)}
+                                        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSelected(c)}
+                                        className="cursor-pointer group border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-teal-400 dark:hover:border-teal-500 transition-all hover:shadow-lg hover:-translate-y-0.5"
+                                    >
+                                        <CardHeader>
+                                            <div className="flex items-start justify-between">
+                                                <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center">
+                                                    <BookOpen className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                                                </div>
+                                                <span className="text-xs text-slate-400">{counts.get(c.id) ?? 0} duas</span>
+                                            </div>
+                                            <CardTitle className="text-lg font-semibold mt-2">{c.name}</CardTitle>
+                                        </CardHeader>
+                                    </Card>
+                                ))}
+                            </div>
+                        ))}
+
+                    {selected && (
+                        <div className="space-y-5">
+                            {categoryDuas.length === 0 ? (
+                                <Card className="p-12 text-center">
+                                    <p className="text-slate-500">No duas match this filter.</p>
+                                </Card>
+                            ) : (
+                                categoryDuas.map((d) => <DuaCard key={d.id} d={d} />)
+                            )}
                         </div>
                     )}
 
-                    {/* Category picker + global search */}
-                    {!selected && (
-                        <>
-                            {loadingCats ? (
-                                <div className="flex flex-col items-center justify-center py-20 gap-3">
-                                    <Loader2 className="h-10 w-10 animate-spin text-teal-600" />
-                                    <p className="text-slate-500">Loading categories…</p>
-                                </div>
-                            ) : search.trim() ? (
-                                /* Global search mode */
-                                <>
-                                    <div className="flex items-center justify-between mb-4">
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                                            {globalSearching ? "Searching…" : `${globalResults.length} ${globalResults.length === 1 ? "dua matches" : "duas match"} "${search}"`}
-                                        </p>
-                                        {globalSearching && <Loader2 className="h-4 w-4 animate-spin text-teal-600" />}
-                                    </div>
-                                    {!globalSearching && globalResults.length === 0 && (
-                                        <Card className="p-12 text-center">
-                                            <p className="text-slate-500">No duas match this search. Try different keywords or browse by category below.</p>
-                                        </Card>
-                                    )}
-                                    <div className="space-y-4">
-                                        {globalResults.map((d) => (
-                                            <Card key={d.id} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                                                <CardContent className="p-6 space-y-3">
-                                                    <div className="flex items-start justify-between gap-3 flex-wrap">
-                                                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{d.title}</h3>
-                                                        <span className="text-xs bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 px-2 py-1 rounded-full border border-teal-200 dark:border-teal-900/40">
-                                                            {d.category}
-                                                        </span>
-                                                    </div>
-                                                    <p className="font-amiri text-xl leading-loose text-slate-900 dark:text-slate-100 text-right" dir="rtl">
-                                                        {d.arabic}
-                                                    </p>
-                                                    <p className="text-sm italic text-slate-500 dark:text-slate-400">{d.transliteration}</p>
-                                                    <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm">{d.translation}</p>
-                                                    {d.source && (
-                                                        <p className="text-xs text-slate-400 dark:text-slate-500 font-mono pt-2 border-t border-slate-100 dark:border-slate-800">
-                                                            Source: {d.source}
-                                                        </p>
-                                                    )}
-                                                </CardContent>
-                                            </Card>
-                                        ))}
-                                    </div>
-                                </>
-                            ) : (
-                                /* Category grid */
-                                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {filteredCats.map((c) => (
-                                        <Card
-                                            key={c.id}
-                                            role="button"
-                                            tabIndex={0}
-                                            onClick={() => setSelected(c)}
-                                            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSelected(c)}
-                                            className="cursor-pointer group border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-teal-400 dark:hover:border-teal-500 transition-all hover:shadow-lg hover:-translate-y-0.5"
-                                        >
-                                            <CardHeader>
-                                                <div className="flex items-start justify-between">
-                                                    <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center">
-                                                        <BookOpen className="h-5 w-5 text-teal-600 dark:text-teal-400" />
-                                                    </div>
-                                                    <span className="text-xs text-slate-400 font-mono">{c.count} duas</span>
-                                                </div>
-                                                <CardTitle className="text-lg font-semibold mt-2">{c.name}</CardTitle>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <CardDescription className="text-sm">{c.description}</CardDescription>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
-                                </div>
-                            )}
-                        </>
-                    )}
-
-                    {/* Dua list */}
-                    {selected && (
-                        <>
-                            {loadingDuas ? (
-                                <div className="flex flex-col items-center justify-center py-20 gap-3">
-                                    <Loader2 className="h-10 w-10 animate-spin text-teal-600" />
-                                    <p className="text-slate-500">Loading duas…</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-5">
-                                    {filteredDuas.length === 0 ? (
-                                        <Card className="p-12 text-center">
-                                            <p className="text-slate-500">No duas match this filter.</p>
-                                        </Card>
-                                    ) : (
-                                        filteredDuas.map((d) => (
-                                            <Card key={d.id} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                                                <CardContent className="p-6 space-y-4">
-                                                    <div className="flex items-start justify-between gap-4 flex-wrap">
-                                                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{d.title}</h3>
-                                                        {d.repeat && d.repeat > 1 && (
-                                                            <span className="text-xs bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 px-2 py-1 rounded-full border border-teal-200 dark:border-teal-900/40">
-                                                                Repeat ×{d.repeat}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <p className="font-amiri text-2xl md:text-3xl leading-loose text-slate-900 dark:text-slate-100 text-right" dir="rtl">
-                                                        {d.arabic}
-                                                    </p>
-                                                    <p className="text-sm italic text-slate-500 dark:text-slate-400">{d.transliteration}</p>
-                                                    <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{d.translation}</p>
-                                                    {d.source && (
-                                                        <p className="text-xs text-slate-400 dark:text-slate-500 font-mono pt-2 border-t border-slate-100 dark:border-slate-800">
-                                                            Source: {d.source}
-                                                        </p>
-                                                    )}
-                                                </CardContent>
-                                            </Card>
-                                        ))
-                                    )}
-                                </div>
-                            )}
-                        </>
-                    )}
-
-                    <p className="text-center mt-12 text-xs text-slate-500 dark:text-slate-400">
-                        Data from{" "}
-                        <a href="https://ummahapi.com" target="_blank" rel="noopener noreferrer" className="text-teal-600 hover:underline">
-                            UmmahAPI
-                        </a>.
+                    <p className="text-center mt-12 text-xs leading-relaxed text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+                        Every Arabic, English and transliteration text is quoted exactly from its source: the Quran (Uthmani text, Saheeh International) and the hadith editions of fawazahmed0/hadith-api (public domain). English editions use their own wording; grades are shown as recorded in those editions.
                     </p>
                 </div>
             </section>

@@ -1,46 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
-import { Loader2, AlertCircle, Search, Sparkles } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Info, Search, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
-
-interface Name {
-    number: number;
-    arabic: string;
-    transliteration: string;
-    english: string;
-    meaning?: string;
-}
+import { NAMES, NAMES_SOURCE } from "@/lib/islamic-data";
 
 export default function Names() {
-    const [names, setNames] = useState<Name[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const names = NAMES;
     const [search, setSearch] = useState("");
-
-    useEffect(() => {
-        fetch("https://ummahapi.com/api/asma-ul-husna")
-            .then(async (r) => {
-                if (!r.ok) throw new Error("failed");
-                const d: any = await r.json();
-                const list: Name[] = Array.isArray(d.data) ? d.data : d.data?.names || [];
-                setNames(list);
-                setLoading(false);
-            })
-            .catch(() => {
-                setError("Failed to load the 99 Names. Please try again.");
-                setLoading(false);
-            });
-    }, []);
 
     const filtered = useMemo(() => {
         if (!search.trim()) return names;
         const q = search.toLowerCase();
         return names.filter(
             (n) =>
-                n.transliteration?.toLowerCase().includes(q) ||
+                n.transliteration.toLowerCase().includes(q) ||
                 n.english?.toLowerCase().includes(q) ||
-                n.meaning?.toLowerCase().includes(q),
+                n.explanation?.toLowerCase().includes(q),
         );
     }, [names, search]);
 
@@ -48,7 +24,7 @@ export default function Names() {
         <div className="min-h-screen bg-gradient-to-b from-amber-50/30 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 font-sans">
             <SEO
                 title="99 Names of Allah - Mastering Quran"
-                description="The Asma ul-Husna — Allah's 99 beautiful names with Arabic, transliteration, English meaning, and reflection."
+                description="The 99 Names of Allah as listed in Jami` at-Tirmidhi 3507, with Arabic, transliteration and sourced English renderings."
             />
             <section className="py-16 px-6">
                 <div className="max-w-5xl mx-auto">
@@ -81,21 +57,16 @@ export default function Names() {
                         </div>
                     </div>
 
-                    {loading && (
-                        <div className="flex flex-col items-center justify-center py-20 gap-3">
-                            <Loader2 className="h-10 w-10 animate-spin text-amber-600" />
-                            <p className="text-slate-500">Loading the 99 Names…</p>
-                        </div>
-                    )}
+                    <div className="max-w-3xl mx-auto mb-10 flex gap-3 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-sm leading-relaxed text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+                        <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                        <p>
+                            <strong>About this list.</strong> The hadith that Allah has ninety-nine names is authentic ({NAMES_SOURCE.countEvidence.join(", ")}), but those narrations do not list them.
+                            The names and their order below come from {NAMES_SOURCE.list}, whose enumeration is graded <em>da'if</em> (weak) by Ahmad Shakir, al-Albani and Zubair Ali Zai.
+                            Each English rendering names its source; where no reliable sourced rendering exists, none is shown.
+                        </p>
+                    </div>
 
-                    {error && (
-                        <div className="text-center py-16">
-                            <AlertCircle className="h-10 w-10 text-red-500 mx-auto mb-3" />
-                            <p className="text-red-600 dark:text-red-400">{error}</p>
-                        </div>
-                    )}
-
-                    {!loading && !error && (
+                    {(
                         <>
                             <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
                                 {filtered.length} of {names.length} {filtered.length === 1 ? "name" : "names"}
@@ -117,13 +88,16 @@ export default function Names() {
                                             </div>
                                             <div>
                                                 <p className="font-semibold text-slate-900 dark:text-white italic">{n.transliteration}</p>
-                                                <p className="text-sm text-amber-700 dark:text-amber-400 font-medium">{n.english}</p>
+                                                {n.english && <p className="text-sm text-amber-700 dark:text-amber-400 font-medium">{n.english}</p>}
                                             </div>
-                                            {n.meaning && (
+                                            {n.explanation && (
                                                 <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                                                    {n.meaning}
+                                                    &ldquo;{n.explanation}&rdquo;
                                                 </p>
                                             )}
+                                            <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                                                {n.englishSource ?? "No reliable sourced English rendering"}
+                                            </p>
                                         </CardContent>
                                     </Card>
                                 ))}
@@ -132,10 +106,7 @@ export default function Names() {
                     )}
 
                     <p className="text-center mt-12 text-xs text-slate-500 dark:text-slate-400">
-                        Data from{" "}
-                        <a href="https://ummahapi.com" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">
-                            UmmahAPI
-                        </a>.
+                        Arabic and English from the {NAMES_SOURCE.arabicEdition} and {NAMES_SOURCE.englishEdition} editions (public domain), with replacements quoted from Saheeh International and Sahih Muslim 2713 where marked.
                     </p>
                 </div>
             </section>
