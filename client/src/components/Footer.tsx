@@ -15,7 +15,10 @@ export default function Footer() {
                         Read, listen, and understand the Holy Quran — free, ad-free, and grounded in verified sources.
                     </p>
                     <p className="text-xs text-slate-500">
-                        Operated by Nusrat Wali Ventures LLC · Houston, Texas
+                        <a href="https://nusratwaliventures.com" className="transition-colors hover:text-white">
+                            Part of Nusrat Wali Ventures
+                        </a>{' '}
+                        · Operated by Nusrat Wali Ventures LLC · Houston, Texas
                     </p>
                 </div>
 
