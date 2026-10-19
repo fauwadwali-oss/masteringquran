@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Flame, TrendingUp, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
-import { getStreak, StreakInfo } from "@/lib/queries/streak";
+import type { StreakInfo } from "@/lib/queries/streak";
 
 const TOTAL_VERSES = 6236;
 
@@ -19,7 +19,8 @@ export default function ReadingPaceWidget() {
             setLoading(false);
             return;
         }
-        getStreak(user.id)
+        void import("@/lib/queries/streak")
+            .then(({ getStreak }) => getStreak(user.id))
             .then((s) => {
                 setStreak(s);
                 setLoading(false);

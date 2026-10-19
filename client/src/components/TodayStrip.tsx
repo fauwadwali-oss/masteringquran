@@ -145,7 +145,7 @@ export default function TodayStrip() {
                                         <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-4">
                                             {clampText(verse.english, 160)}
                                         </p>
-                                        <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">— Quran {verse.verse_key} · Saheeh International</p>
+                                        <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">— Quran {verse.verse_key} · Saheeh International</p>
                                     </>
                                 ) : (
                                     placeholder("verse")
@@ -167,7 +167,7 @@ export default function TodayStrip() {
                                         <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed line-clamp-6">
                                             {clampText(hadith.text, 280)}
                                         </p>
-                                        <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">— {hadith.collection} #{hadith.number}</p>
+                                        <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">— {hadith.collection} #{hadith.number}</p>
                                     </>
                                 ) : (
                                     placeholder("hadith")
@@ -190,7 +190,7 @@ export default function TodayStrip() {
                                         <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-5">
                                             {clampText(dua.translation, 220)}
                                         </p>
-                                        <p className="text-xs text-teal-600 dark:text-teal-400 font-medium">— {dua.source || dua.category}</p>
+                                        <p className="text-xs text-teal-700 dark:text-teal-400 font-medium">— {dua.source || dua.category}</p>
                                     </>
                                 ) : (
                                     placeholder("dua")
@@ -214,9 +214,9 @@ export default function TodayStrip() {
                                         </p>
                                         <div>
                                             <p className="font-semibold text-slate-900 dark:text-white italic">{name.transliteration}</p>
-                                            {name.english && <p className="text-sm text-amber-600 dark:text-amber-400">{name.english}</p>}
+                                            {name.english && <p className="text-sm text-amber-700 dark:text-amber-400">{name.english}</p>}
                                         </div>
-                                        <p className="text-xs text-slate-400 font-mono">#{name.number} of 99</p>
+                                        <p className="text-xs text-slate-600 dark:text-slate-400 font-mono">#{name.number} of 99</p>
                                     </>
                                 ) : (
                                     placeholder("name")

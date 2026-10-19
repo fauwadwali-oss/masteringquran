@@ -8,7 +8,7 @@ export default function Footer() {
             <div className="relative mx-auto grid max-w-6xl gap-10 text-center md:grid-cols-[1.35fr_0.8fr_0.8fr_0.9fr] md:text-left">
                 <div className="space-y-4">
                     <Link to="/" className="inline-flex items-center justify-center gap-3 md:justify-start">
-                        <img src="/mq-logo-mark.svg" alt="" aria-hidden="true" className="h-12 w-auto" />
+                        <img src="/mq-logo-mark.svg" alt="" aria-hidden="true" width="48" height="48" className="h-12 w-auto" />
                         <span className="text-lg font-bold text-white">Mastering Quran</span>
                     </Link>
                     <p className="max-w-sm text-sm leading-7 text-slate-400 mx-auto md:mx-0">
@@ -23,7 +23,7 @@ export default function Footer() {
                 </div>
 
                 <div className="space-y-2">
-                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Study</h4>
+                    <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Study</h2>
                     <div className="flex flex-col gap-3 text-sm">
                         <FooterLink to="/quran" icon={BookOpen} label="Read the Quran" />
                         <FooterLink to="/hadith" icon={BookOpen} label="Browse Hadith" />
@@ -33,7 +33,7 @@ export default function Footer() {
                 </div>
 
                 <div className="space-y-2">
-                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Daily</h4>
+                    <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Daily</h2>
                     <div className="flex flex-col gap-3 text-sm">
                         <FooterLink to="/prayer-times" icon={BookOpen} label="Prayer Times" />
                         <FooterLink to="/duas" icon={Heart} label="Duas" />
@@ -43,7 +43,7 @@ export default function Footer() {
                 </div>
 
                 <div className="space-y-2">
-                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Project</h4>
+                    <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Project</h2>
                     <div className="flex flex-col gap-3 text-sm">
                         <FooterLink to="/about" label="About" />
                         <FooterLink to="/faq" label="FAQ" />

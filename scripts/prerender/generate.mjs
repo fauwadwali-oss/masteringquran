@@ -84,6 +84,122 @@ const write = (rel, html) => {
     fs.writeFileSync(file, html);
 };
 
+// Public landing pages should not send crawlers, link unfurlers, or no-JavaScript
+// readers an empty app shell with the homepage canonical URL. These concise
+// first-response summaries are replaced by the interactive app in browsers.
+const publicPages = [
+    {
+        pathname: "/",
+        title: "Mastering Quran | Read, Learn, and Understand the Holy Quran",
+        description: "Read the Quran with translation, audio and tafsir. Learn Arabic through 12 free lessons, browse hadith, and build a daily study habit.",
+        heading: "Mastering Quran",
+        lede: "Read with understanding, learn Quranic Arabic step by step, and build a daily study habit. The site is free to study and has no ads.",
+        sections: [
+            ["Read and understand", "Read all 114 surahs with Arabic text, identified translations, word-by-word study, recitation audio, and ten English tafsir editions."],
+            ["Learn Quranic Arabic", "Follow a twelve-lesson path from Arabic letters and vowel marks to vocabulary, grammar, roots, writing, and guided surah reading."],
+            ["Daily study tools", "Browse sourced hadith and duas, prayer times, the Names of Allah, reading plans, quizzes, flash cards, and reminders."],
+        ],
+        links: [["Read the Quran", "/quran/1"], ["Start learning Arabic", "/learn-arabic"], ["Browse hadith", "/hadith"], ["Review sources", "/sources"]],
+    },
+    {
+        pathname: "/hadith",
+        title: "Hadith Library | Sahih Bukhari, Muslim, and More",
+        description: "Browse ten English hadith collections including Sahih al-Bukhari, Sahih Muslim, Abu Dawud, Tirmidhi, Nasa'i, Ibn Majah, Muwatta Malik, and Forty Hadith compilations.",
+        heading: "Hadith Collections",
+        lede: "Browse ten English collection datasets drawn from the six main books and other classical compilations. Collection, book, number, and available grades are shown with each entry.",
+        sections: [["The six major collections", "Sahih al-Bukhari, Sahih Muslim, Sunan Abi Dawud, Jami' at-Tirmidhi, Sunan an-Nasa'i, and Sunan Ibn Majah."], ["Other compilations", "Muwatta Malik, Forty Hadith of an-Nawawi, Forty Hadith Qudsi, and Forty Hadith of Shah Waliullah."]],
+        links: [["Browse the hadith library", "/hadith"], ["Hadith sources", "/sources"]],
+    },
+    {
+        pathname: "/duas",
+        title: "Duas from the Quran and Sunnah | Mastering Quran",
+        description: "Browse 126 supplications quoted from the Quran and hadith collections, organized into 27 categories with references and available grading.",
+        heading: "Duas and Supplications",
+        lede: "Study 126 supplications across 27 categories. Each entry identifies its Quran or hadith source and includes grading information when the source dataset provides it.",
+        sections: [["Sourced text", "Arabic, transliteration where available, English meaning, and a direct source reference are presented together."], ["Search by need", "Browse categories including worship, forgiveness, protection, family, travel, morning, evening, and daily life."]],
+        links: [["Browse all duas", "/duas"], ["Review the source methodology", "/sources"]],
+    },
+    {
+        pathname: "/learn-arabic",
+        title: "Learn Quranic Arabic from Zero | Mastering Quran",
+        description: "Learn Quranic Arabic from zero with a 12-lesson path covering letters, harakat, tajweed, vocabulary, grammar, roots, writing, and five surahs.",
+        heading: "Learn Arabic from Zero",
+        lede: "A twelve-lesson Quran-first path from recognizing Arabic letters to reading complete surahs, with progress saving available through a free account.",
+        sections: [["Foundations", "Learn all 28 letters, their joined shapes, short vowels, tanween, sukun, shaddah, and madd."], ["Reading and meaning", "Practice tajweed foundations, common Quranic vocabulary, grammar, roots, writing, and guided surah reading."]],
+        links: [["Begin with Arabic letters", "/learn-arabic/letters"], ["View the curriculum", "/learn-arabic"]],
+    },
+    {
+        pathname: "/prophets",
+        title: "Stories of the 25 Prophets in the Quran | Mastering Quran",
+        description: "Explore the lives, lessons, and Quranic references of the 25 prophets named in the Quran, from Adam to Muhammad ﷺ.",
+        heading: "Stories of the Prophets",
+        lede: "Explore the 25 prophets named in the Quran, their people, major events, lessons, and linked Quranic references.",
+        sections: [["Follow the references", "Each profile connects the narrative to relevant Quran passages and available hadith material."], ["Study the lessons", "Search by prophet, people, or title and examine recurring themes such as faith, patience, repentance, justice, and mercy."]],
+        links: [["Explore the prophets", "/prophets"], ["Read the Quran", "/quran"]],
+    },
+    {
+        pathname: "/seerah",
+        title: "Seerah of Prophet Muhammad ﷺ | Mastering Quran",
+        description: "Study the life of Prophet Muhammad ﷺ through a chronological seerah with Quranic references, key events, locations, and lessons.",
+        heading: "The Seerah of Prophet Muhammad ﷺ",
+        lede: "A chronological study of the Prophet's life, from Arabia before Islam and the first revelation through the Madinan period and final pilgrimage.",
+        sections: [["Chronological chapters", "Follow major events, dates, locations, people, and themes in sequence."], ["Quran connections", "Open related verses while studying events and their enduring lessons."]],
+        links: [["Study the Seerah", "/seerah"], ["Browse Quran topics", "/topics"]],
+    },
+    {
+        pathname: "/hajj",
+        title: "Hajj and Umrah Step-by-Step Guide | Mastering Quran",
+        description: "A step-by-step study guide to Hajj and Umrah covering rites, locations, days, and relevant duas from ihram through the farewell tawaf.",
+        heading: "Hajj and Umrah",
+        lede: "Study the sequence of Hajj and Umrah rites, their locations, timing, practical notes, and relevant supplications.",
+        sections: [["Umrah", "Review ihram, tawaf, sa'i, and completion in order."], ["Hajj", "Follow the days and stations of Hajj from ihram through Mina, Arafah, Muzdalifah, the stoning rites, sacrifice, tawaf, and departure."]],
+        links: [["Open the pilgrimage guide", "/hajj"], ["Browse duas", "/duas"]],
+    },
+    {
+        pathname: "/glossary",
+        title: "Islamic Glossary | Mastering Quran",
+        description: "Search more than 120 Islamic terms with Arabic, transliteration, definitions, categories, and related concepts.",
+        heading: "Islamic Glossary",
+        lede: "A searchable reference of more than 120 terms covering worship, theology, Quran and revelation, ethics, jurisprudence, community, history, and daily practice.",
+        sections: [["Arabic and transliteration", "Each entry presents the term in English and Arabic with a clear transliteration."], ["Definitions in context", "Definitions, related concepts, and categories help connect unfamiliar vocabulary across the site."]],
+        links: [["Search the glossary", "/glossary"], ["Learn Quranic Arabic", "/learn-arabic"]],
+    },
+    {
+        pathname: "/about",
+        title: "About Mastering Quran",
+        description: "Learn what Mastering Quran provides, how its Quran, hadith, tafsir, dua, prayer, and Arabic-learning data are sourced, and how to report a correction.",
+        heading: "About Mastering Quran",
+        lede: "Mastering Quran is a free, ad-free study platform for reading the Quran, learning Quranic Arabic, browsing sourced hadith and duas, and developing a consistent study habit.",
+        sections: [["Learning tools", "Read and listen to the Quran, open identified translations and tafsirs, study Arabic, save notes and bookmarks, and use daily practice tools."], ["Scope and responsibility", "The site supports study and reflection. It does not replace qualified scholars or teachers for personal rulings, fatwas, or urgent guidance."]],
+        links: [["Read the methodology", "/sources"], ["Frequently asked questions", "/faq"]],
+    },
+    {
+        pathname: "/sources",
+        title: "Sources and Methodology | Mastering Quran",
+        description: "Review the Quran, translation, tafsir, hadith, dua, prayer-time, and Arabic-language sources used by Mastering Quran.",
+        heading: "Sources and Methodology",
+        lede: "See where the site's Quran text, translations, recitations, tafsirs, hadith, duas, prayer calculations, and Arabic-language material come from.",
+        sections: [["Traceable editions", "Translations, tafsirs, hadith collections, and source datasets are named so readers can identify the edition being presented."], ["Corrections and limitations", "AI-supported answers can make mistakes and should be checked against their cited references. The site provides a route for reporting corrections."]],
+        links: [["Review all sources", "/sources"], ["Ask a question", "/ask"], ["About the project", "/about"]],
+    },
+];
+
+for (const page of publicPages) {
+    const sections = page.sections.map(([heading, copy]) => `<section><h2>${esc(heading)}</h2><p>${esc(copy)}</p></section>`).join("");
+    const links = page.links.map(([label, href]) => `<li><a href="${esc(href)}">${esc(label)}</a></li>`).join("");
+    const body = `<nav><a href="/">Mastering Quran</a></nav><h1>${esc(page.heading)}</h1><p class="meta">${esc(page.lede)}</p>${sections}<section><h2>Continue studying</h2><ul>${links}</ul></section>`;
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": page.pathname === "/" ? "WebSite" : "CollectionPage",
+        name: page.heading,
+        url: `${ORIGIN}${page.pathname}`,
+        description: page.description,
+        isPartOf: page.pathname === "/" ? undefined : { "@type": "WebSite", name: "Mastering Quran", url: ORIGIN },
+    };
+    const html = setBody(setHead(template, { title: page.title, description: page.description, pathname: page.pathname, jsonLd }), body);
+    write(page.pathname === "/" ? "index.html" : `${page.pathname.slice(1)}/index.html`, html);
+}
+
 // Public FAQ: ship the questions and answers in the first response so search
 // engines and no-JavaScript readers do not receive an empty app shell.
 const faqItems = [

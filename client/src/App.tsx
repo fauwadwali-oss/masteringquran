@@ -71,7 +71,7 @@ function Layout({ children }: { children: ReactNode }) {
 
 function RouteLoading() {
   return (
-    <div className="flex min-h-[50vh] items-center justify-center px-6 py-16">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-16 dark:bg-slate-950">
       <div className="rounded-2xl border border-emerald-100 bg-white/85 px-6 py-5 text-center shadow-xl shadow-emerald-900/5 dark:border-emerald-900/40 dark:bg-slate-900/85">
         <div className="mx-auto mb-3 h-10 w-10 animate-pulse rounded-full bg-emerald-100 dark:bg-emerald-950" />
         <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Loading Mastering Quran...</p>
@@ -92,8 +92,8 @@ function App() {
                 <GoogleAnalytics />
                 <ScrollToTop />
                 <KeyboardShortcutsProvider />
-                <Layout>
-                  <Suspense fallback={<RouteLoading />}>
+                <Suspense fallback={<RouteLoading />}>
+                  <Layout>
                     <Routes>
                       <Route path="/" element={<Home />} />
                       <Route path="/quran" element={<Quran />} />
@@ -146,8 +146,8 @@ function App() {
                       <Route path="/terms" element={<Terms />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
-                  </Suspense>
-                </Layout>
+                  </Layout>
+                </Suspense>
               </BrowserRouter>
             </TooltipProvider>
           </AuthProvider>

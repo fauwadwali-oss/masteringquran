@@ -1,12 +1,11 @@
 import { TRANSLATIONS, TAFSIRS } from "@/lib/study-editions";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { lazy, Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useParams, useNavigate, Link } from "react-router-dom";
 import { Search, Play, Pause, BookOpen, Loader2, AlertCircle, Bookmark, BookmarkCheck, Volume2, VolumeX, SkipForward, SkipBack, ChevronLeft, ChevronRight, Star, X, Mic, Moon, Languages, Layers, Copy, Share2, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import SEO from "@/components/SEO";
@@ -16,11 +15,10 @@ import TajweedText, { TajweedLegend } from "@/components/TajweedText";
 import ChapterInfoPanel from "@/components/ChapterInfoPanel";
 import SimilarVersesPanel from "@/components/SimilarVersesPanel";
 import CompareTranslationsModal from "@/components/CompareTranslationsModal";
-import VerseActionsModal from "@/components/VerseActionsModal";
 import { useAuth } from "@/contexts/AuthContext";
-import * as bmQuery from "@/lib/queries/bookmarks";
-import { recordReading } from "@/lib/queries/streak";
 import { cn } from "@/lib/utils";
+
+const VerseActionsModal = lazy(() => import("@/components/VerseActionsModal"));
 
 // Types
 interface Surah {
@@ -204,15 +202,15 @@ export default function Quran() {
         }
         try {
             const local: Array<{ surahNumber: number; verseNumber: number; surahName?: string }> = JSON.parse(raw);
-            Promise.all(
-                local.map((b) =>
-                    bmQuery.addBookmark(user.id, b.surahNumber, b.verseNumber, b.surahName).catch(() => null),
+            void import("@/lib/queries/bookmarks").then(({ addBookmark }) =>
+                Promise.all(
+                    local.map((b) => addBookmark(user.id, b.surahNumber, b.verseNumber, b.surahName).catch(() => null)),
                 ),
             ).then(() => {
-                sessionStorage.setItem("mq_bookmarks_migrated", "1");
-                localStorage.removeItem("quranBookmarks");
-                toast.success(`Synced ${local.length} bookmark${local.length === 1 ? "" : "s"} to your account`);
-            });
+                    sessionStorage.setItem("mq_bookmarks_migrated", "1");
+                    localStorage.removeItem("quranBookmarks");
+                    toast.success(`Synced ${local.length} bookmark${local.length === 1 ? "" : "s"} to your account`);
+                });
         } catch {
             sessionStorage.setItem("mq_bookmarks_migrated", "1");
         }
@@ -411,7 +409,9 @@ export default function Quran() {
                 if (user) {
                     const firstVerse = data.verses[0];
                     const vkey = firstVerse?.verse_key || `${currentSurah.number}:1`;
-                    recordReading(user.id, vkey).catch(() => { });
+                    void import("@/lib/queries/streak")
+                        .then(({ recordReading }) => recordReading(user.id, vkey))
+                        .catch(() => { });
                 }
             } else {
                 setError("Failed to fetch verses");
@@ -924,17 +924,24 @@ export default function Quran() {
 
                 {/* Controls Section */}
                 <div className="mb-4 rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-4 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 md:p-6">
-                    {/* View Mode Tabs */}
-                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-full mb-3">
-                        <TabsList className="mx-auto grid w-full max-w-2xl h-auto grid-cols-3 rounded-xl bg-emerald-50 p-1 dark:bg-emerald-950/30 sm:grid-cols-6">
-                            <TabsTrigger value="surah" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Surah</TabsTrigger>
-                            <TabsTrigger value="juz" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Juz</TabsTrigger>
-                            <TabsTrigger value="hizb" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Hizb</TabsTrigger>
-                            <TabsTrigger value="rub" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Rub</TabsTrigger>
-                            <TabsTrigger value="manzil" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Manzil</TabsTrigger>
-                            <TabsTrigger value="page" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-md rounded-lg transition-all text-[11px] md:text-xs">Page</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
+                    {/* View mode selector. This changes the reader controls rather than revealing tab panels. */}
+                    <div role="group" aria-label="Quran navigation mode" className="mx-auto mb-3 grid w-full max-w-2xl grid-cols-3 rounded-xl bg-emerald-50 p-1 dark:bg-emerald-950/30 sm:grid-cols-6">
+                        {(["surah", "juz", "hizb", "rub", "manzil", "page"] as const).map((mode) => (
+                            <button
+                                key={mode}
+                                type="button"
+                                aria-pressed={viewMode === mode}
+                                onClick={() => setViewMode(mode)}
+                                className={`rounded-lg px-2 py-1.5 text-[11px] font-medium capitalize transition-all md:text-xs ${
+                                    viewMode === mode
+                                        ? "bg-white text-slate-950 shadow-md dark:bg-slate-800 dark:text-white"
+                                        : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
+                                }`}
+                            >
+                                {mode}
+                            </button>
+                        ))}
+                    </div>
 
                     {/* Navigation Controls */}
                     <div className="mb-3 flex flex-wrap items-center justify-center gap-3 md:gap-4">
@@ -951,7 +958,7 @@ export default function Quran() {
                                                     {surah.number}
                                                 </span>
                                                 <span className="font-medium">{surah.englishName}</span>
-                                                <span className="text-slate-400 text-sm font-amiri">{surah.name}</span>
+                                                <span className="text-slate-600 dark:text-slate-300 text-sm font-amiri">{surah.name}</span>
                                             </span>
                                         </SelectItem>
                                     ))}
@@ -1296,7 +1303,7 @@ export default function Quran() {
                             <Button
                                 onClick={toggleFullSurahAudio}
                                 disabled={fullSurahLoading}
-                                className="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded-xl shadow-md"
+                                className="mt-3 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-6 py-2 rounded-xl shadow-md"
                             >
                                 {fullSurahLoading ? (
                                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading…</>
@@ -1629,11 +1636,13 @@ export default function Quran() {
 
             {/* Verse actions modal: note + hifz status */}
             {actionsVerse && (
-                <VerseActionsModal
-                    surah={actionsVerse.surah}
-                    ayah={actionsVerse.ayah}
-                    onClose={() => setActionsVerse(null)}
-                />
+                <Suspense fallback={null}>
+                    <VerseActionsModal
+                        surah={actionsVerse.surah}
+                        ayah={actionsVerse.ayah}
+                        onClose={() => setActionsVerse(null)}
+                    />
+                </Suspense>
             )}
 
             {/* Floating Audio Player */}

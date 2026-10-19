@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { trackDailyEmailSubscription } from "@/lib/conversion";
 import SEO from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
-import { isSupabaseConfigured } from "@/lib/supabase";
+import { isSupabaseConfigured } from "@/lib/supabase-config";
 import {
     getEmailSubscription,
     upsertEmailSubscription,

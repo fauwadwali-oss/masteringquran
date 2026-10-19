@@ -2,10 +2,8 @@
 // Same contract works in React Native with @supabase/supabase-js.
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { App as CapacitorApp } from "@capacitor/app";
-import { Capacitor } from "@capacitor/core";
-import type { Session, User } from "@supabase/supabase-js";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import type { Session, SupabaseClient, User } from "@supabase/supabase-js";
+import { hasStoredSupabaseSession, isSupabaseConfigured } from "@/lib/supabase-config";
 
 interface AuthContextValue {
     user: User | null;
@@ -19,10 +17,6 @@ interface AuthContextValue {
 const Ctx = createContext<AuthContextValue | null>(null);
 const MOBILE_AUTH_CALLBACK = "masteringquran://auth/callback";
 
-function getEmailRedirectTo() {
-    return Capacitor.isNativePlatform() ? MOBILE_AUTH_CALLBACK : `${window.location.origin}/auth/callback`;
-}
-
 function getAuthParams(url: string) {
     const normalizedUrl = url.replace("#", "?");
     const params = new URL(normalizedUrl).searchParams;
@@ -33,17 +27,17 @@ function getAuthParams(url: string) {
     };
 }
 
-async function completeMobileSignIn(url: string): Promise<Session | null> {
+async function completeMobileSignIn(client: SupabaseClient, url: string): Promise<Session | null> {
     const { code, accessToken, refreshToken } = getAuthParams(url);
 
     if (code) {
-        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+        const { data, error } = await client.auth.exchangeCodeForSession(code);
         if (error) throw error;
         return data.session ?? null;
     }
 
     if (accessToken && refreshToken) {
-        const { data, error } = await supabase.auth.setSession({
+        const { data, error } = await client.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken,
         });
@@ -64,56 +58,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setLoading(false);
             return;
         }
-        supabase.auth.getSession().then(({ data }) => {
+        const capacitor = (window as typeof window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+        const nativePlatform = Boolean(capacitor?.isNativePlatform?.());
+        const authCallback = window.location.pathname === "/auth/callback" || /(?:code|access_token|refresh_token)=/.test(window.location.href);
+        if (!nativePlatform && !authCallback && !hasStoredSupabaseSession()) {
+            setLoading(false);
+            return;
+        }
+
+        let cancelled = false;
+        let unsubscribe: (() => void) | null = null;
+        let appUrlListener: { remove: () => Promise<void> } | null = null;
+        void import("@/lib/supabase").then(async ({ supabase }) => {
+            if (cancelled) return;
+            const { data } = await supabase.auth.getSession();
+            if (cancelled) return;
             setSession(data.session ?? null);
             setLoading(false);
-        });
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, newSession) => {
-            setSession(newSession);
-        });
+            const { data: authListener } = supabase.auth.onAuthStateChange((_event, newSession) => setSession(newSession));
+            unsubscribe = () => authListener.subscription.unsubscribe();
 
-        let appUrlListener: { remove: () => Promise<void> } | null = null;
-
-        if (Capacitor.isNativePlatform()) {
-            CapacitorApp.addListener("appUrlOpen", async ({ url }) => {
+            if (!nativePlatform) return;
+            const { App: CapacitorApp } = await import("@capacitor/app");
+            const finish = async (url: string) => {
                 if (!url.startsWith(MOBILE_AUTH_CALLBACK)) return;
                 try {
-                    const newSession = await completeMobileSignIn(url);
+                    const newSession = await completeMobileSignIn(supabase, url);
                     if (newSession) setSession(newSession);
                     window.history.replaceState({}, "", "/");
                 } catch (error) {
                     console.error("Could not complete mobile sign-in", error);
                     window.history.replaceState({}, "", "/?auth_error=1");
                 }
-            }).then((listener) => {
-                appUrlListener = listener;
-            });
-
-            CapacitorApp.getLaunchUrl().then(async (launchUrl) => {
-                const url = launchUrl?.url;
-                if (!url?.startsWith(MOBILE_AUTH_CALLBACK)) return;
-                try {
-                    const newSession = await completeMobileSignIn(url);
-                    if (newSession) setSession(newSession);
-                    window.history.replaceState({}, "", "/");
-                } catch (error) {
-                    console.error("Could not complete launch sign-in", error);
-                    window.history.replaceState({}, "", "/?auth_error=1");
-                }
-            });
-        }
+            };
+            appUrlListener = await CapacitorApp.addListener("appUrlOpen", ({ url }) => void finish(url));
+            const launchUrl = await CapacitorApp.getLaunchUrl();
+            if (launchUrl?.url) await finish(launchUrl.url);
+        }).catch((error) => {
+            console.error("Could not initialize authentication", error);
+            if (!cancelled) setLoading(false);
+        });
 
         return () => {
-            subscription.unsubscribe();
+            cancelled = true;
+            unsubscribe?.();
             void appUrlListener?.remove();
         };
     }, [configured]);
 
     const signInWithEmail = async (email: string, redirectTo?: string): Promise<{ error: string | null }> => {
         if (!configured) return { error: "Auth is not configured. Please try again later." };
-        const emailRedirectTo = redirectTo || getEmailRedirectTo();
+        const capacitor = (window as typeof window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+        const emailRedirectTo = redirectTo || (capacitor?.isNativePlatform?.() ? MOBILE_AUTH_CALLBACK : `${window.location.origin}/auth/callback`);
+        const { supabase } = await import("@/lib/supabase");
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: { emailRedirectTo, shouldCreateUser: true },
@@ -123,6 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const signOut = async (): Promise<void> => {
         if (!configured) return;
+        const { supabase } = await import("@/lib/supabase");
         await supabase.auth.signOut();
     };
 
