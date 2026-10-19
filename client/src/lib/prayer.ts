@@ -288,3 +288,19 @@ export function ramadanDates(gregorianYear: number): { ymd: [number, number, num
     }
     return out;
 }
+
+/** The Ramadan to show by default: this year's if it hasn't ended yet, otherwise next year's. */
+export function upcomingRamadanYear(today: [number, number, number]) {
+    const days = ramadanDates(today[0]);
+    const last = days[days.length - 1]?.ymd;
+    const ended = last && (today[1] > last[1] || (today[1] === last[1] && today[2] > last[2]));
+    return ended ? today[0] + 1 : today[0];
+}
+
+// Ramadan city page title and description; scripts/prerender/prayer-pages.mjs uses the same functions.
+export const ramadanCityTitle = (p: Place, year: number) => `Ramadan ${year} in ${placeLabel(p)}: Suhoor and Iftar Times | Mastering Quran`;
+export const ramadanCityDescription = (p: Place, year: number) =>
+    `Suhoor (Fajr) and Iftar (Maghrib) times in ${placeLabel(p)} for every day of Ramadan ${year}, with the expected start date and the odd nights of the last ten.`;
+export const ramadanHubTitle = (year: number) => `Ramadan ${year}: Dates, Suhoor and Iftar Times | Mastering Quran`;
+export const ramadanHubDescription = (year: number) =>
+    `When Ramadan ${year} is expected to begin, with Suhoor and Iftar times for every day in any city, a 30-day Quran reading plan and Ramadan duas.`;

@@ -97,5 +97,51 @@ export async function renderPrayerPages({ ROOT, ORIGIN, template, setHead, setBo
             .join("");
     write("prayer-times.html", setBody(setHead(template, { title: P.HUB_TITLE, description: P.HUB_DESCRIPTION, pathname: "/prayer-times" }), hubBody));
 
-    return { sitemap, staticRoutes: new Set(["/prayer-times"]), count: paged.length };
+    // Ramadan: the upcoming Ramadan (as the app shows by default), a hub page and one page per city.
+    const utcToday = P.ymdInZone(now, "UTC");
+    const year = P.upcomingRamadanYear(utcToday);
+    const rdays = P.ramadanDates(year);
+    const fmtDay = ([y, m, d], opts) => new Date(Date.UTC(y, m - 1, d, 12)).toLocaleDateString("en-US", { timeZone: "UTC", ...opts });
+    const span = rdays.length
+        ? `expected to begin on ${fmtDay(rdays[0].ymd, { weekday: "long", month: "long", day: "numeric", year: "numeric" })} and end on ${fmtDay(rdays[rdays.length - 1].ymd, { month: "long", day: "numeric" })} (${rdays[0].hijriYear} AH)`
+        : "";
+    const moonNote = `<p class="src">Dates follow the Umm al-Qura calendar. Ramadan begins with the moon sighting, so your community may start a day earlier or later. Times are calculated with the open-source adhan library using the method mosques in each country usually use.</p>`;
+
+    for (const c of paged) {
+        const pathname = `/ramadan/${c.slug}`;
+        const settings = P.defaultSettings(c.countryCode);
+        const t = (d) => P.formatTime(d, c.timeZone, settings.hour12);
+        const rows = rdays
+            .map(({ ymd, hijriDay }) => {
+                const x = P.timesFor(c, settings, ymd);
+                const odd = hijriDay >= 21 && hijriDay % 2 === 1 ? " (odd night)" : "";
+                return `<tr><td>${hijriDay}${odd}</td><td>${fmtDay(ymd, { weekday: "short", month: "short", day: "numeric" })}</td><td>${t(x.fajr)}</td><td>${t(x.maghrib)}</td></tr>`;
+            })
+            .join("");
+        const body =
+            `<nav><a href="/">Mastering Quran</a> / <a href="/ramadan">Ramadan ${year}</a> / ${esc(c.name)}</nav>` +
+            `<h1>Ramadan ${year} in ${esc(c.name)}</h1>` +
+            `<p class="meta">${esc(P.placeLabel(c))} · ${esc(c.timeZone.replace(/_/g, " "))} · ${esc(methodLabel(settings.method))}</p>` +
+            `<p>Ramadan ${year} is ${span}.</p>` +
+            `<section><h2>Suhoor and Iftar times in ${esc(c.name)}</h2><div style="overflow-x:auto"><table><thead><tr><th>Ramadan</th><th>Date</th><th>Suhoor ends (Fajr)</th><th>Iftar (Maghrib)</th></tr></thead><tbody>${rows}</tbody></table></div></section>` +
+            `<section><p><a href="/prayer-times/${c.slug}">Today's prayer times in ${esc(c.name)}</a> · <a href="/plans?plan=ramadan">Read one juz a day in Ramadan</a></p></section>` +
+            moonNote;
+        write(
+            `ramadan/${c.slug}.html`,
+            setBody(setHead(template, { title: P.ramadanCityTitle(c, year), description: P.ramadanCityDescription(c, year), pathname }), body),
+        );
+        sitemap.push(`  <url><loc>${ORIGIN}${pathname}</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>`);
+    }
+
+    const ramadanHub =
+        `<nav><a href="/">Mastering Quran</a> / Ramadan ${year}</nav>` +
+        `<h1>Ramadan ${year}</h1>` +
+        `<p>Ramadan ${year} is ${span}. Choose your city for Suhoor and Iftar times for every day of the month.</p>` +
+        countries
+            .map(([cc, list]) => `<section><h2>${esc(P.countryName(cc))}</h2><p>${list.map((o) => `<a href="/ramadan/${o.slug}">${esc(o.name)}</a>`).join(" · ")}</p></section>`)
+            .join("") +
+        moonNote;
+    write("ramadan.html", setBody(setHead(template, { title: P.ramadanHubTitle(year), description: P.ramadanHubDescription(year), pathname: "/ramadan" }), ramadanHub));
+
+    return { sitemap, staticRoutes: new Set(["/prayer-times", "/ramadan"]), count: paged.length, ramadanYear: year };
 }

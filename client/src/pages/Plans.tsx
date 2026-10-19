@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { BookOpen, Calendar, CheckCircle2, ArrowLeft, Play, RotateCcw, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -151,7 +152,10 @@ function PlanLink({ seg }: { seg: PlanSegment }) {
 }
 
 function PlansInner() {
-    const [selectedId, setSelectedId] = useState<string | null>(null);
+    // ?plan=<id> opens a plan directly (e.g. the Ramadan page links to ?plan=ramadan).
+    const [params, setParams] = useSearchParams();
+    const selectedId = params.get("plan");
+    const setSelectedId = (id: string | null) => setParams(id ? { plan: id } : {});
     const selected = selectedId ? getPlanById(selectedId) : null;
 
     return (
