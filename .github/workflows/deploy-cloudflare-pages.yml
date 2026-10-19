@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Pages
+name: Validate build
 
 on:
   push:
@@ -10,16 +10,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: cloudflare-pages-production
+  group: validate-main
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    name: Build and deploy
+  validate:
+    name: Type check, test, and build
     runs-on: ubuntu-latest
-    env:
-      CLOUDFLARE_ACCOUNT_ID: 402e7028e499c1e1d5a60ad3dd4340be
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -43,6 +40,3 @@ jobs:
         env:
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
         run: npm run build
-
-      - name: Deploy to Cloudflare Pages
-        run: npx wrangler@3.114.17 pages deploy dist/public --project-name masteringquran --branch main
