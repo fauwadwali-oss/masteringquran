@@ -38,22 +38,30 @@
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Mastering Quran",
-      "alternateName": "MasteringQuran",
-      "url": "https://masteringquran.com",
-      "description": "A free Quran reader with word-by-word translation, 10 English tafsirs, authentic hadith collections, and an AI assistant grounded in verified scholarship.",
-      "publisher": {
-        "@type": "Organization",
-        "name": "Nusrat Wali Ventures LLC",
-        "url": "https://nusratwaliventures.com",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Houston",
-          "addressRegion": "TX",
-          "addressCountry": "US"
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://masteringquran.com/#organization",
+          "name": "Mastering Quran",
+          "url": "https://masteringquran.com/",
+          "logo": "https://masteringquran.com/MQ_shield_logo.png",
+          "parentOrganization": {
+            "@type": "Organization",
+            "@id": "https://nusratwaliventures.com/#organization",
+            "name": "Nusrat Wali Ventures LLC",
+            "url": "https://nusratwaliventures.com/"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://masteringquran.com/#website",
+          "name": "Mastering Quran",
+          "alternateName": "MasteringQuran",
+          "url": "https://masteringquran.com/",
+          "description": "A free Quran reader with word-by-word translation, 10 English tafsirs, authentic hadith collections, and an AI assistant grounded in verified scholarship.",
+          "publisher": {"@id": "https://masteringquran.com/#organization"}
         }
-      }
+      ]
     }
   </script>
 
