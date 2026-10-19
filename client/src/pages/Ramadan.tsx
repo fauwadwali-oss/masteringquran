@@ -1,206 +1,148 @@
-import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, MapPin, Moon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { MapPin, Moon, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
 import PageHero from "@/components/PageHero";
+import LocationPicker from "@/components/LocationPicker";
+import {
+    defaultSettings,
+    formatTime,
+    loadPlace,
+    loadSettings,
+    placeLabel,
+    ramadanDates,
+    savePlace,
+    timesFor,
+    ymdInZone,
+    type Place,
+} from "@/lib/prayer";
 
-interface Location { latitude: number; longitude: number }
-interface RamadanDay {
-    day: number;
-    date: string;
-    hijri_date?: string;
-    day_name?: string;
-    suhoor: string;
-    iftar: string;
+// The Ramadan to show by default: this year's if it hasn't ended yet, otherwise next year's.
+function defaultYear(today: [number, number, number]) {
+    const days = ramadanDates(today[0]);
+    const last = days[days.length - 1]?.ymd;
+    const ended = last && (today[1] > last[1] || (today[1] === last[1] && today[2] > last[2]));
+    return ended ? today[0] + 1 : today[0];
 }
-interface RamadanData {
-    year: number;
-    hijri_year: number;
-    ramadan_start: string;
-    ramadan_end: string;
-    total_days: number;
-    timezone: string;
-    days: RamadanDay[];
-}
+
+const fmtDate = ([y, m, d]: [number, number, number], opts: Intl.DateTimeFormatOptions) =>
+    new Date(Date.UTC(y, m - 1, d, 12)).toLocaleDateString("en-US", { timeZone: "UTC", ...opts });
 
 export default function Ramadan() {
-    const [location, setLocation] = useState<Location | null>(null);
-    const [data, setData] = useState<RamadanData | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [year, setYear] = useState(new Date().getFullYear());
+    const [place, setPlace] = useState<Place | null>(() => loadPlace());
+    const [editing, setEditing] = useState(false);
+    const today = ymdInZone(new Date(), place?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone);
+    const [year, setYear] = useState(() => defaultYear(today));
+    const settings = loadSettings() ?? defaultSettings(place?.countryCode);
 
-    const requestLocation = () => {
-        setError(null);
-        if (!navigator.geolocation) {
-            setError("Your browser does not support location.");
-            return;
-        }
-        setLoading(true);
-        navigator.geolocation.getCurrentPosition(
-            (pos) => setLocation({
-                latitude: Number(pos.coords.latitude.toFixed(4)),
-                longitude: Number(pos.coords.longitude.toFixed(4)),
-            }),
-            (err) => {
-                setLoading(false);
-                setError(
-                    err.code === 1
-                        ? "Location permission denied. Allow location access to see your Ramadan timetable."
-                        : "Could not determine your location.",
-                );
-            },
-        );
+    const days = useMemo(() => ramadanDates(year), [year]);
+    const rows = useMemo(
+        () => (place ? days.map((d) => ({ ...d, times: timesFor(place, settings, d.ymd) })) : []),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [days, place, settings.method, settings.madhab],
+    );
+    const isToday = (ymd: [number, number, number]) => ymd[0] === today[0] && ymd[1] === today[1] && ymd[2] === today[2];
+    const fmt = (d: Date) => formatTime(d, place!.timeZone, settings.hour12);
+
+    const choose = (p: Place) => {
+        savePlace(p);
+        setPlace(p);
+        setEditing(false);
     };
 
-    useEffect(() => {
-        if (!location) return;
-        setLoading(true);
-        setError(null);
-        fetch(`https://ummahapi.com/api/ramadan/${year}?latitude=${location.latitude}&longitude=${location.longitude}`)
-            .then(async (r) => {
-                if (!r.ok) throw new Error("failed");
-                const d: any = await r.json();
-                const payload = d.data || d;
-                // Extract days: UmmahAPI returns ramadan_days array
-                const days: RamadanDay[] = (payload.ramadan_days || []).map((x: any, i: number) => ({
-                    day: i + 1,
-                    date: x.date || x.gregorian_date || "",
-                    hijri_date: x.hijri_date,
-                    day_name: x.day_name,
-                    suhoor: x.prayer_times?.imsak || x.prayer_times?.fajr || x.suhoor || "",
-                    iftar: x.prayer_times?.maghrib || x.iftar || "",
-                }));
-                setData({
-                    year: payload.year,
-                    hijri_year: payload.hijri_year,
-                    ramadan_start: payload.ramadan_start,
-                    ramadan_end: payload.ramadan_end,
-                    total_days: payload.total_days || days.length,
-                    timezone: payload.timezone,
-                    days,
-                });
-                setLoading(false);
-            })
-            .catch(() => {
-                setError("Failed to fetch Ramadan timetable.");
-                setLoading(false);
-            });
-    }, [location, year]);
+    const first = days[0];
+    const last = days[days.length - 1];
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-amber-50/30 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 font-sans">
             <SEO
-                title="Ramadan Timetable - Mastering Quran"
-                description="Suhoor and Iftar times for every day of Ramadan, calculated for your location."
+                title={`Ramadan ${year} Timetable: Suhoor and Iftar Times | Mastering Quran`}
+                description={`Suhoor and Iftar times for every day of Ramadan ${year}${first ? ` (${first.hijriYear} AH)` : ""}, for any city.`}
             />
-            <section className="py-12 px-6">
-                <div className="max-w-5xl mx-auto">
-                    <div className="mb-8">
-                        <PageHero
-                            eyebrow="Blessed month"
-                            title="Ramadan Timetable"
-                            description={`Suhoor and Iftar times for every day of Ramadan ${year}, calculated for your location.`}
-                            icon={Moon}
-                            accent="amber"
-                        />
-                    </div>
+            <section className="py-12 px-4 md:px-6">
+                <div className="max-w-5xl mx-auto space-y-6">
+                    <PageHero
+                        eyebrow="Blessed month"
+                        title={`Ramadan ${year}`}
+                        description={
+                            first && last
+                                ? `Expected ${fmtDate(first.ymd, { weekday: "long", month: "long", day: "numeric" })} to ${fmtDate(last.ymd, { month: "long", day: "numeric", year: "numeric" })}, ${first.hijriYear} AH.`
+                                : "Suhoor and Iftar times for every day of Ramadan."
+                        }
+                        icon={Moon}
+                        accent="amber"
+                    />
 
-                    {!location && (
-                        <Card className="border border-amber-200 dark:border-amber-900/40 bg-gradient-to-br from-amber-50/60 to-white dark:from-amber-950/20 dark:to-slate-900">
-                            <CardContent className="p-8 text-center space-y-4">
-                                <div className="w-14 h-14 mx-auto bg-amber-100 dark:bg-amber-900/40 rounded-2xl flex items-center justify-center">
-                                    <MapPin className="h-7 w-7 text-amber-600 dark:text-amber-400" />
-                                </div>
-                                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Share your location</h2>
-                                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
-                                    Ramadan timings depend on where you are. We don't store your coordinates.
-                                </p>
-                                <Button onClick={requestLocation} disabled={loading} className="bg-amber-600 hover:bg-amber-700 text-white">
-                                    {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Locating…</> : "Use my location"}
-                                </Button>
-                                {error && <p className="text-sm text-red-600 dark:text-red-400 pt-2">{error}</p>}
+                    {place && !editing && (
+                        <p className="flex items-center justify-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+                            <MapPin className="h-3.5 w-3.5" aria-hidden />
+                            {placeLabel(place)}
+                            <button type="button" onClick={() => setEditing(true)} className="ml-2 inline-flex items-center gap-1 font-medium text-amber-700 hover:underline dark:text-amber-400">
+                                <Pencil className="h-3.5 w-3.5" aria-hidden /> Change
+                            </button>
+                        </p>
+                    )}
+
+                    {(!place || editing) && (
+                        <Card className="border border-amber-200 dark:border-amber-900/40">
+                            <CardContent className="p-5 md:p-6">
+                                {!place && (
+                                    <p className="mb-4 text-sm text-slate-600 dark:text-slate-300">
+                                        Find your city to see Suhoor and Iftar times. They are calculated on your device, and your location is never sent anywhere.
+                                    </p>
+                                )}
+                                <LocationPicker onSelect={choose} accent="amber" autoFocus={editing} />
                             </CardContent>
                         </Card>
                     )}
 
-                    {location && loading && (
-                        <div className="flex flex-col items-center justify-center py-16 gap-3">
-                            <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
-                            <p className="text-slate-500 text-sm">Calculating Ramadan schedule…</p>
-                        </div>
-                    )}
-
-                    {error && !loading && location && (
-                        <div className="text-center py-8">
-                            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
-                            <p className="text-red-600 dark:text-red-400">{error}</p>
-                        </div>
-                    )}
-
-                    {data && !loading && (
-                        <>
-                            {/* Summary */}
-                            <Card className="border-2 border-amber-200 dark:border-amber-900/40 bg-gradient-to-br from-amber-50/70 to-white dark:from-amber-950/20 dark:to-slate-900 mb-6">
-                                <CardContent className="p-6 grid sm:grid-cols-3 gap-4 text-center">
-                                    <div>
-                                        <p className="text-xs text-slate-500 uppercase tracking-wider">Begins</p>
-                                        <p className="text-lg font-semibold text-slate-900 dark:text-white">{data.ramadan_start}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-slate-500 uppercase tracking-wider">Ends</p>
-                                        <p className="text-lg font-semibold text-slate-900 dark:text-white">{data.ramadan_end}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-slate-500 uppercase tracking-wider">{data.hijri_year} AH · {data.total_days} days</p>
-                                        <p className="text-lg font-semibold text-amber-700 dark:text-amber-400">{data.timezone}</p>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Days table */}
-                            <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-sm">
-                                        <thead className="bg-slate-50 dark:bg-slate-800/60">
-                                            <tr>
-                                                <th className="text-left px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Day</th>
-                                                <th className="text-left px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Date</th>
-                                                <th className="text-right px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Suhoor ends</th>
-                                                <th className="text-right px-4 py-3 font-semibold text-amber-700 dark:text-amber-400">Iftar</th>
+                    {place && rows.length > 0 && (
+                        <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <caption className="sr-only">Ramadan {year} Suhoor and Iftar times in {place.name}</caption>
+                                    <thead className="bg-slate-50 dark:bg-slate-800/60">
+                                        <tr>
+                                            <th className="text-left px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Ramadan</th>
+                                            <th className="text-left px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Date</th>
+                                            <th className="text-right px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Suhoor ends (Fajr)</th>
+                                            <th className="text-right px-4 py-3 font-semibold text-amber-700 dark:text-amber-400">Iftar (Maghrib)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {rows.map((d) => (
+                                            <tr
+                                                key={d.hijriDay}
+                                                className={`border-t border-slate-100 dark:border-slate-800 ${isToday(d.ymd) ? "bg-amber-50 font-semibold dark:bg-amber-950/30" : d.hijriDay >= 21 && d.hijriDay % 2 === 1 ? "bg-amber-50/40 dark:bg-amber-950/10" : ""}`}
+                                            >
+                                                <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                                                    {d.hijriDay}
+                                                    {d.hijriDay >= 21 && d.hijriDay % 2 === 1 && (
+                                                        <span className="ml-2 text-[11px] font-normal text-amber-700 dark:text-amber-400">odd night</span>
+                                                    )}
+                                                </td>
+                                                <td className="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">{fmtDate(d.ymd, { weekday: "short", month: "short", day: "numeric" })}</td>
+                                                <td className="px-4 py-3 text-right tabular-nums text-slate-700 dark:text-slate-300">{fmt(d.times.fajr)}</td>
+                                                <td className="px-4 py-3 text-right tabular-nums font-semibold text-amber-700 dark:text-amber-400">{fmt(d.times.maghrib)}</td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            {data.days.map((d) => (
-                                                <tr key={d.day} className="border-t border-slate-100 dark:border-slate-800 hover:bg-amber-50/40 dark:hover:bg-amber-950/10 transition-colors">
-                                                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">#{d.day}</td>
-                                                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                                                        <div className="font-mono text-xs">{d.date}</div>
-                                                        {d.hijri_date && <div className="text-[11px] text-slate-400">{d.hijri_date}</div>}
-                                                    </td>
-                                                    <td className="px-4 py-3 text-right font-mono text-slate-700 dark:text-slate-300">{d.suhoor || "—"}</td>
-                                                    <td className="px-4 py-3 text-right font-mono font-semibold text-amber-700 dark:text-amber-400">{d.iftar || "—"}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Card>
-
-                            <div className="flex items-center justify-center gap-3 mt-6">
-                                <Button variant="outline" size="sm" onClick={() => setYear(year - 1)}>Previous year</Button>
-                                <span className="text-sm text-slate-500 dark:text-slate-400">{year}</span>
-                                <Button variant="outline" size="sm" onClick={() => setYear(year + 1)}>Next year</Button>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
-                        </>
+                        </Card>
                     )}
 
-                    <p className="text-center mt-10 text-xs text-slate-500 dark:text-slate-400">
-                        Data from{" "}
-                        <a href="https://ummahapi.com" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">
-                            UmmahAPI
-                        </a>.
+                    <div className="flex items-center justify-center gap-3">
+                        <Button variant="outline" size="sm" onClick={() => setYear(year - 1)}>Ramadan {year - 1}</Button>
+                        <Button variant="outline" size="sm" onClick={() => setYear(year + 1)}>Ramadan {year + 1}</Button>
+                    </div>
+
+                    <p className="text-center pt-4 text-xs leading-relaxed text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+                        Dates follow the Umm al-Qura calendar. Ramadan begins with the moon sighting, so your community may start a day earlier or later.
+                        Times use the calculation method set on the <Link to="/prayer-times" className="underline">prayer times</Link> page and are calculated on your device.
+                        Many people stop eating a few minutes before Fajr; follow your local mosque.
                     </p>
                 </div>
             </section>
