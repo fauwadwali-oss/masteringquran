@@ -18,6 +18,21 @@ export const HIJRI_MONTHS: { number: number; name: string; arabic: string; note?
     { number: 12, name: "Dhu al-Hijjah", arabic: "ذُو الحِجَّة", note: "One of the four sacred months (9:36): Hajj, the Day of Arafah and Eid al-Adha." },
 ];
 
+/**
+ * Hijri date via the browser's Umm al-Qura calendar, e.g. "8 Jumada al-Ula 1448 AH".
+ * Month names come from HIJRI_MONTHS: Android WebView's ICU returns Gregorian names ("May").
+ */
+export function hijriDate(when = new Date(), timeZone?: string) {
+    try {
+        const parts = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn", { timeZone, day: "numeric", month: "numeric", year: "numeric" }).formatToParts(when);
+        const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+        const month = HIJRI_MONTHS[parseInt(get("month"), 10) - 1]?.name;
+        return month ? `${get("day")} ${month} ${get("year")} AH` : null;
+    } catch {
+        return null;
+    }
+}
+
 export const ISLAMIC_EVENTS: { name: string; month: number; day: number }[] = [
     { name: "Islamic New Year", month: 1, day: 1 },
     { name: "Day of Ashura", month: 1, day: 10 },

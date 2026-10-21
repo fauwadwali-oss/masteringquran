@@ -80,7 +80,7 @@ export default function Navbar() {
     const isInMore = MORE_GROUPS.some((g) => g.items.some((i) => location.pathname === i.to));
 
     return (
-        <nav className="w-full sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 px-4 py-3 text-slate-900 shadow-sm shadow-slate-900/5 backdrop-blur-xl transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/88 dark:text-slate-100 sm:px-6">
+        <nav className="w-full sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 px-4 py-3 text-slate-900 shadow-sm shadow-slate-900/5 backdrop-blur-xl transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/88 dark:text-slate-100 pt-[calc(0.75rem+env(safe-area-inset-top))] sm:px-6">
             <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-4">
                 <div className="font-bold text-lg tracking-tight flex items-center">
                     <Link to="/" className="flex items-center gap-3" onClick={() => setIsOpen(false)}>

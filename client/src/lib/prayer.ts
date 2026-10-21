@@ -137,17 +137,6 @@ export function formatCountdown(ms: number) {
     return h > 0 ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}m ${String(s).padStart(2, "0")}s`;
 }
 
-/** Hijri date via the browser's Umm al-Qura calendar, e.g. "8 Jumada I 1448 AH". */
-export function hijriDate(when = new Date(), timeZone?: string) {
-    try {
-        const parts = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", { timeZone, day: "numeric", month: "long", year: "numeric" }).formatToParts(when);
-        const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
-        return `${get("day")} ${get("month")} ${get("year")} AH`;
-    } catch {
-        return null;
-    }
-}
-
 export function qiblaBearing(latitude: number, longitude: number) {
     return Qibla(new Coordinates(latitude, longitude));
 }

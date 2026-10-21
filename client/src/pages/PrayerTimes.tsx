@@ -22,7 +22,6 @@ import {
     defaultSettings,
     formatCountdown,
     formatTime,
-    hijriDate,
     loadCities,
     loadPlace,
     loadSettings,
@@ -38,6 +37,7 @@ import {
     type PrayerKey,
     type PrayerSettings,
 } from "@/lib/prayer";
+import { hijriDate } from "@/lib/hijri";
 
 const ICONS: Record<PrayerKey, typeof Sun> = { fajr: Sunrise, sunrise: Sun, dhuhr: Sun, asr: Sun, maghrib: Sunset, isha: Moon };
 
