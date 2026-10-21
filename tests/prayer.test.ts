@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { defaultSettings, formatTime, hijriDate, ramadanDates, searchCities, timesFor, toHijri, type Place } from "@/lib/prayer";
-import { hijriToGregorian, upcomingEvents } from "@/lib/hijri";
+import { defaultSettings, formatTime, ramadanDates, searchCities, timesFor, toHijri, type Place } from "@/lib/prayer";
+import { hijriDate, hijriToGregorian, upcomingEvents } from "@/lib/hijri";
 import { prayerCalendar } from "@/lib/prayer-ics";
 
 const houston: Place = { name: "Houston", region: "Texas", countryCode: "US", latitude: 29.7633, longitude: -95.3633, timeZone: "America/Chicago", slug: "houston-us" };
@@ -30,7 +30,7 @@ describe("hijri", () => {
         expect(toHijri([2026, 10, 19])).toEqual({ day: 8, month: 5, year: 1448 });
         expect(hijriToGregorian(1448, 9, 1)).toEqual([2027, 2, 8]);
         expect(hijriToGregorian(1448, 5, 8)).toEqual([2026, 10, 19]);
-        expect(hijriDate(new Date("2026-10-19T12:00:00Z"), "UTC")).toBe("8 Jumada I 1448 AH");
+        expect(hijriDate(new Date("2026-10-19T12:00:00Z"), "UTC")).toBe("8 Jumada al-Ula 1448 AH");
     });
 
     it("finds Ramadan 2027", () => {

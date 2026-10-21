@@ -1647,7 +1647,7 @@ export default function Quran() {
 
             {/* Floating Audio Player */}
             <div className="fixed bottom-0 left-0 right-0 z-50">
-                <div className="border-t border-slate-200 bg-white/95 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
+                <div className="border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
                     <div className="mx-auto max-w-4xl px-3 py-3 md:px-4 md:py-4">
                         <div className="flex items-center justify-between gap-4">
                             {/* Now Playing Info */}
