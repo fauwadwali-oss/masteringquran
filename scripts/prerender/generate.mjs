@@ -198,7 +198,9 @@ for (const page of publicPages) {
         isPartOf: page.pathname === "/" ? undefined : { "@type": "WebSite", name: "Mastering Quran", url: ORIGIN },
     };
     const html = setBody(setHead(template, { title: page.title, description: page.description, pathname: page.pathname, jsonLd }), body);
-    write(page.pathname === "/" ? "index.html" : `${page.pathname.slice(1)}/index.html`, html);
+    // sources.html, not sources/index.html: Cloudflare Pages 308-redirects a directory
+    // URL to its trailing-slash form, which contradicts the canonical and sitemap URL.
+    write(page.pathname === "/" ? "index.html" : `${page.pathname.slice(1)}.html`, html);
 }
 
 // Public FAQ: ship the questions and answers in the first response so search
@@ -254,6 +256,23 @@ write(
             },
         }),
         faqBody
+    )
+);
+
+// /quran: without its own page the SPA rewrite served the homepage shell, whose
+// canonical is "/". The reader moves to /quran/N on load, so /quran stays out of the sitemap.
+const quranIndexPath = "/quran";
+write(
+    "quran.html",
+    setBody(
+        setHead(template, {
+            title: "Quran Reader | Word-by-Word Translation and Tafsir",
+            description: "Read the Holy Quran in Uthmani script with word-by-word study, tajweed, audio recitation, 17 translations, bookmarks, notes, and 10 English tafsirs.",
+            pathname: quranIndexPath,
+            jsonLd: crumbs([["Quran", quranIndexPath]]),
+        }),
+        `<nav><a href="/">Mastering Quran</a> / Quran</nav><h1>The Holy Quran</h1><p class="meta">114 surahs with Arabic text, English translation and tafsir</p>` +
+            `<ol>${surahs.map(s => `<li><a href="/quran/${s.number}">${s.number}. Surah ${esc(s.nameSimple)}</a> <span lang="ar" dir="rtl">${esc(s.nameArabic)}</span> · ${esc(s.nameTranslated)} · ${s.versesCount} verses</li>`).join("")}</ol>`
     )
 );
 
@@ -405,7 +424,7 @@ fs.writeFileSync(sitemapFile, sitemap.replace("</urlset>", `${entries}\n${prayer
 const appSource = fs.readFileSync(path.join(ROOT, "client", "src", "App.tsx"), "utf8");
 const routes = [...appSource.matchAll(/<Route path="([^"]+)"/g)]
     .map(m => m[1])
-    .filter(p => p !== "*" && p !== namesPath && !publicPagePaths.has(p) && !p.includes(":") && !prayer.staticRoutes.has(p));
+    .filter(p => p !== "*" && p !== namesPath && p !== quranIndexPath && !publicPagePaths.has(p) && !p.includes(":") && !prayer.staticRoutes.has(p));
 if (routes.length < 20) throw new Error(`only found ${routes.length} routes in App.tsx`);
 fs.writeFileSync(
     path.join(DIST, "_redirects"),
