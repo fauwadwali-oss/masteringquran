@@ -8,6 +8,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import UserPreferences from "./components/UserPreferences";
 import KeyboardShortcutsProvider from "./components/KeyboardShortcutsProvider";
 import Navbar from "./components/Navbar";
+import SideRail from "./components/SideRail";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import GoogleAnalytics from "./components/GoogleAnalytics";
@@ -63,6 +64,7 @@ function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.08),transparent_30%),linear-gradient(180deg,#f8fffb_0%,#f8fafc_42%,#ffffff_100%)] text-slate-950 dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_28%),linear-gradient(180deg,#020617_0%,#0f172a_52%,#020617_100%)] dark:text-slate-100">
       <Navbar />
+      <SideRail />
       <main className="flex-grow">{children}</main>
       <Footer />
     </div>
