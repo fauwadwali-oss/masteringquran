@@ -1,6 +1,29 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { Capacitor } from "@capacitor/core";
+import { Geolocation } from "@capacitor/geolocation";
 import { Loader2, LocateFixed, MapPin, Search } from "lucide-react";
 import { countryName, loadCities, nearestCity, searchCities, type Place } from "@/lib/prayer";
+
+const POSITION_OPTIONS = { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 };
+
+// In the apps, ask through the native plugin: one system prompt. The web view's own
+// geolocation adds a second "localhost would like to use your location" prompt on iOS.
+async function currentCoords(): Promise<{ latitude: number; longitude: number }> {
+    if (Capacitor.isNativePlatform()) {
+        const pos = await Geolocation.getCurrentPosition(POSITION_OPTIONS);
+        return pos.coords;
+    }
+    return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition((pos) => resolve(pos.coords), reject, POSITION_OPTIONS);
+    });
+}
+
+async function wasDeclined(err: unknown): Promise<boolean> {
+    if (Capacitor.isNativePlatform()) {
+        return (await Geolocation.checkPermissions().catch(() => null))?.location === "denied";
+    }
+    return (err as GeolocationPositionError | undefined)?.code === 1;
+}
 
 interface LocationPickerProps {
     onSelect: (place: Place) => void;
@@ -55,34 +78,31 @@ export default function LocationPicker({ onSelect, accent = "emerald", autoFocus
         onSelect(p);
     };
 
-    const useMyLocation = () => {
+    const useMyLocation = async () => {
         setError(null);
-        if (!navigator.geolocation) {
+        if (!Capacitor.isNativePlatform() && !navigator.geolocation) {
             setError("Your browser does not support location. Search for your city instead.");
             return;
         }
         setLocating(true);
-        navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                const latitude = Number(pos.coords.latitude.toFixed(4));
-                const longitude = Number(pos.coords.longitude.toFixed(4));
-                const near = await loadCities().then((c) => nearestCity(c, latitude, longitude)).catch(() => null);
-                setLocating(false);
-                choose({
-                    name: near?.name ?? "Your location",
-                    region: near?.region,
-                    countryCode: near?.countryCode,
-                    latitude,
-                    longitude,
-                    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                });
-            },
-            (err) => {
-                setLocating(false);
-                setError(err.code === 1 ? "Location access was declined. Search for your city instead." : "Could not find your location. Search for your city instead.");
-            },
-            { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
-        );
+        try {
+            const coords = await currentCoords();
+            const latitude = Number(coords.latitude.toFixed(4));
+            const longitude = Number(coords.longitude.toFixed(4));
+            const near = await loadCities().then((c) => nearestCity(c, latitude, longitude)).catch(() => null);
+            setLocating(false);
+            choose({
+                name: near?.name ?? "Your location",
+                region: near?.region,
+                countryCode: near?.countryCode,
+                latitude,
+                longitude,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            });
+        } catch (err) {
+            setLocating(false);
+            setError((await wasDeclined(err)) ? "Location access was declined. Search for your city instead." : "Could not find your location. Search for your city instead.");
+        }
     };
 
     const ring = {
