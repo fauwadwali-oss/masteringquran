@@ -20,7 +20,7 @@ const templates: Record<string, { subject: string; html: string }> = {
             ],
             button: { label: "Confirm my email", url: "{{ .ConfirmationURL }}" },
             afterButton: [
-                "This link expires in 24 hours. If you're using the iPhone or Android app, open this email on the same phone.",
+                "This link works once and expires in 1 hour. If you're using the iPhone or Android app, open this email on the same phone.",
                 "Didn't sign up? You can ignore this email and no account will be activated.",
             ],
             footerNote: "You're getting this because someone used this address to sign up at masteringquran.com.",

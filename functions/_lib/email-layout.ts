@@ -26,7 +26,7 @@ export function renderEmail(parts: EmailParts): string {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f3ec;padding:32px 16px;"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e7e2d6;">
 <tr><td style="background:#064e3b;padding:24px 32px;">
-<a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/MQ_shield_logo.png" width="40" height="40" alt="" style="vertical-align:middle;border:0;">
+<a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/apple-touch-icon.png" width="40" height="40" alt="" style="vertical-align:middle;border:0;">
 <span style="vertical-align:middle;margin-left:10px;font-size:18px;font-weight:700;color:#ffffff;">Mastering Quran</span></a>
 </td></tr>
 <tr><td style="padding:32px;">
