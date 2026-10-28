@@ -8,6 +8,7 @@ import {
     GraduationCap,
     Heart,
     Library,
+    ListMusic,
     Menu,
     Search,
     ScrollText,
@@ -59,6 +60,7 @@ const MORE_GROUPS: Array<{
         label: "Practice",
         items: [
             { to: "/plans", label: "Reading Plans", icon: BookOpen, description: "Build a habit" },
+            { to: "/playlists", label: "Playlists", icon: ListMusic, description: "Surahs back to back" },
             { to: "/quiz", label: "Quiz", icon: Trophy, description: "Test recall" },
             { to: "/flashcards", label: "Flash Cards", icon: GraduationCap, description: "Review quickly" },
             { to: "/share", label: "Share a Verse", icon: Heart, description: "Create images" },
