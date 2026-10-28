@@ -12,7 +12,7 @@ export default function Footer() {
                         <span className="text-lg font-bold text-white">Mastering Quran</span>
                     </Link>
                     <p className="max-w-sm text-sm leading-7 text-slate-400 mx-auto md:mx-0">
-                        Read, listen, and understand the Holy Quran — free, ad-free, and grounded in verified sources.
+                        Read, listen, and understand the Holy Quran: free, ad-free, and grounded in verified sources.
                     </p>
                     <p className="text-xs text-slate-500">
                         <a href="https://nusratwaliventures.com" className="transition-colors hover:text-white">
@@ -37,6 +37,7 @@ export default function Footer() {
                     <div className="flex flex-col gap-3 text-sm">
                         <FooterLink to="/prayer-times" icon={BookOpen} label="Prayer Times" />
                         <FooterLink to="/duas" icon={Heart} label="Duas" />
+                        <FooterLink to="/adhkar" icon={Heart} label="Adhkar" />
                         <FooterLink to="/plans" icon={BookOpen} label="Reading Plans" />
                         <FooterLink to="/daily" icon={Mail} label="Daily Reminder" />
                     </div>

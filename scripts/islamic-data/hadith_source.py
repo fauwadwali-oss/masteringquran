@@ -45,9 +45,14 @@ def lookup(data_repo: Path, cache: Path, collection: str, ref: str):
     cache.mkdir(parents=True, exist_ok=True)
     f = cache / f"ara-{collection}-{idx}.json"
     if not f.exists():
-        url = f"https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-{collection}/{idx}.json"
-        # curl rather than urllib: some Python installs ship without a CA bundle.
-        subprocess.run(["curl", "-sSfL", "--max-time", "30", "-o", str(f), url], check=True)
+        path = f"editions/ara-{collection}/{idx}.json"
+        # curl rather than urllib: some Python installs ship without a CA bundle. jsDelivr
+        # sometimes answers 403; the same file from the repo's "1" branch is the fallback.
+        for url in (f"https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/{path}", f"https://raw.githubusercontent.com/fawazahmed0/hadith-api/1/{path}"):
+            if subprocess.run(["curl", "-sSfL", "--max-time", "30", "-o", str(f), url]).returncode == 0:
+                break
+        else:
+            raise RuntimeError(f"could not fetch {path}")
     ara = json.loads(f.read_text(encoding="utf-8"))["hadiths"][0]["text"]
     return h["text"], ara, h.get("grades") or []
 
