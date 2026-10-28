@@ -29,6 +29,7 @@ const About = lazy(() => import("./pages/About"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Sources = lazy(() => import("./pages/Sources"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Bookmarks = lazy(() => import("./pages/Bookmarks"));
 const Notes = lazy(() => import("./pages/Notes"));
 const Memorize = lazy(() => import("./pages/Memorize"));
@@ -117,6 +118,7 @@ function App() {
                       <Route path="/faq" element={<FAQ />} />
                       <Route path="/sources" element={<Sources />} />
                       <Route path="/auth/callback" element={<AuthCallback />} />
+                      <Route path="/auth/reset-password" element={<ResetPassword />} />
                       <Route path="/bookmarks" element={<Bookmarks />} />
                       <Route path="/notes" element={<Notes />} />
                       <Route path="/memorize" element={<Memorize />} />

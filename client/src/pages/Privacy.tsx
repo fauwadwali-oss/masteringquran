@@ -25,10 +25,11 @@ export default function Privacy() {
           <section>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Information we collect</h2>
             <ul className="list-disc list-inside space-y-2">
-              <li><strong>Account information.</strong> If you sign in, we store your email address and Supabase user ID so bookmarks, notes, memorization progress, reading plans, and daily reminder settings can sync across your devices.</li>
+              <li><strong>Account information.</strong> If you sign in, we store your email address, Supabase user ID, and (if you choose one) a securely hashed password so bookmarks, notes, memorization progress, reading plans, and daily reminder settings can sync across your devices.</li>
               <li><strong>Content you save.</strong> We store the bookmarks, notes, learning progress, memorization status, zakat records, and reminder preferences you choose to save.</li>
               <li><strong>Optional location.</strong> Prayer times and Qibla can use your device location when you grant permission. Coordinates are used to calculate results and are not stored by us for that feature.</li>
               <li><strong>Messages and support.</strong> If you email us or submit a form, we receive your email address and the contents of your message.</li>
+              <li><strong>Sign-in activity.</strong> We record the steps of signing up, signing in, and resetting a password (for example, which option you chose and whether it worked) to find and fix problems. These records do not include your email address or password.</li>
               <li><strong>Usage data.</strong> We may use privacy-respecting analytics to count page views and referrers. We do not use advertising trackers or sell personal information.</li>
               <li><strong>Server logs.</strong> Our host (Cloudflare) keeps standard access logs (IP, user agent, request URL) for security and performance.</li>
             </ul>

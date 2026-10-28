@@ -38,7 +38,7 @@ export default function RequireAuth({ children, reason }: Props) {
                         {reason || "This feature requires a free Mastering Quran account."}
                     </p>
                     <div className="flex items-center gap-2 justify-center text-xs text-slate-500 dark:text-slate-400">
-                        <Sparkles className="h-3.5 w-3.5" /> Free forever · No password · Magic-link email
+                        <Sparkles className="h-3.5 w-3.5" /> Free forever · Password or magic link
                     </div>
                     <Button
                         onClick={() => setShowLogin(true)}
