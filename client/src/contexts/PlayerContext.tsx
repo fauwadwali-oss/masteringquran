@@ -246,6 +246,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const loadToken = useRef(0);
     // Bumped on every new source, so a late play() rejection or ended event from an old one is ignored.
     const playGen = useRef(0);
+    // What the reader asked for, as opposed to what the audio element is doing:
+    // a WebView can pause audio by itself when the app goes to the background.
+    const wantPlay = useRef(false);
     const [status, setStatus] = useState<PlayerStatus>("idle");
     const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
 
@@ -276,6 +279,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         if (!s || !el || !s.segments[index]) return;
         s.seg = index;
         const gen = ++playGen.current;
+        wantPlay.current = true;
         el.src = s.segments[index].url;
         claimAudioFocus("playlist");
         el.play().catch((e) => {
@@ -324,6 +328,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         }
         const next = nextPosition(s.pos, s.order.length, settingsRef.current.repeat);
         if (next === null) {
+            wantPlay.current = false;
             setStatus("paused");
             s.seg = 0;
             publish();
@@ -352,6 +357,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }, [loadTrack]);
 
     const pause = useCallback(() => {
+        wantPlay.current = false;
         audioRef.current?.pause();
     }, []);
 
@@ -369,11 +375,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
                 return;
             }
             claimAudioFocus("playlist");
+            wantPlay.current = true;
             const gen = playGen.current;
             el.play().catch((e) => {
                 if (gen === playGen.current && e?.name !== "AbortError") setStatus("paused");
             });
         } else {
+            wantPlay.current = false;
             el.pause();
         }
     }, [loadTrack, playSegment]);
@@ -396,6 +404,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const stop = useCallback(() => {
         loadToken.current++;
         playGen.current++;
+        wantPlay.current = false;
         session.current = null;
         const el = audioRef.current;
         if (el) {
@@ -437,7 +446,27 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }, [userId, stop]);
 
     // Other audio on the page (a verse, the whole-surah button) pauses the playlist.
-    useEffect(() => onAudioFocusLost("playlist", () => audioRef.current?.pause()), []);
+    useEffect(() => onAudioFocusLost("playlist", () => {
+        wantPlay.current = false;
+        audioRef.current?.pause();
+    }), []);
+
+    // The Android WebView pauses audio a few seconds after the app leaves the
+    // screen, and retrying there only stutters. Pick up again when the reader comes back.
+    const resumeIfWanted = useCallback(() => {
+        const el = audioRef.current;
+        // Skip while a new surah is loading: the element still holds the old file.
+        if (!el || !wantPlay.current || !el.paused || !isCurrentSource()) return;
+        if (el.ended) handleEnded();
+        else el.play().catch(() => undefined);
+    }, [handleEnded, isCurrentSource]);
+    useEffect(() => {
+        const onVisible = () => {
+            if (document.visibilityState === "visible") resumeIfWanted();
+        };
+        document.addEventListener("visibilitychange", onVisible);
+        return () => document.removeEventListener("visibilitychange", onVisible);
+    }, [resumeIfWanted]);
 
     // Audio element events
     useEffect(() => {
@@ -450,6 +479,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         };
         const onPause = () => {
             if (el.ended) return;
+            // Paused by the system while in the background (the Android WebView does
+            // this): keep showing "playing" so it resumes when the reader comes back.
+            if (document.visibilityState === "hidden" && wantPlay.current) return;
             setStatus((st) => (st === "loading" ? st : "paused"));
             const ms = mediaSession();
             if (ms) ms.playbackState = "paused";
