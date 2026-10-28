@@ -38,7 +38,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { usePlayer } from "@/contexts/PlayerContext";
-import { RECITERS } from "@/lib/reciters";
+import { ReciterPicker } from "@/components/ReciterPicker";
 import { SURAHS, getSurah } from "@/lib/surah-list";
 import {
     LISTEN_MODES,
@@ -247,16 +247,7 @@ function ListeningSettings() {
                 <label className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                     <Mic className="h-4 w-4 text-emerald-500" /> Reciter
                 </label>
-                <Select value={reciter} onValueChange={setReciter}>
-                    <SelectTrigger aria-label="Reciter" className="h-11 w-full rounded-xl bg-white dark:bg-slate-900">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {RECITERS.map((r) => (
-                            <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <ReciterPicker value={reciter} onChange={setReciter} className="bg-white dark:bg-slate-900" />
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 sm:col-span-2">
                 The reciter is used for every playlist and in the Quran reader. Each playlist picks its own translation. Changes apply from the next surah.

@@ -39,7 +39,7 @@ export default function About() {
                                     <BookOpen className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <h3 className="font-semibold text-slate-900 dark:text-white">Quranic text</h3>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">Uthmani script, 8 reciters, 17 translations, word-by-word with per-word audio, tajweed color-coding, and 10 classical English tafsirs.</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">Uthmani script, 10 reciters, 17 translations, word-by-word with per-word audio, tajweed color-coding, and 10 classical English tafsirs.</p>
                             </CardContent>
                         </Card>
                         <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">

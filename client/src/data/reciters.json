@@ -1,0 +1,12 @@
+[
+    { "id": "3", "verseAudioId": 3, "chapterAudioId": 3, "name": "Abdurrahmaan As-Sudais", "arabicName": "عبدالرحمن السديس", "style": "murattal", "tags": [], "wordTimings": true },
+    { "id": "7", "verseAudioId": 7, "chapterAudioId": 7, "name": "Mishary Alafasy", "arabicName": "مشاري العفاسي", "style": "murattal", "tags": [], "wordTimings": true },
+    { "id": "6", "verseAudioId": 6, "chapterAudioId": 6, "name": "Mahmoud Khalil Al-Husary", "arabicName": "محمود خليل الحصري", "style": "murattal", "tags": ["slow"], "wordTimings": true },
+    { "id": "12", "verseAudioId": 12, "chapterAudioId": 12, "name": "Al-Husary (Teaching)", "arabicName": "محمود خليل الحصري (المعلم)", "style": "muallim", "tags": ["slow", "verse-by-verse", "children"], "wordTimings": true },
+    { "id": "9", "verseAudioId": 9, "chapterAudioId": 9, "name": "Muhammad Siddiq Al-Minshawi", "arabicName": "محمد صديق المنشاوي", "style": "murattal", "tags": [], "wordTimings": true },
+    { "id": "2", "verseAudioId": 2, "chapterAudioId": 2, "name": "Abdul Basit (Murattal)", "arabicName": "عبد الباسط عبد الصمد", "style": "murattal", "tags": [], "wordTimings": true },
+    { "id": "1", "verseAudioId": 1, "chapterAudioId": 1, "name": "Abdul Basit (Mujawwad)", "arabicName": "عبد الباسط عبد الصمد (مجود)", "style": "mujawwad", "tags": [], "wordTimings": true },
+    { "id": "10", "verseAudioId": 10, "chapterAudioId": 10, "name": "Saood Ash-Shuraym", "arabicName": "سعود الشريم", "style": "murattal", "tags": [], "wordTimings": true },
+    { "id": "4", "verseAudioId": 4, "chapterAudioId": 4, "name": "Abu Bakr al-Shatri", "arabicName": "أبو بكر الشاطري", "style": "murattal", "tags": [], "wordTimings": true },
+    { "id": "5", "verseAudioId": 5, "chapterAudioId": 5, "name": "Hani ar-Rifai", "arabicName": "هاني الرفاعي", "style": "murattal", "tags": [], "wordTimings": true }
+]
