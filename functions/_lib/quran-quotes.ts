@@ -45,33 +45,36 @@ const MIN_WORDS_TO_MOVE_REFERENCE = 6;
 
 /**
  * Base skeleton: no vowels, tatweel, Quranic annotation marks, verse numbers or bidi controls.
- * Hamza seats on alef are folded, but ى/ي and ة/ه are kept apart because they can change the word
+ * Alef madda and wasla read as bare alef. ى/ي, ة/ه and the hamza seats أ/إ are kept apart because they can change the word
  * (هدى "guidance" vs هدي "offering"); spelling differences between scripts come from comparing
  * against both the Uthmani and the Imla'i text instead.
  */
-function skeleton(word: string, daggerAlef: "" | "ا"): string {
-    return word
+function skeleton(word: string, daggerAlef: "" | "\u0627", foldHamza: boolean): string {
+    const out = word
         .normalize("NFKC")
-        .replace(/[‌-‏؜﻿]/g, "")
-        .replace(/ٰ/g, daggerAlef)
-        .replace(/[ً-ٟـۖ-ۭ࣓-ࣿ]/g, "")
-        .replace(/[٠-٩۰-۹﴾﴿۝۞()]/g, "")
-        .replace(/^ءا/, "ا")
-        .replace(/[أإآٱ]/g, "ا")
-        .replace(/[^ء-ي]/g, "");
+        .replace(/[\u200C-\u200F\u061C\uFEFF]/g, "")
+        .replace(/\u0670/g, daggerAlef)
+        .replace(/[\u064B-\u065F\u0640\u06D6-\u06ED\u08D3-\u08FF]/g, "")
+        .replace(/[\u0660-\u0669\u06F0-\u06F9\uFD3E\uFD3F\u06DD\u06DE()]/g, "")
+        .replace(/^\u0621\u0627/, "\u0627")
+        .replace(/[\u0622\u0671]/g, "\u0627");
+    return (foldHamza ? out.replace(/[\u0623\u0625]/g, "\u0627") : out).replace(/[^\u0621-\u064A]/g, "");
 }
 
-/** Every acceptable comparison form of one canonical word (dagger alef may or may not be written). */
+/**
+ * Every acceptable comparison form of one canonical word: the dagger alef may or may not be
+ * written, and the hamza seat on alef may be left off (bare ا) but never swapped (أ for إ).
+ */
 function variants(word: string): string[] {
-    const a = skeleton(word, "");
-    const b = skeleton(word, "ا");
-    return a === b ? [a] : [a, b];
+    const forms = new Set<string>();
+    for (const dagger of ["", "\u0627"] as const) for (const fold of [false, true]) forms.add(skeleton(word, dagger, fold));
+    return [...forms];
 }
 
 export function normalizeArabic(text: string): string {
     return text
         .split(/\s+/)
-        .map((w) => skeleton(w, ""))
+        .map((w) => skeleton(w, "", true))
         .filter(Boolean)
         .join(" ");
 }
@@ -79,7 +82,7 @@ export function normalizeArabic(text: string): string {
 function modelWords(text: string): string[] {
     return text
         .split(/\s+/)
-        .map((w) => skeleton(w, "ا"))
+        .map((w) => skeleton(w, "\u0627", false))
         .filter(Boolean);
 }
 
@@ -235,6 +238,9 @@ export interface Passage {
 // A citation straight after the Arabic, e.g. "ٱلرَّحْمَٰنُ (Quran 55:1)".
 const CITATION_NEXT = /^[\s*_"'”»)\]]*[(\[]?\s*(?:Qur['’]?an|Q\b|Surah|Surat|Sura|\d{1,3}\s*:)/i;
 
+// ...or straight before it on a lead-in, e.g. "Allah says (Quran 55:1): ٱلرَّحْمَٰنُ".
+const CITATION_BEFORE = /\d{1,3}\s*:\s*\d{1,3}(?:\s*[-–]\s*\d{1,3})?\s*[)\]]?\s*:?[\s*_"'“«]*$/;
+
 export function findArabicPassages(text: string): Passage[] {
     const out: Passage[] = [];
     ARABIC_RUN.lastIndex = 0;
@@ -242,7 +248,10 @@ export function findArabicPassages(text: string): Passage[] {
         const words = modelWords(m[0]);
         const end = m.index + m[0].length;
         // One or two words are only a quote when a citation follows at once; otherwise they are terms like تقوى.
-        const short = words.length > 0 && words.length < MIN_QUOTE_WORDS && CITATION_NEXT.test(text.slice(end, end + 24));
+        const short =
+            words.length > 0 &&
+            words.length < MIN_QUOTE_WORDS &&
+            (CITATION_NEXT.test(text.slice(end, end + 24)) || CITATION_BEFORE.test(text.slice(Math.max(0, m.index - 24), m.index)));
         if (words.length >= MIN_QUOTE_WORDS || short) out.push({ start: m.index, end, text: m[0], words, short });
     }
     return out;

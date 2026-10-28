@@ -158,6 +158,19 @@ describe("checkQuranQuotes", () => {
         expect(term.quotes.map((q) => q.kind)).toEqual(["reference"]);
     });
 
+    it("keeps the hamza seats أ and إ apart but accepts a bare alef", async () => {
+        expect((await checkQuranQuotes("إن مع العسر يسرا (Quran 112:1)", fakeLookup())).quotes).toHaveLength(2);
+        const bare = await checkQuranQuotes("الله لا اله الا هو الحي القيوم (Quran 2:255)", fakeLookup());
+        expect(bare.quotes[0].status).toBe("verified");
+        const swapped = await checkQuranQuotes("الله لا أله ألا هو الحي القيوم (Quran 2:255)", fakeLookup());
+        expect(swapped.quotes[0].status).not.toBe("verified");
+    });
+
+    it("checks a one-word quote after a lead-in citation", async () => {
+        const r = await checkQuranQuotes("Allah says (Quran 112:2): ٱلصَّمَدُ", fakeLookup());
+        expect(r.quotes.map((q) => `${q.kind}:${q.status}`)).toEqual(["reference:verified", "arabic:verified"]);
+    });
+
     it("does not move a citation out of the surah it names", async () => {
         const text = "الله لا إله إلا هو الحي القيوم لا تأخذه سنة ولا نوم (Al-Fatihah 1:4)";
         const r = await checkQuranQuotes(text, fakeLookup());
