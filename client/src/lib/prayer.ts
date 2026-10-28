@@ -35,10 +35,14 @@ export const METHODS: { id: MethodId; label: string }[] = [
 
 export type MadhabId = "Shafi" | "Hanafi";
 
+/** Whose Suhoor and Iftar times to show. Asked once, never guessed from the country. */
+export type FastingId = "sunni" | "shia";
+
 export interface PrayerSettings {
     method: MethodId;
     madhab: MadhabId;
     hour12: boolean;
+    fasting?: FastingId;
 }
 
 export interface Place {

@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
 import PageHero from "@/components/PageHero";
 import LocationPicker from "@/components/LocationPicker";
+import FastingChoice from "@/components/FastingChoice";
 import {
     defaultSettings,
     fastTimes,
@@ -21,8 +22,10 @@ import {
     ramadanHubDescription,
     ramadanHubTitle,
     savePlace,
+    saveSettings,
     upcomingRamadanYear,
     ymdInZone,
+    type FastingId,
     type Place,
 } from "@/lib/prayer";
 
@@ -54,6 +57,11 @@ export default function Ramadan() {
         };
     }, [city]);
     const settings = loadSettings() ?? defaultSettings(place?.countryCode);
+    const [fasting, setFasting] = useState<FastingId | undefined>(() => loadSettings()?.fasting);
+    const chooseFasting = (f: FastingId) => {
+        saveSettings({ ...settings, fasting: f });
+        setFasting(f);
+    };
 
     const days = useMemo(() => ramadanDates(year), [year]);
     const rows = useMemo(
@@ -165,50 +173,48 @@ export default function Ramadan() {
 
                     {place && rows.length > 0 && (
                         <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <caption className="sr-only">Ramadan {year} Suhoor and Iftar times in {place.name}</caption>
-                                    <thead className="bg-slate-50 dark:bg-slate-800/60">
-                                        <tr>
-                                            <th className="text-left px-2 py-3 font-semibold text-slate-700 dark:text-slate-300">Ramadan</th>
-                                            <th className="text-left px-2 py-3 font-semibold text-slate-700 dark:text-slate-300">Date</th>
-                                            <th className="text-right px-2 py-3 font-semibold text-slate-700 dark:text-slate-300">
-                                                Suhoor ends
-                                                <span className="block text-xs font-normal text-slate-500 dark:text-slate-400">Sunni / Shia</span>
-                                            </th>
-                                            <th className="text-right px-2 py-3 font-semibold text-amber-700 dark:text-amber-400">
-                                                Iftar
-                                                <span className="block text-xs font-normal text-slate-500 dark:text-slate-400">Sunni / Shia</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {rows.map((d) => (
-                                            <tr
-                                                key={d.hijriDay}
-                                                className={`border-t border-slate-100 dark:border-slate-800 ${isToday(d.ymd) ? "bg-amber-50 font-semibold dark:bg-amber-950/30" : d.hijriDay >= 21 && d.hijriDay % 2 === 1 ? "bg-amber-50/40 dark:bg-amber-950/10" : ""}`}
-                                            >
-                                                <td className="px-2 py-3 font-medium text-slate-900 dark:text-white">
-                                                    {d.hijriDay}
-                                                    {d.hijriDay >= 21 && d.hijriDay % 2 === 1 && (
-                                                        <span className="ml-2 text-[11px] font-normal text-amber-700 dark:text-amber-400">odd night</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-2 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap"><span className="hidden sm:inline">{fmtDate(d.ymd, { weekday: "short" })}, </span>
-                                                    {fmtDate(d.ymd, { month: "short", day: "numeric" })}</td>
-                                                <td className="whitespace-nowrap px-2 py-3 text-right tabular-nums text-slate-700 dark:text-slate-300">
-                                                    {fmt(d.fast.sunni.suhoorEnds)}
-                                                    <span className="block text-xs text-slate-500 dark:text-slate-400">{fmt(d.fast.shia.suhoorEnds)}</span>
-                                                </td>
-                                                <td className="whitespace-nowrap px-2 py-3 text-right tabular-nums font-semibold text-amber-700 dark:text-amber-400">
-                                                    {fmt(d.fast.sunni.iftar)}
-                                                    <span className="block text-xs font-normal text-amber-700/80 dark:text-amber-400/80">{fmt(d.fast.shia.iftar)}</span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                            <div className="flex flex-wrap items-center justify-between gap-3 px-4 pt-4">
+                                <p className="font-semibold text-slate-900 dark:text-white">{fasting ? "Suhoor and Iftar" : "Which Suhoor and Iftar times do you follow?"}</p>
+                                <FastingChoice value={fasting} onChange={chooseFasting} />
                             </div>
+                            {fasting ? (
+                                <div className="mt-3 overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                        <caption className="sr-only">Ramadan {year} {fasting === "sunni" ? "Sunni" : "Shia"} Suhoor and Iftar times in {place.name}</caption>
+                                        <thead className="bg-slate-50 dark:bg-slate-800/60">
+                                            <tr>
+                                                <th className="text-left px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Ramadan</th>
+                                                <th className="text-left px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Date</th>
+                                                <th className="text-right px-3 py-3 font-semibold text-slate-700 dark:text-slate-300">Suhoor ends</th>
+                                                <th className="text-right px-3 py-3 font-semibold text-amber-700 dark:text-amber-400">Iftar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {rows.map((d) => (
+                                                <tr
+                                                    key={d.hijriDay}
+                                                    className={`border-t border-slate-100 dark:border-slate-800 ${isToday(d.ymd) ? "bg-amber-50 font-semibold dark:bg-amber-950/30" : d.hijriDay >= 21 && d.hijriDay % 2 === 1 ? "bg-amber-50/40 dark:bg-amber-950/10" : ""}`}
+                                                >
+                                                    <td className="px-3 py-3 font-medium text-slate-900 dark:text-white">
+                                                        {d.hijriDay}
+                                                        {d.hijriDay >= 21 && d.hijriDay % 2 === 1 && (
+                                                            <span className="ml-2 text-[11px] font-normal text-amber-700 dark:text-amber-400">odd night</span>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-3 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                                                        <span className="hidden sm:inline">{fmtDate(d.ymd, { weekday: "short" })}, </span>
+                                                        {fmtDate(d.ymd, { month: "short", day: "numeric" })}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-3 py-3 text-right tabular-nums text-slate-700 dark:text-slate-300">{fmt(d.fast[fasting].suhoorEnds)}</td>
+                                                    <td className="whitespace-nowrap px-3 py-3 text-right tabular-nums font-semibold text-amber-700 dark:text-amber-400">{fmt(d.fast[fasting].iftar)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <p className="px-4 py-4 text-sm text-slate-600 dark:text-slate-300">Choose Sunni or Shia to see the Ramadan timetable.</p>
+                            )}
                         </Card>
                     )}
 
@@ -220,7 +226,7 @@ export default function Ramadan() {
                     <p className="text-center pt-4 text-xs leading-relaxed text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
                         Dates follow the Umm al-Qura calendar. Ramadan begins with the moon sighting, so your community may start a day earlier or later.
                         Sunni times use the calculation method set on the <Link to="/prayer-times" className="underline">prayer times</Link> page: Suhoor ends at Fajr and Iftar is at Maghrib.
-                        Shia times use the Jafari method, where Maghrib comes after the redness in the east fades. All times are calculated on your device.
+                        Shia times use the Jafari method, where Maghrib comes after the redness in the east fades. Your choice is saved on this device, and all times are calculated here.
                         Many people stop eating a few minutes before Fajr; follow your local mosque.
                     </p>
                 </div>
