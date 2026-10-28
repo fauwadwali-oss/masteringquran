@@ -2,6 +2,14 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { claimAudioFocus, onAudioFocusLost } from "@/lib/audio-focus";
+import {
+    setNowPlayingHandler,
+    setNowPlayingMetadata,
+    setNowPlayingPosition,
+    setNowPlayingState,
+    type NowPlayingAction,
+    type NowPlayingHandler,
+} from "@/lib/now-playing";
 import { DEFAULT_RECITER, reciterName } from "@/lib/reciters";
 import { getSurah, type SurahInfo } from "@/lib/surah-list";
 import {
@@ -143,7 +151,6 @@ async function fetchSegments(surah: number, mode: ListenMode, reciter: string, v
     return segments;
 }
 
-const mediaSession = () => (typeof navigator !== "undefined" && "mediaSession" in navigator ? navigator.mediaSession : null);
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
     const { user } = useAuth();
@@ -414,11 +421,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         }
         setStatus("idle");
         setNowPlaying(null);
-        const ms = mediaSession();
-        if (ms) {
-            ms.metadata = null;
-            ms.playbackState = "none";
-        }
+        setNowPlayingMetadata(null);
+        setNowPlayingState("none");
     }, []);
 
     const cycleRepeat = useCallback(() => {
@@ -474,8 +478,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         if (!el) return;
         const onPlay = () => {
             setStatus("playing");
-            const ms = mediaSession();
-            if (ms) ms.playbackState = "playing";
+            setNowPlayingState("playing");
         };
         const onPause = () => {
             if (el.ended) return;
@@ -483,8 +486,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             // this): keep showing "playing" so it resumes when the reader comes back.
             if (document.visibilityState === "hidden" && wantPlay.current) return;
             setStatus((st) => (st === "loading" ? st : "paused"));
-            const ms = mediaSession();
-            if (ms) ms.playbackState = "paused";
+            setNowPlayingState("paused");
         };
         const onError = () => {
             const s = session.current;
@@ -510,9 +512,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     // Lock screen and notification controls
     useEffect(() => {
-        const ms = mediaSession();
-        if (!ms) return;
-        const handlers: [MediaSessionAction, MediaSessionActionHandler | null][] = [
+        const handlers: [NowPlayingAction, NowPlayingHandler][] = [
             ["play", () => {
                 if (audioRef.current?.paused) toggle();
             }],
@@ -525,53 +525,31 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
                 if (el && d.seekTime != null && session.current?.mode === "arabic") el.currentTime = d.seekTime;
             }],
         ];
-        for (const [action, handler] of handlers) {
-            try {
-                ms.setActionHandler(action, handler);
-            } catch {
-                // Action not supported here.
-            }
-        }
+        for (const [action, handler] of handlers) setNowPlayingHandler(action, handler);
         return () => {
-            for (const [action] of handlers) {
-                try {
-                    ms.setActionHandler(action, null);
-                } catch {
-                    // ignore
-                }
-            }
+            for (const [action] of handlers) setNowPlayingHandler(action, null);
         };
     }, [toggle, pause, next, previous, stop]);
 
     useEffect(() => {
-        const ms = mediaSession();
-        if (!ms || !nowPlaying || typeof MediaMetadata === "undefined") return;
+        if (!nowPlaying) return;
         const { surah, mode, ayah, kind, playlistName } = nowPlaying;
         const voice = TRANSLATION_VOICES.find((v) => v.id === nowPlaying.voice);
         const artist = kind === "translation" ? (voice ? `${voice.label} translation, ${voice.credit}` : "Translation") : reciterName(settings.reciter);
-        ms.metadata = new MediaMetadata({
+        setNowPlayingMetadata({
             title: mode === "arabic" || !ayah ? surah.englishName : `${surah.englishName}, verse ${ayah}`,
             artist,
             album: playlistName,
-            artwork: [
-                { src: "/favicon-512.png", sizes: "512x512", type: "image/png" },
-                { src: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-            ],
         });
     }, [nowPlaying, settings.reciter]);
 
     // Seek bar on the lock screen, for whole-surah audio.
     useEffect(() => {
         const el = audioRef.current;
-        const ms = mediaSession();
-        if (!el || !ms || typeof ms.setPositionState !== "function") return;
+        if (!el) return;
         const update = () => {
             if (session.current?.mode !== "arabic" || !Number.isFinite(el.duration) || el.duration <= 0) return;
-            try {
-                ms.setPositionState({ duration: el.duration, position: Math.min(el.currentTime, el.duration), playbackRate: el.playbackRate });
-            } catch {
-                // ignore
-            }
+            setNowPlayingPosition(el.duration, Math.min(el.currentTime, el.duration), el.playbackRate);
         };
         el.addEventListener("loadedmetadata", update);
         el.addEventListener("seeked", update);
