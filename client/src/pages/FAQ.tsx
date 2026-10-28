@@ -31,7 +31,7 @@ const FAQS: QA[] = [
         a: (
             <>
                 Every factual claim the AI makes must come from a tool call. Before it writes an answer, it fetches the actual verse, hadith, or tafsir text from a verified source and is shown that text. The system prompt forbids inventing references. See the full scope and guardrails in the{" "}
-                <Link to="/ask" className="text-emerald-600 dark:text-emerald-400 hover:underline">Ask AI</Link> page.
+                <Link to="/ask" className="text-emerald-600 dark:text-emerald-400 hover:underline">Ask Wali</Link> page.
             </>
         ),
     },

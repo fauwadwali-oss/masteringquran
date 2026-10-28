@@ -110,7 +110,7 @@ export default function Home() {
 
             <section className="bg-[#0B2545] px-6 py-10 text-white">
                 <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2">
-                    <div><h2 className="text-2xl font-bold">Questions as you study?</h2><p className="mt-3 leading-relaxed text-slate-200">Ask AI checks Quran, hadith and tafsir sources to support your study. Answers can contain mistakes; open the references and verify them.</p><Link to="/ask" className="mt-4 inline-flex min-h-11 items-center gap-2 font-semibold text-emerald-200 hover:underline">Ask a question<ArrowRight className="h-4 w-4" /></Link></div>
+                    <div><h2 className="text-2xl font-bold">Questions as you study?</h2><p className="mt-3 leading-relaxed text-slate-200">Ask Wali checks Quran, hadith and tafsir sources to support your study. Answers can contain mistakes; open the references and verify them.</p><Link to="/ask" className="mt-4 inline-flex min-h-11 items-center gap-2 font-semibold text-emerald-200 hover:underline">Ask a question<ArrowRight className="h-4 w-4" /></Link></div>
                     <div><h2 className="text-2xl font-bold">Follow the sources</h2><p className="mt-3 leading-relaxed text-slate-200">See the text providers, translation and tafsir editions, and how to report a correction.</p><Link to="/sources" className="mt-4 inline-flex min-h-11 items-center gap-2 font-semibold text-emerald-200 hover:underline">Sources and methodology<ArrowRight className="h-4 w-4" /></Link></div>
                 </div>
             </section>

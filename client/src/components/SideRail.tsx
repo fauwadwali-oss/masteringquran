@@ -8,7 +8,7 @@ const railItems = [
     { to: "/quran", label: "Quran", icon: BookOpen },
     { to: "/hadith", label: "Hadith", icon: Library },
     { to: "/learn-arabic", label: "Arabic", icon: GraduationCap },
-    { to: "/ask", label: "Ask AI", icon: Sparkles },
+    { to: "/ask", label: "Ask Wali", icon: Sparkles },
 ];
 
 /**
