@@ -10,6 +10,7 @@ import {
     ADHKAR,
     ROUTINES,
     countFor,
+    emptyProgress,
     firstUnfinished,
     increment,
     loadProgress,
@@ -186,10 +187,12 @@ function FocusMode({ routine, progress, update, start, onExit }: { routine: Rout
 
     const tap = () => {
         // After midnight the saved counts belong to yesterday, so a finished dhikr can be counted again.
-        const current = progress.date === localDay(new Date()) ? done : 0;
+        const now = new Date();
+        const today = progress.date === localDay(now) ? progress : emptyProgress(now);
+        const current = countFor(today, routine.id, d);
         if (current >= d.count) return;
         const next = current + 1;
-        update(p => increment(p, routine.id, d, new Date()));
+        update(p => increment(p, routine.id, d, now));
         setPulse(n => n + 1);
         if (next < d.count) {
             buzz(10);
@@ -197,7 +200,7 @@ function FocusMode({ routine, progress, update, start, onExit }: { routine: Rout
         }
         buzz([30, 60, 30]);
         // Move on to the next unfinished dhikr after a moment, so the finished ring is seen.
-        const after = items.findIndex((x, i) => i > index && countFor(progress, routine.id, x) < x.count);
+        const after = items.findIndex((x, i) => i > index && countFor(today, routine.id, x) < x.count);
         if (after >= 0) advanceTimer.current = window.setTimeout(() => setIndex(after), 700);
     };
 
@@ -334,8 +337,8 @@ export default function Adhkar() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-teal-50/30 via-white to-white font-sans dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
             <SEO
-                title={routine ? `${routine.name} adhkar - Mastering Quran` : "Adhkar routines: morning, evening, sleep and after salah - Mastering Quran"}
-                description="Daily adhkar with a tap counter: morning, evening, before sleep, on waking and after salah. Every dhikr is quoted from the Quran or the hadith collections, with its reference and the words of the hadith that give its count."
+                title={routine ? `${routine.name} adhkar - Mastering Quran` : "Adhkar routines: morning, evening, sleep, after salah and through the day - Mastering Quran"}
+                description="Daily adhkar with a tap counter: morning, evening, before sleep, on waking, after salah and through the day. Every dhikr is quoted from the Quran or the hadith collections, with its reference and the words of the hadith that give its count."
             />
             <section className="px-4 py-12 md:px-6">
                 <div className="mx-auto max-w-3xl">
