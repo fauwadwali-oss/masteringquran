@@ -17,6 +17,7 @@ import {
     skipBack,
     skipForward,
     translationAudioUrl,
+    isTranslationVoice,
     TRANSLATION_VOICES,
     type ListenMode,
     type Playlist,
@@ -39,6 +40,7 @@ interface Session {
     playlistName: string;
     surahs: number[];
     mode: ListenMode;
+    voice: TranslationVoice;
     order: number[];
     pos: number;
     segments: Segment[];
@@ -52,6 +54,7 @@ export interface NowPlaying {
     playlistName: string;
     surah: SurahInfo;
     mode: ListenMode;
+    voice: TranslationVoice;
     /** Position in play order, from 0. */
     pos: number;
     total: number;
@@ -68,8 +71,6 @@ interface PlayerContextValue {
     // Settings
     reciter: string;
     setReciter: (id: string) => void;
-    voice: TranslationVoice;
-    setVoice: (v: TranslationVoice) => void;
     repeat: RepeatMode;
     cycleRepeat: () => void;
     shuffle: boolean;
@@ -95,12 +96,11 @@ function readSettings() {
         const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
         return {
             reciter: typeof s.reciter === "string" ? s.reciter : DEFAULT_RECITER,
-            voice: (TRANSLATION_VOICES.some((v) => v.id === s.voice) ? s.voice : "en") as TranslationVoice,
             repeat: (["off", "all", "one"].includes(s.repeat) ? s.repeat : "off") as RepeatMode,
             shuffle: s.shuffle === true,
         };
     } catch {
-        return { reciter: DEFAULT_RECITER, voice: "en" as TranslationVoice, repeat: "off" as RepeatMode, shuffle: false };
+        return { reciter: DEFAULT_RECITER, repeat: "off" as RepeatMode, shuffle: false };
     }
 }
 
@@ -204,6 +204,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
                     name: r.name,
                     surahs: r.surahs ?? [],
                     mode: r.mode,
+                    voice: isTranslationVoice(r.voice) ? r.voice : "en",
                     createdAt: Date.parse(r.created_at) || Date.now(),
                 }));
                 commit(uid, mergeWithAccount(playlistsRef.current, remote, loadDeleted(uid)));
@@ -261,6 +262,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             playlistName: s.playlistName,
             surah,
             mode: s.mode,
+            voice: s.voice,
             pos: s.pos,
             total: s.order.length,
             ayah: segment?.ayah,
@@ -295,8 +297,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setStatus("loading");
         publish();
         try {
-            const { reciter, voice } = settingsRef.current;
-            const segments = await fetchSegments(surahNumber, s.mode, reciter, voice);
+            const segments = await fetchSegments(surahNumber, s.mode, settingsRef.current.reciter, s.voice);
             if (token !== loadToken.current || session.current !== s) return;
             s.segments = segments;
             playSegment(0);
@@ -341,6 +342,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             playlistName: playlist.name,
             surahs: [...playlist.surahs],
             mode: playlist.mode,
+            voice: playlist.voice,
             order,
             pos: 0,
             segments: [],
@@ -428,7 +430,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }, [publish]);
 
     const setReciter = useCallback((reciter: string) => setSettings((s) => ({ ...s, reciter })), []);
-    const setVoice = useCallback((voice: TranslationVoice) => setSettings((s) => ({ ...s, voice })), []);
 
     // Stop when the reader signs out: playlists belong to the account.
     useEffect(() => {
@@ -514,7 +515,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         const ms = mediaSession();
         if (!ms || !nowPlaying || typeof MediaMetadata === "undefined") return;
         const { surah, mode, ayah, kind, playlistName } = nowPlaying;
-        const voice = TRANSLATION_VOICES.find((v) => v.id === settings.voice);
+        const voice = TRANSLATION_VOICES.find((v) => v.id === nowPlaying.voice);
         const artist = kind === "translation" ? (voice ? `${voice.label} translation, ${voice.credit}` : "Translation") : reciterName(settings.reciter);
         ms.metadata = new MediaMetadata({
             title: mode === "arabic" || !ayah ? surah.englishName : `${surah.englishName}, verse ${ayah}`,
@@ -525,7 +526,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
                 { src: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
             ],
         });
-    }, [nowPlaying, settings.reciter, settings.voice]);
+    }, [nowPlaying, settings.reciter]);
 
     // Seek bar on the lock screen, for whole-surah audio.
     useEffect(() => {
@@ -561,8 +562,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setPlaylists,
         reciter: settings.reciter,
         setReciter,
-        voice: settings.voice,
-        setVoice,
         repeat: settings.repeat,
         cycleRepeat,
         shuffle: settings.shuffle,
@@ -576,7 +575,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         next,
         previous,
         stop,
-    }), [playlists, playlistsReady, setPlaylists, settings, setReciter, setVoice, cycleRepeat, toggleShuffle, status, nowPlaying, audio, playPlaylist, toggle, pause, next, previous, stop]);
+    }), [playlists, playlistsReady, setPlaylists, settings, setReciter, cycleRepeat, toggleShuffle, status, nowPlaying, audio, playPlaylist, toggle, pause, next, previous, stop]);
 
     return (
         <PlayerContext.Provider value={value}>

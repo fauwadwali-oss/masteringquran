@@ -11,6 +11,8 @@ import {
     nextPosition,
     removeSurahAt,
     renamePlaylist,
+    setPlaylistVoice,
+    TRANSLATION_VOICES,
     skipBack,
     skipForward,
     STARTER_PLAYLISTS,
@@ -38,6 +40,13 @@ describe("surah list", () => {
     it("builds translation audio links by global verse number", () => {
         expect(translationAudioUrl("en", 2, 255)).toBe("https://cdn.islamic.network/quran/audio/192/en.walk/262.mp3");
         expect(translationAudioUrl("ur", 1, 1)).toBe("https://cdn.islamic.network/quran/audio/64/ur.khan/1.mp3");
+        expect(translationAudioUrl("fa", 1, 1)).toBe("https://cdn.islamic.network/quran/audio/40/fa.hedayatfarfooladvand/1.mp3");
+    });
+
+    it("lists each translation voice once", () => {
+        const ids = TRANSLATION_VOICES.map((v) => v.id);
+        expect(new Set(ids).size).toBe(ids.length);
+        expect(ids.slice(0, 2)).toEqual(["en", "ur"]);
     });
 });
 
@@ -48,6 +57,7 @@ describe("editing playlists", () => {
         expect(p.name).toBe("Night time");
         expect(p.surahs).toEqual([67, 32]);
         expect(p.mode).toBe("arabic");
+        expect(p.voice).toBe("en");
         expect(cleanName("")).toBe("My playlist");
     });
 
@@ -62,6 +72,9 @@ describe("editing playlists", () => {
         expect(list[0].name).toBe("Test");
         list = renamePlaylist(list, p.id, "Friday");
         expect(list[0].name).toBe("Friday");
+        list = setPlaylistVoice(list, p.id, "ur");
+        expect(list[0].voice).toBe("ur");
+        expect(setPlaylistVoice(list, p.id, "xx")[0].voice).toBe("ur");
         expect(deletePlaylist(list, p.id)).toEqual([]);
     });
 
@@ -105,7 +118,7 @@ describe("play order", () => {
 });
 
 describe("account sync", () => {
-    const pl = (id: string, extra: Partial<Playlist> = {}): Playlist => ({ id, name: id, surahs: [1], mode: "arabic", createdAt: 1, ...extra });
+    const pl = (id: string, extra: Partial<Playlist> = {}): Playlist => ({ id, name: id, surahs: [1], mode: "arabic", voice: "en", createdAt: 1, ...extra });
 
     it("keeps unsent device playlists and drops ones deleted elsewhere", () => {
         const local = [pl("a", { synced: true }), pl("b", { synced: true }), pl("c")];
@@ -114,6 +127,12 @@ describe("account sync", () => {
         expect(merged.map((p) => p.id)).toEqual(["a", "c"]);
         expect(merged[0]).toMatchObject({ name: "renamed", synced: true });
         expect(merged[1].synced).toBeFalsy();
+    });
+
+    it("uploads a playlist again when only its translation changed", () => {
+        const before = [pl("a", { synced: true })];
+        const { list } = applyEdit(before, [{ ...before[0], voice: "ur" }]);
+        expect(list[0].synced).toBe(false);
     });
 
     it("lets an edit made before the account answered win", () => {

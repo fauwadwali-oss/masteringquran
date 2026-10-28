@@ -1,7 +1,7 @@
 // Portable playlist data access: plain async functions, no React dependencies.
 
 import { supabase } from "@/lib/supabase";
-import type { ListenMode } from "@/lib/playlists";
+import type { ListenMode, TranslationVoice } from "@/lib/playlists";
 
 export interface PlaylistRow {
     id: string;
@@ -9,6 +9,7 @@ export interface PlaylistRow {
     name: string;
     surahs: number[];
     mode: ListenMode;
+    voice: TranslationVoice;
     created_at: string;
     updated_at: string;
 }
@@ -25,7 +26,7 @@ export async function listPlaylists(userId: string): Promise<PlaylistRow[]> {
 
 export async function upsertPlaylists(
     userId: string,
-    playlists: { id: string; name: string; surahs: number[]; mode: ListenMode; createdAt: number }[],
+    playlists: { id: string; name: string; surahs: number[]; mode: ListenMode; voice: TranslationVoice; createdAt: number }[],
 ): Promise<void> {
     if (!playlists.length) return;
     const now = new Date().toISOString();
@@ -36,6 +37,7 @@ export async function upsertPlaylists(
             name: p.name,
             surahs: p.surahs,
             mode: p.mode,
+            voice: p.voice,
             created_at: new Date(p.createdAt).toISOString(),
             updated_at: now,
         })),

@@ -51,6 +51,7 @@ import {
     removeSurahAt,
     renamePlaylist,
     setPlaylistMode,
+    setPlaylistVoice,
     type Playlist,
     type TranslationVoice,
 } from "@/lib/playlists";
@@ -238,7 +239,7 @@ function NowPlayingCard() {
 }
 
 function ListeningSettings() {
-    const { reciter, setReciter, voice, setVoice } = usePlayer();
+    const { reciter, setReciter } = usePlayer();
     return (
         <div className="grid gap-3 sm:grid-cols-2">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 sm:col-span-2">How it sounds</h2>
@@ -257,28 +258,8 @@ function ListeningSettings() {
                     </SelectContent>
                 </Select>
             </div>
-            <div className="min-w-0 space-y-1.5">
-                <label className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                    <ListMusic className="h-4 w-4 text-indigo-500" /> Translation voice
-                </label>
-                <Select value={voice} onValueChange={(v) => setVoice(v as TranslationVoice)}>
-                    <SelectTrigger aria-label="Translation voice" className="h-11 w-full rounded-xl bg-white dark:bg-slate-900">
-                        <SelectValue>{TRANSLATION_VOICES.find((v) => v.id === voice)?.label}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                        {TRANSLATION_VOICES.map((v) => (
-                            <SelectItem key={v.id} value={v.id}>
-                                <span>
-                                    <span className="font-medium">{v.label}</span>
-                                    <span className="block text-xs text-slate-400">{v.credit}</span>
-                                </span>
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 sm:col-span-2">
-                Translation audio: {TRANSLATION_VOICES.find((v) => v.id === voice)?.credit}. Changes apply from the next surah.
+                The reciter is used for every playlist and in the Quran reader. Each playlist picks its own translation. Changes apply from the next surah.
             </p>
         </div>
     );
@@ -327,6 +308,7 @@ function PlaylistCard({ playlist, open, onToggle }: { playlist: Playlist; open: 
                             <span className="block truncate font-semibold text-slate-900 dark:text-white">{playlist.name}</span>
                             <span className="block truncate text-sm text-slate-500 dark:text-slate-400">
                                 {playlist.surahs.length} {playlist.surahs.length === 1 ? "surah" : "surahs"} · {LISTEN_MODES.find((m) => m.id === playlist.mode)?.label}
+                                {playlist.mode !== "arabic" && ` (${TRANSLATION_VOICES.find((v) => v.id === playlist.voice)?.label})`}
                             </span>
                         </span>
                         <ChevronDown className={cn("h-5 w-5 shrink-0 text-slate-400 transition-transform", open && "rotate-180")} />
@@ -358,6 +340,28 @@ function PlaylistCard({ playlist, open, onToggle }: { playlist: Playlist; open: 
                             ))}
                         </div>
                     </fieldset>
+
+                    {playlist.mode !== "arabic" && (
+                        <div className="space-y-1.5">
+                            <label htmlFor={`voice-${id}`} className="text-sm font-medium text-slate-600 dark:text-slate-300">Translation to hear</label>
+                            <Select value={playlist.voice} onValueChange={(v) => setPlaylists((list) => setPlaylistVoice(list, id, v as TranslationVoice))}>
+                                <SelectTrigger id={`voice-${id}`} aria-label="Translation to hear" className="h-11 w-full rounded-xl">
+                                    <SelectValue>{TRANSLATION_VOICES.find((v) => v.id === playlist.voice)?.label}</SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {TRANSLATION_VOICES.map((v) => (
+                                        <SelectItem key={v.id} value={v.id}>
+                                            <span>
+                                                <span className="font-medium">{v.label}</span>
+                                                <span className="block text-xs text-slate-400">{v.credit}</span>
+                                            </span>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{TRANSLATION_VOICES.find((v) => v.id === playlist.voice)?.credit}</p>
+                        </div>
+                    )}
 
                     <ol className="space-y-1.5">
                         {playlist.surahs.map((n, i) => {

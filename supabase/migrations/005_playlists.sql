@@ -9,6 +9,7 @@ create table if not exists public.mq_playlists (
     surahs      int[] not null default '{}',
     mode        text not null default 'arabic'
                 check (mode in ('arabic', 'arabic-translation', 'translation')),
+    voice       text not null default 'en' check (char_length(voice) between 1 and 40),  -- translation audio id
     created_at  timestamptz not null default now(),
     updated_at  timestamptz not null default now()
 );

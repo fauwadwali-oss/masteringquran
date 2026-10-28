@@ -5,7 +5,7 @@ import { getSurah, globalAyahNumber } from "@/lib/surah-list";
 // returns a new array so React state and storage stay in step.
 
 export type ListenMode = "arabic" | "arabic-translation" | "translation";
-export type TranslationVoice = "en" | "ur";
+export type TranslationVoice = string;
 export type RepeatMode = "off" | "all" | "one";
 
 export interface Playlist {
@@ -13,6 +13,8 @@ export interface Playlist {
     name: string;
     surahs: number[];
     mode: ListenMode;
+    /** Which translation is heard in the translation modes (an id from TRANSLATION_VOICES). */
+    voice: TranslationVoice;
     createdAt: number;
     /** Local only: true once the account has a copy. */
     synced?: boolean;
@@ -24,10 +26,21 @@ export const LISTEN_MODES: { id: ListenMode; label: string; hint: string }[] = [
     { id: "translation", label: "Translation only", hint: "The meaning, verse by verse" },
 ];
 
+// Verse-by-verse translation recordings on cdn.islamic.network (alquran.cloud audio editions).
 export const TRANSLATION_VOICES: { id: TranslationVoice; label: string; credit: string; edition: string; bitrate: number }[] = [
     { id: "en", label: "English", credit: "Saheeh International, read by Ibrahim Walk", edition: "en.walk", bitrate: 192 },
     { id: "ur", label: "Urdu", credit: "Read by Shamshad Ali Khan", edition: "ur.khan", bitrate: 64 },
+    { id: "fr", label: "French", credit: "Read by Youssouf Leclerc", edition: "fr.leclerc", bitrate: 128 },
+    { id: "tr", label: "Turkish", credit: "Diyanet Vakfi translation", edition: "tr.vakfi-audio", bitrate: 128 },
+    { id: "ru", label: "Russian", credit: "Elmir Kuliev translation", edition: "ru.kuliev-audio", bitrate: 128 },
+    { id: "fa", label: "Persian", credit: "Fooladvand translation, read by Hedayatfar", edition: "fa.hedayatfarfooladvand", bitrate: 40 },
+    { id: "zh", label: "Chinese", credit: "Chinese translation", edition: "zh.chinese", bitrate: 128 },
+    { id: "kk", label: "Kazakh", credit: "Read by Khalifah Altai", edition: "kk.khalifahaltai-audio", bitrate: 128 },
+    { id: "uz", label: "Uzbek", credit: "Muhammad Sodik Muhammad Yusuf translation", edition: "uz.sodik-audio", bitrate: 128 },
 ];
+
+export const isTranslationVoice = (id: unknown): id is TranslationVoice =>
+    typeof id === "string" && TRANSLATION_VOICES.some((v) => v.id === id);
 
 export function translationAudioUrl(voice: TranslationVoice, surah: number, ayah: number): string {
     const v = TRANSLATION_VOICES.find((t) => t.id === voice) ?? TRANSLATION_VOICES[0];
@@ -67,6 +80,7 @@ function sanitize(raw: unknown): Playlist[] {
             name: p.name.slice(0, 60),
             surahs: p.surahs.filter(isValidSurah),
             mode: modes.includes(p.mode) ? p.mode : "arabic",
+            voice: isTranslationVoice(p.voice) ? p.voice : "en",
             createdAt: typeof p.createdAt === "number" ? p.createdAt : Date.now(),
             synced: p.synced === true,
         }];
@@ -119,8 +133,8 @@ export function cleanName(name: string, fallback = "My playlist"): string {
     return trimmed || fallback;
 }
 
-export function createPlaylist(list: Playlist[], name: string, surahs: number[] = [], mode: ListenMode = "arabic"): [Playlist[], Playlist] {
-    const playlist: Playlist = { id: newId(), name: cleanName(name), surahs: surahs.filter(isValidSurah), mode, createdAt: Date.now() };
+export function createPlaylist(list: Playlist[], name: string, surahs: number[] = [], mode: ListenMode = "arabic", voice: TranslationVoice = "en"): [Playlist[], Playlist] {
+    const playlist: Playlist = { id: newId(), name: cleanName(name), surahs: surahs.filter(isValidSurah), mode, voice, createdAt: Date.now() };
     return [[...list, playlist], playlist];
 }
 
@@ -130,7 +144,7 @@ function update(list: Playlist[], id: string, fn: (p: Playlist) => Playlist): Pl
 
 /** What is saved to the account for a playlist. Two copies with the same key need no upload. */
 export function payloadKey(p: Playlist): string {
-    return JSON.stringify([p.name, p.surahs, p.mode]);
+    return JSON.stringify([p.name, p.surahs, p.mode, p.voice]);
 }
 
 /**
@@ -171,6 +185,9 @@ export const deletePlaylist = (list: Playlist[], id: string) => list.filter((p) 
 
 export const setPlaylistMode = (list: Playlist[], id: string, mode: ListenMode) =>
     update(list, id, (p) => ({ ...p, mode }));
+
+export const setPlaylistVoice = (list: Playlist[], id: string, voice: TranslationVoice) =>
+    update(list, id, (p) => (isTranslationVoice(voice) ? { ...p, voice } : p));
 
 /** Adds a surah to the end. A surah already in the list is left where it is. */
 export const addSurah = (list: Playlist[], id: string, surah: number) =>
