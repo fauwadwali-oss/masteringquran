@@ -136,8 +136,9 @@ function PlaylistsContent() {
                 <div className="space-y-3">
                     <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Your playlists</h2>
                     {!playlistsReady ? (
-                        <div className="flex justify-center py-10">
-                            <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+                        <div role="status" className="flex justify-center py-10">
+                            <Loader2 aria-hidden className="h-6 w-6 animate-spin text-slate-400" />
+                            <span className="sr-only">Loading playlists</span>
                         </div>
                     ) : playlists.length === 0 ? (
                         <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-6 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-400">

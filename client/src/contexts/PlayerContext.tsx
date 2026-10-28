@@ -6,13 +6,16 @@ import { DEFAULT_RECITER, reciterName } from "@/lib/reciters";
 import { getSurah, type SurahInfo } from "@/lib/surah-list";
 import {
     buildOrder,
+    applyEdit,
+    loadDeleted,
     loadPlaylists,
     mergeWithAccount,
+    payloadKey,
+    saveDeleted,
     nextPosition,
     savePlaylists,
     skipBack,
     skipForward,
-    syncChanges,
     translationAudioUrl,
     TRANSLATION_VOICES,
     type ListenMode,
@@ -150,29 +153,52 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const [playlists, setPlaylistsState] = useState<Playlist[]>([]);
     const [playlistsReady, setPlaylistsReady] = useState(false);
     const playlistsRef = useRef<Playlist[]>([]);
-    // False when the account copy is unavailable (offline, or the table is not there yet).
-    const remoteOk = useRef(true);
+    const activeUser = useRef<string | null>(null);
+    // Account reads and writes run one at a time, in order, so a slow request
+    // can never land after a newer one.
+    const syncChain = useRef<Promise<void>>(Promise.resolve());
 
-    const commit = useCallback((list: Playlist[]) => {
+    const commit = useCallback((uid: string, list: Playlist[]) => {
+        if (activeUser.current !== uid) return;
         playlistsRef.current = list;
         setPlaylistsState(list);
-        if (userId) savePlaylists(userId, list);
-    }, [userId]);
+        savePlaylists(uid, list);
+    }, []);
+
+    /** Uploads unsaved changes and pending deletes. Failures are retried on the next change or load. */
+    const flush = useCallback((uid: string) => {
+        syncChain.current = syncChain.current.then(async () => {
+            if (activeUser.current !== uid) return;
+            const pending = playlistsRef.current.filter((p) => !p.synced);
+            const deleted = loadDeleted(uid);
+            if (!pending.length && !deleted.length) return;
+            try {
+                await upsertPlaylists(uid, pending);
+                await deletePlaylists(uid, deleted);
+            } catch {
+                return;
+            }
+            if (activeUser.current !== uid) return;
+            const sent = new Map(pending.map((p) => [p.id, payloadKey(p)]));
+            commit(uid, playlistsRef.current.map((p) => (!p.synced && sent.get(p.id) === payloadKey(p) ? { ...p, synced: true } : p)));
+            saveDeleted(uid, loadDeleted(uid).filter((id) => !deleted.includes(id)));
+        });
+    }, [commit]);
 
     useEffect(() => {
+        activeUser.current = userId;
         playlistsRef.current = [];
         setPlaylistsState([]);
         setPlaylistsReady(false);
         if (!userId) return;
-        let cancelled = false;
-        const local = loadPlaylists(userId);
-        commit(local);
+        const uid = userId;
+        commit(uid, loadPlaylists(uid));
         setPlaylistsReady(true);
-        (async () => {
+        syncChain.current = syncChain.current.then(async () => {
+            if (activeUser.current !== uid) return;
             try {
-                const rows = await listPlaylists(userId);
-                if (cancelled) return;
-                remoteOk.current = true;
+                const rows = await listPlaylists(uid);
+                if (activeUser.current !== uid) return;
                 const remote: Playlist[] = rows.map((r) => ({
                     id: r.id,
                     name: r.name,
@@ -180,38 +206,25 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
                     mode: r.mode,
                     createdAt: Date.parse(r.created_at) || Date.now(),
                 }));
-                const merged = mergeWithAccount(playlistsRef.current, remote);
-                const unsent = merged.filter((p) => !p.synced);
-                commit(merged);
-                if (unsent.length) {
-                    await upsertPlaylists(userId, unsent);
-                    if (!cancelled) commit(playlistsRef.current.map((p) => (unsent.some((u) => u.id === p.id) ? { ...p, synced: true } : p)));
-                }
+                commit(uid, mergeWithAccount(playlistsRef.current, remote, loadDeleted(uid)));
             } catch {
-                // Keep the device copy; changes upload next time the account is reachable.
-                remoteOk.current = false;
+                // Offline, or the account copy is unavailable: keep the device copy.
             }
-        })();
-        return () => {
-            cancelled = true;
-        };
-    }, [userId, commit]);
+        });
+        flush(uid);
+    }, [userId, commit, flush]);
 
     const setPlaylists = useCallback((fn: (list: Playlist[]) => Playlist[]) => {
-        if (!userId) return;
+        const uid = activeUser.current;
+        if (!uid) return;
         const before = playlistsRef.current;
         const after = fn(before);
         if (after === before) return;
-        const { upsert, remove } = syncChanges(before, after);
-        const sending = new Set(upsert.map((p) => p.id));
-        commit(after.map((p) => (sending.has(p.id) ? { ...p, synced: false } : p)));
-        if (!remoteOk.current) return;
-        Promise.all([upsertPlaylists(userId, upsert), deletePlaylists(userId, remove)])
-            .then(() => commit(playlistsRef.current.map((p) => (sending.has(p.id) ? { ...p, synced: true } : p))))
-            .catch(() => {
-                remoteOk.current = false;
-            });
-    }, [userId, commit]);
+        const { list, removed } = applyEdit(before, after);
+        if (removed.length) saveDeleted(uid, Array.from(new Set([...loadDeleted(uid), ...removed])));
+        commit(uid, list);
+        flush(uid);
+    }, [commit, flush]);
 
     // ── Settings ─────────────────────────────────────────────────────────────
     const [settings, setSettings] = useState(readSettings);
@@ -230,6 +243,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const session = useRef<Session | null>(null);
     const loadToken = useRef(0);
+    // Bumped on every new source, so a late play() rejection or ended event from an old one is ignored.
+    const playGen = useRef(0);
     const [status, setStatus] = useState<PlayerStatus>("idle");
     const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
 
@@ -258,9 +273,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         const el = audioRef.current;
         if (!s || !el || !s.segments[index]) return;
         s.seg = index;
+        const gen = ++playGen.current;
         el.src = s.segments[index].url;
         claimAudioFocus("playlist");
-        el.play().catch(() => setStatus("paused"));
+        el.play().catch((e) => {
+            if (gen === playGen.current && e?.name !== "AbortError") setStatus("paused");
+        });
         publish();
     }, [publish]);
 
@@ -272,6 +290,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         s.pos = pos;
         s.segments = [];
         s.seg = 0;
+        playGen.current++;
         audioRef.current?.pause();
         setStatus("loading");
         publish();
@@ -288,9 +307,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         }
     }, [playSegment, publish]);
 
+    /** True when the audio element is playing what the session expects, not a leftover source. */
+    const isCurrentSource = useCallback(() => {
+        const s = session.current;
+        const el = audioRef.current;
+        return !!s && !!el && s.segments.length > 0 && el.src === s.segments[s.seg]?.url;
+    }, []);
+
     const handleEnded = useCallback(() => {
         const s = session.current;
-        if (!s) return;
+        if (!s || !isCurrentSource()) return;
         if (s.seg + 1 < s.segments.length) {
             playSegment(s.seg + 1);
             return;
@@ -304,7 +330,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         }
         if (next === s.pos) playSegment(0);
         else void loadTrack(next);
-    }, [loadTrack, playSegment, publish]);
+    }, [isCurrentSource, loadTrack, playSegment, publish]);
 
     const playPlaylist = useCallback((playlist: Playlist, startIndex = 0) => {
         if (!playlist.surahs.length) return;
@@ -341,7 +367,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
                 return;
             }
             claimAudioFocus("playlist");
-            el.play().catch(() => setStatus("paused"));
+            const gen = playGen.current;
+            el.play().catch((e) => {
+                if (gen === playGen.current && e?.name !== "AbortError") setStatus("paused");
+            });
         } else {
             el.pause();
         }
@@ -364,6 +393,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     const stop = useCallback(() => {
         loadToken.current++;
+        playGen.current++;
         session.current = null;
         const el = audioRef.current;
         if (el) {
@@ -425,7 +455,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         };
         const onError = () => {
             const s = session.current;
-            if (!s || !el.getAttribute("src")) return;
+            if (!s || !isCurrentSource()) return;
             // A missing verse file should not stop the whole playlist.
             if (s.segments.length > 1) handleEnded();
             else {
@@ -443,7 +473,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             el.removeEventListener("ended", handleEnded);
             el.removeEventListener("error", onError);
         };
-    }, [audio, handleEnded]);
+    }, [audio, handleEnded, isCurrentSource]);
 
     // Lock screen and notification controls
     useEffect(() => {

@@ -1,4 +1,4 @@
-// Portable playlist data access — plain async functions, no React dependencies.
+// Portable playlist data access: plain async functions, no React dependencies.
 
 import { supabase } from "@/lib/supabase";
 import type { ListenMode } from "@/lib/playlists";

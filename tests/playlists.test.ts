@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
     addSurah,
+    applyEdit,
     buildOrder,
     cleanName,
     createPlaylist,
@@ -13,7 +14,6 @@ import {
     skipBack,
     skipForward,
     STARTER_PLAYLISTS,
-    syncChanges,
     translationAudioUrl,
     type Playlist,
 } from "@/lib/playlists";
@@ -116,11 +116,22 @@ describe("account sync", () => {
         expect(merged[1].synced).toBeFalsy();
     });
 
-    it("sends only what changed", () => {
-        const before = [pl("a", { synced: true }), pl("b", { synced: true }), pl("c", { synced: true })];
-        const after = [pl("a", { synced: true }), { ...before[1], surahs: [1, 2] }, pl("d")];
-        const { upsert, remove } = syncChanges(before, after);
-        expect(upsert.map((p) => p.id)).toEqual(["b", "d"]);
-        expect(remove).toEqual(["c"]);
+    it("lets an edit made before the account answered win", () => {
+        const local = [pl("a", { name: "edited on phone", synced: false })];
+        const remote = [pl("a", { name: "old" })];
+        expect(mergeWithAccount(local, remote)[0]).toMatchObject({ name: "edited on phone", synced: false });
+    });
+
+    it("does not bring back a playlist whose delete has not reached the account", () => {
+        const remote = [pl("a"), pl("b")];
+        expect(mergeWithAccount([pl("b", { synced: true })], remote, ["a"]).map((p) => p.id)).toEqual(["b"]);
+    });
+
+    it("marks only changed playlists for upload and reports synced deletes", () => {
+        const before = [pl("a", { synced: true }), pl("b", { synced: true }), pl("c", { synced: true }), pl("x")];
+        const after = [before[0], { ...before[1], surahs: [1, 2] }, pl("d")];
+        const { list, removed } = applyEdit(before, after);
+        expect(list.map((p) => [p.id, !!p.synced])).toEqual([["a", true], ["b", false], ["d", false]]);
+        expect(removed).toEqual(["c"]);
     });
 });

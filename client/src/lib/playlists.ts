@@ -51,6 +51,7 @@ export const STARTER_PLAYLISTS: StarterPlaylist[] = [
 ];
 
 const storageKey = (userId: string) => `mq-playlists:${userId}`;
+const deletedKey = (userId: string) => `mq-playlists-deleted:${userId}`;
 
 function isValidSurah(n: unknown): n is number {
     return typeof n === "number" && Number.isInteger(n) && !!getSurah(n);
@@ -88,6 +89,25 @@ export function savePlaylists(userId: string, playlists: Playlist[]): void {
     }
 }
 
+/** Playlists deleted on this device that the account has not confirmed deleting yet. */
+export function loadDeleted(userId: string): string[] {
+    try {
+        const ids = JSON.parse(localStorage.getItem(deletedKey(userId)) || "[]");
+        return Array.isArray(ids) ? ids.filter((id): id is string => typeof id === "string") : [];
+    } catch {
+        return [];
+    }
+}
+
+export function saveDeleted(userId: string, ids: string[]): void {
+    try {
+        if (ids.length) localStorage.setItem(deletedKey(userId), JSON.stringify(ids));
+        else localStorage.removeItem(deletedKey(userId));
+    } catch {
+        // ignore
+    }
+}
+
 function newId(): string {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
     return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
@@ -108,26 +128,40 @@ function update(list: Playlist[], id: string, fn: (p: Playlist) => Playlist): Pl
     return list.map((p) => (p.id === id ? fn(p) : p));
 }
 
-/**
- * Combines the account's playlists with the device copy. The account wins for
- * any playlist it has. A device playlist the account has never seen (made
- * offline) is kept so it can be uploaded; one that was synced but is gone from
- * the account was deleted on another device, so it is dropped.
- */
-export function mergeWithAccount(local: Playlist[], remote: Playlist[]): Playlist[] {
-    const remoteIds = new Set(remote.map((p) => p.id));
-    const unsent = local.filter((p) => !p.synced && !remoteIds.has(p.id));
-    return [...remote.map((p) => ({ ...p, synced: true })), ...unsent];
+/** What is saved to the account for a playlist. Two copies with the same key need no upload. */
+export function payloadKey(p: Playlist): string {
+    return JSON.stringify([p.name, p.surahs, p.mode]);
 }
 
-/** What to send to the account after a change from `before` to `after`. */
-export function syncChanges(before: Playlist[], after: Playlist[]): { upsert: Playlist[]; remove: string[] } {
-    const key = (p: Playlist) => JSON.stringify([p.name, p.surahs, p.mode]);
+/**
+ * Combines the account's playlists with the device copy.
+ * - A device change not yet uploaded (synced false) wins over the account copy.
+ * - A playlist deleted on this device but not yet deleted from the account stays deleted.
+ * - A synced device playlist missing from the account was deleted elsewhere, so it is dropped.
+ */
+export function mergeWithAccount(local: Playlist[], remote: Playlist[], deleted: string[] = []): Playlist[] {
+    const gone = new Set(deleted);
+    const pending = new Map(local.filter((p) => !p.synced).map((p) => [p.id, p]));
+    const merged = remote
+        .filter((p) => !gone.has(p.id))
+        .map((p) => pending.get(p.id) ?? { ...p, synced: true });
+    const remoteIds = new Set(remote.map((p) => p.id));
+    return [...merged, ...Array.from(pending.values()).filter((p) => !remoteIds.has(p.id) && !gone.has(p.id))];
+}
+
+/**
+ * Applies an edit: changed or new playlists are marked for upload, and removed
+ * playlists the account already has are returned so they can be deleted there.
+ */
+export function applyEdit(before: Playlist[], after: Playlist[]): { list: Playlist[]; removed: string[] } {
     const prev = new Map(before.map((p) => [p.id, p]));
-    const upsert = after.filter((p) => !p.synced || !prev.has(p.id) || key(prev.get(p.id)!) !== key(p));
+    const list = after.map((p) => {
+        const old = prev.get(p.id);
+        return old && payloadKey(old) === payloadKey(p) ? p : { ...p, synced: false };
+    });
     const ids = new Set(after.map((p) => p.id));
-    const remove = before.filter((p) => !ids.has(p.id) && p.synced).map((p) => p.id);
-    return { upsert, remove };
+    const removed = before.filter((p) => !ids.has(p.id) && p.synced).map((p) => p.id);
+    return { list, removed };
 }
 
 export const renamePlaylist = (list: Playlist[], id: string, name: string) =>
