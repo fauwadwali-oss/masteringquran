@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Check, ChevronDown, Mic } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Check, ChevronDown, Mic, X } from "lucide-react";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getReciter, matchesFilter, RECITER_FILTERS, reciterBadges, RECITERS, type ReciterFilter } from "@/lib/reciters";
 import { cn } from "@/lib/utils";
 
-// A button that opens the reciter list with filter chips. The trigger is a plain
-// button (not a Radix asChild trigger) because ui/button does not forward refs.
+// A button that opens the reciter list with filter chips. DialogTrigger renders its
+// own button (no asChild), because ui/button does not forward refs.
 export function ReciterPicker({ value, onChange, className }: { value: string; onChange: (id: string) => void; className?: string }) {
     const [open, setOpen] = useState(false);
     const [filter, setFilter] = useState<ReciterFilter>("all");
@@ -13,12 +13,10 @@ export function ReciterPicker({ value, onChange, className }: { value: string; o
     const shown = RECITERS.filter((r) => matchesFilter(r, filter));
 
     return (
-        <>
-            <button
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger
                 type="button"
                 aria-label={`Reciter: ${current.name}. Change reciter`}
-                aria-haspopup="dialog"
-                onClick={() => setOpen(true)}
                 className={cn(
                     "flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 text-left text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:border-slate-700 dark:bg-slate-800",
                     className,
@@ -26,13 +24,22 @@ export function ReciterPicker({ value, onChange, className }: { value: string; o
             >
                 <span className="truncate">{current.name}</span>
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
-            </button>
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="top-[max(8dvh,calc(env(safe-area-inset-top)_+_1rem))] left-[calc(50%_+_(env(safe-area-inset-left)_-_env(safe-area-inset-right))_/_2)] max-w-[calc(100%_-_2rem_-_env(safe-area-inset-left)_-_env(safe-area-inset-right))] flex max-h-[80dvh] translate-y-0 flex-col gap-3 border-slate-200 bg-white p-4 text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 sm:p-6">
-                    <DialogHeader className="shrink-0 text-left">
+            </DialogTrigger>
+                {/* Pinned to the top and kept inside the safe areas (the iPhone Duo has a status column on the right). */}
+                <DialogContent
+                    showCloseButton={false}
+                    className="top-[max(8dvh,calc(env(safe-area-inset-top)_+_1rem))] right-[calc(env(safe-area-inset-right)_+_1rem)] left-[calc(env(safe-area-inset-left)_+_1rem)] mx-auto flex w-auto max-w-none translate-x-0 max-h-[80dvh] translate-y-0 flex-col gap-3 border-slate-200 bg-white p-4 text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 sm:max-w-lg sm:p-6"
+                >
+                    <DialogHeader className="shrink-0 pr-10 text-left">
                         <DialogTitle>Choose a reciter</DialogTitle>
                         <DialogDescription className="text-slate-500 dark:text-slate-400">Used in the Quran reader and in your playlists.</DialogDescription>
                     </DialogHeader>
+                    <DialogClose
+                        aria-label="Close"
+                        className="absolute top-2 right-2 flex h-11 w-11 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none dark:text-slate-400 dark:hover:bg-slate-800"
+                    >
+                        <X className="h-5 w-5" />
+                    </DialogClose>
                     <div className="flex shrink-0 flex-wrap gap-1.5" role="group" aria-label="Filter reciters">
                         {RECITER_FILTERS.map((f) => (
                             <button
@@ -51,15 +58,14 @@ export function ReciterPicker({ value, onChange, className }: { value: string; o
                             </button>
                         ))}
                     </div>
-                    <div role="radiogroup" aria-label="Reciters" className="-mx-1 min-h-0 flex-1 space-y-1 overflow-y-auto px-1">
+                    <div role="group" aria-label="Reciters" className="-mx-1 min-h-0 flex-1 space-y-1 overflow-y-auto px-1">
                         {shown.map((r) => {
                             const selected = r.id === current.id;
                             return (
                                 <button
                                     key={r.id}
                                     type="button"
-                                    role="radio"
-                                    aria-checked={selected}
+                                    aria-pressed={selected}
                                     onClick={() => {
                                         onChange(r.id);
                                         setOpen(false);
@@ -92,7 +98,6 @@ export function ReciterPicker({ value, onChange, className }: { value: string; o
                         {shown.length === 0 && <p className="p-3 text-sm text-slate-500">No reciters match this filter.</p>}
                     </div>
                 </DialogContent>
-            </Dialog>
-        </>
+        </Dialog>
     );
 }

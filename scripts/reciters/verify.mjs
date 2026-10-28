@@ -7,7 +7,14 @@ const reciters = JSON.parse(readFileSync(new URL("../../client/src/data/reciters
 const AYAHS = { 1: 7, 2: 286, 36: 83, 114: 6 };
 const abs = (u) => (u.startsWith("http") ? u : u.startsWith("//") ? `https:${u}` : `https://verses.quran.com/${u}`);
 const status = async (u) => { try { return (await fetch(abs(u), { method: "HEAD" })).status; } catch (e) { return String(e); } };
-const get = async (u) => (await fetch(u)).json();
+async function get(u) {
+    for (let attempt = 0; ; attempt++) {
+        const r = await fetch(u);
+        if (r.ok) return r.json();
+        if (r.status === 429 && attempt < 3) { await new Promise((ok) => setTimeout(ok, 2000 * (attempt + 1))); continue; }
+        throw new Error(`${r.status} ${u}`);
+    }
+}
 
 async function check(r) {
     const problems = [];
@@ -32,7 +39,7 @@ async function check(r) {
 
 let failed = 0;
 for (const r of reciters) {
-    const problems = await check(r);
+    const problems = await check(r).catch((e) => [`request failed: ${e.message}`]);
     if (problems.length) failed++;
     console.log(`${problems.length ? "FAIL" : "ok  "} ${r.id.padStart(3)} ${r.name}${problems.length ? "\n     " + problems.join("\n     ") : ""}`);
 }
