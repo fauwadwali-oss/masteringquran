@@ -164,7 +164,7 @@ export default function Navbar() {
                         )}
                     >
                         <Sparkles className="h-3.5 w-3.5 text-emerald-500" />
-                        Ask AI
+                        Ask Wali
                     </Link>
                     <SettingsMenu />
                     <AuthButton />
@@ -190,7 +190,7 @@ export default function Navbar() {
                         <Link key={item.to} to={item.to} className="block rounded-xl px-4 py-3 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-900" onClick={() => setIsOpen(false)}>{item.label}</Link>
                     ))}
                     <Link to="/ask" className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-900" onClick={() => setIsOpen(false)}>
-                        <Sparkles className="h-4 w-4 text-emerald-500" /> Ask AI
+                        <Sparkles className="h-4 w-4 text-emerald-500" /> Ask Wali
                     </Link>
                     {MORE_GROUPS.map((group) => (
                         <div key={group.label} className="pt-2">

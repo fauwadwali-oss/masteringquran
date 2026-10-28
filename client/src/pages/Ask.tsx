@@ -116,7 +116,7 @@ function AskInner() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 font-sans">
             <SEO
-                title="Ask AI - Mastering Quran"
+                title="Ask Wali - Mastering Quran"
                 description="Ask questions about the Quran, hadith, and classical tafsir. AI-grounded answers with citations to verified sources."
             />
 
@@ -128,7 +128,7 @@ function AskInner() {
                         <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Grounded in verified sources</span>
                     </div>
                     <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                        Ask AI
+                        Ask Wali
                     </h1>
                     <p className="text-sm md:text-base text-slate-600 dark:text-slate-300 max-w-xl mx-auto">
                         Questions about the Quran, hadith, or classical tafsir. The assistant uses source tools and provides references for you to check. AI answers can contain mistakes.
@@ -312,7 +312,7 @@ export default function Ask() {
                             <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Grounded in Quran, hadith, and tafsir</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            Ask AI with cited sources
+                            Ask Wali with cited sources
                         </h1>
                         <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
                             Explore questions with an assistant designed to use verified Islamic sources, show what it checked, and avoid unsupported citations.
@@ -355,7 +355,7 @@ export default function Ask() {
                             </div>
                             <div>
                                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-                                    Free sign-in unlocks Ask AI
+                                    Free sign-in unlocks Ask Wali
                                 </h2>
                                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
                                     No password needed. Sign in with a magic link so your questions can run through the protected source-checking tools.
@@ -379,7 +379,7 @@ export default function Ask() {
                         </div>
                     </div>
                 </section>
-                <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to use the Ask AI assistant. Free forever — no password needed." />
+                <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to use the Ask Wali assistant. Free forever — no password needed." />
             </div>
         );
     }

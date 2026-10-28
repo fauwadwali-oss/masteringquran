@@ -400,7 +400,7 @@ export default function Zakat() {
                         </ul>
                         <p className="pt-2">
                             This is a helper, not a fatwa. For complex portfolios (pension funds, crypto, agricultural produce, livestock) consult a qualified scholar.{" "}
-                            <Link to="/ask" className="text-emerald-600 hover:underline">Ask AI →</Link>
+                            <Link to="/ask" className="text-emerald-600 hover:underline">Ask Wali →</Link>
                         </p>
                     </CardContent>
                 </Card>

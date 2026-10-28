@@ -28,7 +28,7 @@ export default function Footer() {
                         <FooterLink to="/quran" icon={BookOpen} label="Read the Quran" />
                         <FooterLink to="/hadith" icon={BookOpen} label="Browse Hadith" />
                         <FooterLink to="/learn-arabic" icon={Sparkles} label="Learn Arabic" />
-                        <FooterLink to="/ask" icon={Sparkles} label="Ask AI" />
+                        <FooterLink to="/ask" icon={Sparkles} label="Ask Wali" />
                     </div>
                 </div>
 

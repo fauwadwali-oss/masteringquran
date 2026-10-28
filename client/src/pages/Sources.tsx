@@ -33,9 +33,9 @@ const SOURCE_GROUPS = [
     },
     {
         icon: Sparkles,
-        title: "Ask AI Method",
+        title: "Ask Wali Method",
         items: [
-            "Ask AI is designed to answer only with Quran, hadith, or tafsir source checks.",
+            "Ask Wali is designed to answer only with Quran, hadith, or tafsir source checks.",
             "Answers expose the source tools used, such as reading a verse, searching Quran, reading tafsir, or searching hadith.",
             "The assistant declines fatwas and sensitive religious rulings, and reminds users to verify guidance with a qualified scholar.",
         ],

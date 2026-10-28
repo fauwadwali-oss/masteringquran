@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SEO from "@/components/SEO";
 import LocationPicker from "@/components/LocationPicker";
+import FastingChoice from "@/components/FastingChoice";
 import {
     HUB_DESCRIPTION,
     HUB_TITLE,
@@ -20,6 +21,7 @@ import {
     PRAYER_LABELS,
     currentAndNext,
     defaultSettings,
+    fastTimes,
     formatCountdown,
     formatTime,
     loadCities,
@@ -112,10 +114,16 @@ export default function PrayerTimes() {
         const days = new Date(Date.UTC(y, m, 0)).getUTCDate();
         return Array.from({ length: days }, (_, i) => {
             const ymd: [number, number, number] = [y, m, i + 1];
-            return { ymd, times: timesFor(place, settings, ymd) };
+            return { ymd, times: timesFor(place, settings, ymd), fast: fastTimes(place, settings, ymd) };
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [place, settings, mode, today?.[0], today?.[1]]);
+
+    const todayFast = useMemo(
+        () => (place && today ? fastTimes(place, settings, today) : null),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [place, settings, today?.[0], today?.[1], today?.[2]],
+    );
 
     const fmt = (d: Date) => formatTime(d, place!.timeZone, settings.hour12);
     const dateLine = place
@@ -273,6 +281,43 @@ export default function PrayerTimes() {
                                 </ol>
                             )}
 
+                            {mode === "today" && todayFast && (
+                                <section aria-labelledby="fast-heading" className="rounded-3xl border border-amber-200 bg-amber-50/60 p-5 dark:border-amber-900/50 dark:bg-amber-950/20 md:p-6">
+                                    <div className="flex flex-wrap items-center justify-between gap-3">
+                                        <h2 id="fast-heading" className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+                                            <Moon className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" aria-hidden />
+                                            Suhoor and Iftar today
+                                        </h2>
+                                        {settings.fasting && <FastingChoice value={settings.fasting} onChange={(fasting) => updateSettings({ fasting })} />}
+                                    </div>
+                                    {settings.fasting ? (
+                                        <>
+                                            <dl className="mt-4 grid grid-cols-2 gap-3">
+                                                <div className="rounded-2xl bg-white p-4 dark:bg-slate-900">
+                                                    <dt className="text-xs text-slate-600 dark:text-slate-400">Suhoor ends</dt>
+                                                    <dd className="whitespace-nowrap text-xl font-semibold tabular-nums text-slate-900 dark:text-white">{fmt(todayFast[settings.fasting].suhoorEnds)}</dd>
+                                                </div>
+                                                <div className="rounded-2xl bg-white p-4 dark:bg-slate-900">
+                                                    <dt className="text-xs text-slate-600 dark:text-slate-400">Iftar</dt>
+                                                    <dd className="whitespace-nowrap text-xl font-semibold tabular-nums text-amber-700 dark:text-amber-400">{fmt(todayFast[settings.fasting].iftar)}</dd>
+                                                </div>
+                                            </dl>
+                                            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                                                {settings.fasting === "sunni"
+                                                    ? "Suhoor ends at Fajr and Iftar is at Maghrib, from your calculation method."
+                                                    : "Jafari times: Maghrib comes after the redness in the east fades, a little after sunset."}{" "}
+                                                Many people stop eating a few minutes early; follow your local mosque.
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <div className="mt-3 space-y-3">
+                                            <p className="text-sm text-slate-600 dark:text-slate-300">Which Suhoor and Iftar times do you follow?</p>
+                                            <FastingChoice onChange={(fasting) => updateSettings({ fasting })} />
+                                        </div>
+                                    )}
+                                </section>
+                            )}
+
                             {mode === "month" && (
                                 <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                                     <div className="overflow-x-auto">
@@ -306,6 +351,47 @@ export default function PrayerTimes() {
                                             </tbody>
                                         </table>
                                     </div>
+                                </div>
+                            )}
+
+                            {mode === "month" && (
+                                <div className="overflow-hidden rounded-3xl border border-amber-200 bg-white dark:border-amber-900/50 dark:bg-slate-900">
+                                    <div className="flex flex-wrap items-center justify-between gap-3 px-4 pt-4">
+                                        <h2 className="font-semibold text-slate-900 dark:text-white">Suhoor and Iftar this month</h2>
+                                        <FastingChoice value={settings.fasting} onChange={(fasting) => updateSettings({ fasting })} />
+                                    </div>
+                                    {settings.fasting ? (
+                                        <div className="mt-3 overflow-x-auto">
+                                            <table className="w-full text-sm">
+                                                <caption className="sr-only">{settings.fasting === "sunni" ? "Sunni" : "Shia"} Suhoor and Iftar times in {place.name} this month</caption>
+                                                <thead className="bg-amber-50 text-slate-600 dark:bg-amber-950/30 dark:text-slate-300">
+                                                    <tr>
+                                                        <th className="px-3 py-3 text-left font-semibold">Date</th>
+                                                        <th className="px-3 py-3 text-right font-semibold">Suhoor ends</th>
+                                                        <th className="px-3 py-3 text-right font-semibold">Iftar</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {monthRows.map(({ ymd, fast }) => {
+                                                        const isToday = today && ymd[2] === today[2];
+                                                        const d = new Date(Date.UTC(ymd[0], ymd[1] - 1, ymd[2], 12));
+                                                        const t = fast[settings.fasting!];
+                                                        return (
+                                                            <tr key={ymd[2]} className={`border-t border-slate-100 dark:border-slate-800 ${isToday ? "bg-amber-50 font-semibold dark:bg-amber-950/30" : ""}`}>
+                                                                <td className="px-3 py-2 whitespace-nowrap text-slate-900 dark:text-white">
+                                                                    {d.toLocaleDateString("en-US", { timeZone: "UTC", weekday: "short", day: "numeric" })}
+                                                                </td>
+                                                                <td className="whitespace-nowrap px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">{fmt(t.suhoorEnds)}</td>
+                                                                <td className="whitespace-nowrap px-3 py-2 text-right tabular-nums text-amber-700 dark:text-amber-400">{fmt(t.iftar)}</td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        <p className="px-4 py-4 text-sm text-slate-600 dark:text-slate-300">Choose Sunni or Shia to see this month's Suhoor and Iftar times.</p>
+                                    )}
                                 </div>
                             )}
 

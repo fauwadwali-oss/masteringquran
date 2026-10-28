@@ -10,7 +10,7 @@ const SHORTCUTS: Array<{ keys: string; desc: string }> = [
     { keys: "g h", desc: "Home" },
     { keys: "g q", desc: "Quran" },
     { keys: "g b", desc: "Hadith" },
-    { keys: "g a", desc: "Ask AI" },
+    { keys: "g a", desc: "Ask Wali" },
     { keys: "g t", desc: "Topics" },
     { keys: "g p", desc: "Prayer Times" },
     { keys: "g d", desc: "Duas" },
