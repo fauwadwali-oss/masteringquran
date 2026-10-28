@@ -20,8 +20,8 @@ import {
 const COUNT_WORDS: Record<number, string> = { 3: "three", 33: "thirty-three", 34: "thirty-four", 100: "hundred" };
 
 describe("adhkar data", () => {
-    it("has the five routines, each with adhkar", () => {
-        expect(ROUTINES.map(r => r.id)).toEqual(["morning", "evening", "sleep", "waking", "salah"]);
+    it("has the six routines, each with adhkar", () => {
+        expect(ROUTINES.map(r => r.id)).toEqual(["morning", "evening", "sleep", "waking", "salah", "day"]);
         for (const r of ROUTINES) {
             expect(routineAdhkar(r.id).length).toBeGreaterThan(0);
             expect(routineAdhkar(r.id).map(d => d.id).sort()).toEqual(ADHKAR.filter(d => d.routines.includes(r.id)).map(d => d.id).sort());
@@ -78,6 +78,7 @@ describe("adhkar data", () => {
         for (const d of ADHKAR) {
             expect(d.arabic).not.toMatch(/[‎‏]/);
             expect(d.title).not.toContain("—");
+            expect(d.note ?? "").not.toContain("—");
         }
         for (const r of ROUTINES) expect(`${r.name} ${r.description}`).not.toContain("—");
     });
@@ -91,6 +92,12 @@ describe("adhkar data", () => {
         expect(byId("salah-tamam-al-miah").count).toBe(1);
         expect(byId("sleep-ayat-al-kursi").reference).toBe("Quran 2:255");
         expect(byId("sleep-ayat-al-kursi").evidence.reference).toBe("Sahih al-Bukhari 2311");
+        expect(byId("sleep-ayat-al-kursi").note).toMatch(/mu'allaq/);
+        // "Per day" adhkar are not given a time of day the hadith does not state.
+        expect(byId("tawhid-100").routines).toEqual(["day"]);
+        expect(byId("istighfar-100").routines).toEqual(["day"]);
+        // The plural al-mu'awwidhat after salah: all three surahs, with the reading explained.
+        for (const id of ["salah-ikhlas", "salah-falaq", "salah-nas"]) expect(byId(id).note).toMatch(/plural/);
     });
 });
 
@@ -147,7 +154,7 @@ describe("daily counter progress", () => {
         expect(firstUnfinished(p, morning)).toBe(1);
         for (const d of items) for (let i = 0; i < d.count; i++) p = increment(p, morning, d, day1);
         expect(routineProgress(p, morning).complete).toBe(true);
-        expect(firstUnfinished(p, morning)).toBe(items.length - 1);
+        expect(firstUnfinished(p, morning)).toBe(0);
         p = resetDhikr(p, morning, items[2]);
         expect(firstUnfinished(p, morning)).toBe(2);
         p = resetRoutine(p, morning);

@@ -14,9 +14,7 @@
     "alim-al-ghayb",
     "bismillah-la-yadurr",
     "subhanallah-wa-bihamdihi-100",
-    "subhanallah-adada-khalqihi",
-    "tawhid-100",
-    "istighfar-100"
+    "subhanallah-adada-khalqihi"
    ]
   },
   {
@@ -70,7 +68,7 @@
   {
    "id": "salah",
    "name": "After salah",
-   "description": "After the salam of each obligatory prayer.",
+   "description": "At the end of each obligatory prayer.",
    "adhkar": [
     "salah-istighfar",
     "salah-antas-salam",
@@ -82,8 +80,18 @@
     "salah-tamam-al-miah",
     "salah-aini",
     "salah-jubn",
+    "salah-ikhlas",
     "salah-falaq",
     "salah-nas"
+   ]
+  },
+  {
+   "id": "day",
+   "name": "Through the day",
+   "description": "Adhkar the hadith count across the whole day, said at any time.",
+   "adhkar": [
+    "tawhid-100",
+    "istighfar-100"
    ]
   }
  ],
@@ -274,6 +282,7 @@
    "grades": [],
    "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari",
    "count": 1,
+   "note": "The hadith says during the day and at night.",
    "evidence": {
     "reference": "Sahih al-Bukhari 6306",
     "url": "https://sunnah.com/bukhari:6306",
@@ -419,6 +428,7 @@
    "grades": [],
    "englishEdition": "Abdul Hamid Siddiqui translation of Sahih Muslim",
    "count": 3,
+   "note": "The Prophet said these words after the dawn prayer while Juwairiya sat in remembrance.",
    "evidence": {
     "reference": "Sahih Muslim 2726",
     "url": "https://sunnah.com/muslim:2726",
@@ -432,9 +442,9 @@
   {
    "id": "tawhid-100",
    "routines": [
-    "morning"
+    "day"
    ],
-   "title": "La ilaha illallah wahdahu, a hundred times a day",
+   "title": "La ilaha illallah wahdahu, a hundred times in the day",
    "arabic": "لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَىْءٍ قَدِيرٌ",
    "translation": "There is no god but Allah, the One, having no partner with Him. Sovereignty belongs to Him and all the praise is due to Him, and He is Potent over everything",
    "reference": "Sahih Muslim 2691",
@@ -455,9 +465,9 @@
   {
    "id": "istighfar-100",
    "routines": [
-    "morning"
+    "day"
    ],
-   "title": "Asking forgiveness, a hundred times a day",
+   "title": "Asking forgiveness, a hundred times in the day",
    "arabic": "أَسْتَغْفِرُ اللَّهَ",
    "translation": "I seek forgiveness from Allah",
    "reference": "Sahih Muslim 2702",
@@ -532,10 +542,12 @@
    "grades": [],
    "englishEdition": "Saheeh International",
    "count": 1,
+   "note": "Al-Bukhari gives this report without its full chain at this place (mu'allaq). In it the Prophet confirms that the advice is true.",
    "evidence": {
     "reference": "Sahih al-Bukhari 2311",
     "url": "https://sunnah.com/bukhari:2311",
     "quote": [
+     "Whenever you go to bed, recite \"Ayat-al-Kursi\"",
      "Allah will appoint a guard for you who will stay with you and no satan will come near you till morning",
      "spoke the truth, although he is an absolute liar"
     ],
@@ -555,6 +567,7 @@
    "grades": [],
    "englishEdition": "Saheeh International",
    "count": 1,
+   "note": "The hadith says at night, not only at bedtime.",
    "evidence": {
     "reference": "Sahih al-Bukhari 5009",
     "url": "https://sunnah.com/bukhari:5009",
@@ -1086,6 +1099,7 @@
    "grades": [],
    "englishEdition": "Muhsin Khan translation of Sahih al-Bukhari",
    "count": 1,
+   "note": "The Arabic dubur as-salah can mean the last part of the prayer or right after it; scholars differ.",
    "evidence": {
     "reference": "Sahih al-Bukhari 2822",
     "url": "https://sunnah.com/bukhari:2822",
@@ -1093,6 +1107,34 @@
      "used to seek Refuge with Allah from them (i.e. the evils) at the end of every prayer"
     ],
     "grades": []
+   }
+  },
+  {
+   "id": "salah-ikhlas",
+   "routines": [
+    "salah"
+   ],
+   "title": "Surah Al-Ikhlas",
+   "arabic": "قُلْ هُوَ ٱللَّهُ أَحَدٌ ٱللَّهُ ٱلصَّمَدُ لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",
+   "translation": "Say, \"He is Allāh, [who is] One, Allāh, the Eternal Refuge. He neither begets nor is born, Nor is there to Him any equivalent.\"",
+   "reference": "Quran 112",
+   "url": "https://quran.com/112",
+   "grades": [],
+   "englishEdition": "Saheeh International",
+   "count": 1,
+   "note": "The Arabic says al-mu'awwidhat, a plural. The English edition reads it as the last two surahs; many scholars include Al-Ikhlas, so all three are listed.",
+   "evidence": {
+    "reference": "Sunan Abi Dawud 1523",
+    "url": "https://sunnah.com/abudawud:1523",
+    "quote": [
+     "commanded me to recite Mu'awwidhatan (the last two surahs of the Qur'an) after every prayer"
+    ],
+    "grades": [
+     "Sahih (Al-Albani)",
+     "Sahih (Muhammad Muhyi Al-Din Abdul Hamid)",
+     "Hasan (Shuaib Al Arnaut)",
+     "Isnaad Hasan (Zubair Ali Zai)"
+    ]
    }
   },
   {
@@ -1108,6 +1150,7 @@
    "grades": [],
    "englishEdition": "Saheeh International",
    "count": 1,
+   "note": "The Arabic says al-mu'awwidhat, a plural. The English edition reads it as the last two surahs; many scholars include Al-Ikhlas, so all three are listed.",
    "evidence": {
     "reference": "Sunan Abi Dawud 1523",
     "url": "https://sunnah.com/abudawud:1523",
@@ -1135,6 +1178,7 @@
    "grades": [],
    "englishEdition": "Saheeh International",
    "count": 1,
+   "note": "The Arabic says al-mu'awwidhat, a plural. The English edition reads it as the last two surahs; many scholars include Al-Ikhlas, so all three are listed.",
    "evidence": {
     "reference": "Sunan Abi Dawud 1523",
     "url": "https://sunnah.com/abudawud:1523",

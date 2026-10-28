@@ -3,7 +3,7 @@
 // scripts/islamic-data/build_adhkar.py for how they are built and checked.
 import adhkarData from "@/data/adhkar.json";
 
-export type RoutineId = "morning" | "evening" | "sleep" | "waking" | "salah";
+export type RoutineId = "morning" | "evening" | "sleep" | "waking" | "salah" | "day";
 
 export interface Routine {
     id: RoutineId;
@@ -25,6 +25,8 @@ export interface Dhikr {
     grades: string[];
     englishEdition: string;
     narrationOmitted?: boolean;
+    /** Our own words: an interpretation or caveat about the source. */
+    note?: string;
     count: number;
     /** The hadith that says when to say it and how many times, quoted word for word. */
     evidence: { reference: string; url: string; quote: string[]; grades: string[] };
@@ -99,9 +101,7 @@ export function routineProgress(progress: AdhkarProgress, routine: RoutineId) {
     return { done, total: items.length, complete: items.length > 0 && done === items.length };
 }
 
-/** The first dhikr not yet finished today, or the last one when the routine is complete. */
+/** The first dhikr not yet finished today, or the first one when the routine is complete. */
 export function firstUnfinished(progress: AdhkarProgress, routine: RoutineId): number {
-    const items = routineAdhkar(routine);
-    const i = items.findIndex(d => countFor(progress, routine, d) < d.count);
-    return i < 0 ? Math.max(items.length - 1, 0) : i;
+    return Math.max(routineAdhkar(routine).findIndex(d => countFor(progress, routine, d) < d.count), 0);
 }

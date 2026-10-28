@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ArrowLeft, Check, ChevronLeft, ChevronRight, ExternalLink, Moon, RotateCcw, Sun, Sunrise, Sunset, HandHeart, type LucideIcon } from "lucide-react";
+import { ArrowLeft, Check, ChevronLeft, ChevronRight, Clock, ExternalLink, Moon, RotateCcw, Sun, Sunrise, Sunset, HandHeart, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
@@ -13,6 +13,7 @@ import {
     firstUnfinished,
     increment,
     loadProgress,
+    localDay,
     resetDhikr,
     resetRoutine,
     routineAdhkar,
@@ -24,7 +25,7 @@ import {
     type RoutineId,
 } from "@/lib/adhkar";
 
-const ICONS: Record<RoutineId, LucideIcon> = { morning: Sunrise, evening: Sunset, sleep: Moon, waking: Sun, salah: HandHeart };
+const ICONS: Record<RoutineId, LucideIcon> = { morning: Sunrise, evening: Sunset, sleep: Moon, waking: Sun, salah: HandHeart, day: Clock };
 
 function useProgress() {
     const [progress, setProgress] = useState<AdhkarProgress>(() => loadProgress(new Date()));
@@ -73,6 +74,12 @@ function SourceLine({ d }: { d: Dhikr }) {
                     </a>
                 )}
             </p>
+            {d.note && (
+                <p>
+                    <span className="font-medium text-slate-600 dark:text-slate-300">Note: </span>
+                    {d.note}
+                </p>
+            )}
             <p>
                 {d.translation ? "English" : "Transliteration"} quoted from the {d.englishEdition}.
                 {d.narrationOmitted && " The … marks a narrator's comment left out."}
@@ -178,8 +185,10 @@ function FocusMode({ routine, progress, update, start, onExit }: { routine: Rout
     const go = useCallback((to: number) => setIndex(Math.max(0, Math.min(items.length - 1, to))), [items.length]);
 
     const tap = () => {
-        if (done >= d.count) return;
-        const next = done + 1;
+        // After midnight the saved counts belong to yesterday, so a finished dhikr can be counted again.
+        const current = progress.date === localDay(new Date()) ? done : 0;
+        if (current >= d.count) return;
+        const next = current + 1;
         update(p => increment(p, routine.id, d, new Date()));
         setPulse(n => n + 1);
         if (next < d.count) {
@@ -194,7 +203,7 @@ function FocusMode({ routine, progress, update, start, onExit }: { routine: Rout
 
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
-            if (e.target instanceof HTMLElement && e.target.closest("input, textarea, select, [contenteditable]")) return;
+            if (e.target instanceof HTMLElement && e.target.closest("a, input, textarea, select, [contenteditable]")) return;
             if (e.key === "ArrowRight") go(index + 1);
             if (e.key === "ArrowLeft") go(index - 1);
         };
@@ -233,20 +242,30 @@ function FocusMode({ routine, progress, update, start, onExit }: { routine: Rout
             {/* Stays in reach at the bottom of the screen while a long passage is read. */}
             <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] z-10 space-y-3 rounded-[2rem] border border-slate-200/80 bg-white/90 p-3 shadow-lg sm:p-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
                 <TapCounter done={done} target={d.count} onTap={tap} pulse={pulse} />
-                <div className="flex items-center justify-between gap-2">
-                    <Button variant="outline" className="min-h-11 gap-1" onClick={() => go(index - 1)} disabled={index === 0}>
-                        <ChevronLeft className="h-4 w-4" /> Previous
+                {/* Three equal columns; on the narrowest screens only the icons show, so the row always fits. */}
+                <div className="grid grid-cols-3 gap-2">
+                    <Button variant="outline" className="min-h-11 min-w-0 gap-1 px-2" onClick={() => go(index - 1)} disabled={index === 0} aria-label="Previous dhikr">
+                        <ChevronLeft className="h-4 w-4" /> <span className="truncate max-[359px]:sr-only">Back</span>
                     </Button>
-                    <Button variant="ghost" className="min-h-11 gap-1 text-slate-500" onClick={() => update(p => resetDhikr(p, routine.id, d))} disabled={done === 0}>
-                        <RotateCcw className="h-4 w-4" /> Reset
+                    <Button
+                        variant="ghost"
+                        className="min-h-11 min-w-0 gap-1 px-2 text-slate-500"
+                        onClick={() => {
+                            window.clearTimeout(advanceTimer.current);
+                            update(p => resetDhikr(p, routine.id, d));
+                        }}
+                        disabled={done === 0}
+                        aria-label="Reset this dhikr"
+                    >
+                        <RotateCcw className="h-4 w-4" /> <span className="truncate max-[359px]:sr-only">Reset</span>
                     </Button>
                     {index < items.length - 1 ? (
-                        <Button variant="outline" className="min-h-11 gap-1" onClick={() => go(index + 1)}>
-                            Next <ChevronRight className="h-4 w-4" />
+                        <Button variant="outline" className="min-h-11 min-w-0 gap-1 px-2" onClick={() => go(index + 1)} aria-label="Next dhikr">
+                            <span className="truncate max-[359px]:sr-only">Next</span> <ChevronRight className="h-4 w-4" />
                         </Button>
                     ) : (
-                        <Button className="min-h-11 gap-1 bg-teal-600 text-white hover:bg-teal-700" onClick={onExit}>
-                            Finish
+                        <Button className="min-h-11 min-w-0 gap-1 bg-teal-600 px-2 text-white hover:bg-teal-700" onClick={onExit}>
+                            <Check className="h-4 w-4" /> <span className="truncate max-[359px]:sr-only">Finish</span>
                         </Button>
                     )}
                 </div>
@@ -306,7 +325,7 @@ export default function Adhkar() {
     const [params, setParams] = useSearchParams();
     const [progress, update] = useProgress();
     const routine = ROUTINES.find(r => r.id === params.get("routine")) ?? null;
-    const focusAt = params.has("focus") ? Math.max(0, Number(params.get("focus")) || 0) : null;
+    const focusAt = params.has("focus") ? Math.max(0, Math.floor(Number(params.get("focus")) || 0)) : null;
     const open = (r: Routine | null, focus?: number) => {
         setParams(r ? (focus === undefined ? { routine: r.id } : { routine: r.id, focus: String(focus) }) : {});
         window.scrollTo({ top: 0 });
@@ -316,7 +335,7 @@ export default function Adhkar() {
         <div className="min-h-screen bg-gradient-to-b from-teal-50/30 via-white to-white font-sans dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
             <SEO
                 title={routine ? `${routine.name} adhkar - Mastering Quran` : "Adhkar routines: morning, evening, sleep and after salah - Mastering Quran"}
-                description="Daily adhkar with a tap counter: morning, evening, before sleep, on waking and after salah. Every dhikr is quoted from the Quran or a hadith that no grader in our source grades weak, with its reference and count."
+                description="Daily adhkar with a tap counter: morning, evening, before sleep, on waking and after salah. Every dhikr is quoted from the Quran or the hadith collections, with its reference and the words of the hadith that give its count."
             />
             <section className="px-4 py-12 md:px-6">
                 <div className="mx-auto max-w-3xl">
@@ -330,7 +349,7 @@ export default function Adhkar() {
                                 <PageHero
                                     eyebrow="Daily remembrance"
                                     title="Adhkar Routines"
-                                    description={`${ADHKAR.length} adhkar in five daily routines, with a counter for each one. Your progress is saved on this device and starts fresh each day.`}
+                                    description={`${ADHKAR.length} adhkar in six daily routines, with a counter for each one. Your progress is saved on this device and starts fresh each day.`}
                                     icon={HandHeart}
                                     accent="teal"
                                 />
@@ -369,7 +388,7 @@ export default function Adhkar() {
                     )}
 
                     <p className="mx-auto mt-12 max-w-2xl text-center text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                        The routines follow Hisn al-Muslim. Every Arabic, English and transliteration text is quoted exactly from its source: the Quran (Uthmani text, Saheeh International) and the hadith editions of fawazahmed0/hadith-api (public domain). Each count and time is quoted from the hadith that gives it. A dhikr is left out when any grader in those editions grades its hadith weak.
+                        The routines follow Hisn al-Muslim. Every Arabic, English and transliteration text is quoted exactly from its source: the Quran (Uthmani text, Saheeh International) and the hadith editions of fawazahmed0/hadith-api (public domain). Each count and time is quoted from the hadith that gives it. A dhikr from the Sunan is left out when any grader in those editions grades its hadith weak; notes mark where a reading or a chain needs explaining.
                     </p>
                 </div>
             </section>

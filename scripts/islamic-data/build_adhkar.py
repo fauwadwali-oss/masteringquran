@@ -36,14 +36,14 @@ snapshot = json.loads((ROOT / "scripts/prerender/data/quran-snapshot.json").read
 surahs = {s["number"]: s for s in snapshot["surahs"]}
 
 TRANSLATORS = {"bukhari": "Muhsin Khan", "muslim": "Abdul Hamid Siddiqui"}
-WEAK = ("daif", "da'if", "mawdu", "munkar")
+WEAK = ("daif", "da'if", "dha'if", "dhaif", "weak", "mawdu", "fabricated", "munkar", "batil")
 # How each repeat count must be worded in the evidence quotes.
 COUNT_WORDS = {3: "three", 33: "thirty-three", 34: "thirty-four", 100: "hundred"}
 
 
 def checked_hadith(collection: str, ref: str, where: str):
     en, ar, grades = lookup(data_repo, cache, collection, ref)
-    weak = [g for g in grades if any(w in g["grade"].lower() for w in WEAK)]
+    weak = [g for g in grades if any(w in g["grade"].lower().replace("\u2019", "'").replace("`", "'") for w in WEAK)]
     if weak:
         raise SystemExit(f"{where}: {COLLECTIONS[collection]} {ref} is graded weak by {[g['name'] for g in weak]}")
     return en, ar, grades
@@ -107,6 +107,8 @@ for d in spec["adhkar"]:
     if count > 1 and COUNT_WORDS.get(count, "\0") not in " ".join(ev["quote"]):
         raise SystemExit(f"{where}: count {count} is not stated in the evidence quotes")
     entry["count"] = count
+    if "note" in d:
+        entry["note"] = d["note"]  # our own words, shown as a note: an interpretation or a caveat
     label, url = hadith_label(ev_col, ev_ref)
     entry["evidence"] = {"reference": label, "url": url, "quote": ev["quote"], "grades": [f"{g['grade']} ({g['name']})" for g in ev_grades]}
     out.append(entry)

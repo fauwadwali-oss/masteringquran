@@ -12,7 +12,7 @@ export default function Footer() {
                         <span className="text-lg font-bold text-white">Mastering Quran</span>
                     </Link>
                     <p className="max-w-sm text-sm leading-7 text-slate-400 mx-auto md:mx-0">
-                        Read, listen, and understand the Holy Quran — free, ad-free, and grounded in verified sources.
+                        Read, listen, and understand the Holy Quran: free, ad-free, and grounded in verified sources.
                     </p>
                     <p className="text-xs text-slate-500">
                         <a href="https://nusratwaliventures.com" className="transition-colors hover:text-white">

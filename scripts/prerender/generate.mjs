@@ -122,10 +122,10 @@ const publicPages = [
     {
         pathname: "/adhkar",
         title: "Morning and Evening Adhkar with a Counter | Mastering Quran",
-        description: "Daily adhkar routines for the morning, evening, before sleep, on waking and after salah, with a tap counter. Each dhikr is quoted from the Quran or hadith with its reference and count.",
+        description: "Daily adhkar routines for the morning, evening, before sleep, on waking, after salah and through the day, with a tap counter. Each dhikr is quoted from the Quran or hadith with its reference and count.",
         heading: "Adhkar Routines",
-        lede: "Five daily routines following Hisn al-Muslim. Say each dhikr one at a time with a counter that starts fresh every day.",
-        sections: [["Sourced text and counts", "Arabic, English or transliteration, the reference with its grading, and the words of the hadith that give each count and time."], ["Five routines", "Morning, evening, before sleep, on waking, and after each obligatory prayer."]],
+        lede: "Six daily routines following Hisn al-Muslim. Say each dhikr one at a time with a counter that starts fresh every day.",
+        sections: [["Sourced text and counts", "Arabic, English or transliteration, the reference with its grading, and the words of the hadith that give each count and time."], ["Six routines", "Morning, evening, before sleep, on waking, after each obligatory prayer, and adhkar counted across the day."]],
         links: [["Open the adhkar routines", "/adhkar"], ["Browse all duas", "/duas"], ["Review the source methodology", "/sources"]],
     },
     {
