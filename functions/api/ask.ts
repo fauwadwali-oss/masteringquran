@@ -2,7 +2,9 @@
 // Streams Claude Haiku 5.5 responses over SSE with a hand-rolled tool-use loop
 // that fetches grounding data from Quran.com API and our nwv-islamic-data mirror.
 
-interface Env {
+import { corsHeaders, getSupabaseUser, jsonResponse, preflight, type SupabaseEnv } from "../_lib/auth";
+
+interface Env extends SupabaseEnv {
     ANTHROPIC_API_KEY: string;
     UMMAH_API_KEY?: string;
 }
@@ -460,31 +462,24 @@ async function callClaude(
 
 // ──────────────────────────────── Entrypoint ────────────────────────────────
 
+export const onRequestOptions: PagesFunction<Env> = async ({ request }) => preflight(request);
+
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
-    if (!env.ANTHROPIC_API_KEY) {
-        return new Response(
-            JSON.stringify({ error: "ANTHROPIC_API_KEY not configured on the server." }),
-            { status: 503, headers: { "Content-Type": "application/json" } },
-        );
-    }
+    // Ask Wali is for signed-in users only; this also keeps the Anthropic key from open use.
+    const user = await getSupabaseUser(request, env);
+    if (!user) return jsonResponse(request, 401, { error: "Please sign in again to use Ask Wali." });
+
+    if (!env.ANTHROPIC_API_KEY) return jsonResponse(request, 503, { error: "Ask Wali is not available right now. Please try again later." });
 
     let body: RequestBody;
     try {
         body = await request.json();
     } catch {
-        return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-        });
+        return jsonResponse(request, 400, { error: "Invalid JSON body" });
     }
 
     const userMessage = (body.message || "").trim();
-    if (!userMessage) {
-        return new Response(JSON.stringify({ error: "Empty message" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-        });
-    }
+    if (!userMessage) return jsonResponse(request, 400, { error: "Empty message" });
 
     const history = (body.history || []).slice(-10);
     const messages: any[] = history.map((m) => ({ role: m.role, content: m.content }));
@@ -541,6 +536,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
             "Cache-Control": "no-cache, no-transform",
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no",
+            ...corsHeaders(request),
         },
     });
 };

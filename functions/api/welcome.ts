@@ -4,62 +4,25 @@
 // never emailed. user_metadata.welcome_sent_at makes it send once.
 
 import { WELCOME_HTML, WELCOME_TEXT } from "../_lib/welcome-email";
+import { bearerToken, getSupabaseUser, jsonResponse as json, preflight, supabaseConfig, type SupabaseEnv } from "../_lib/auth";
 
-interface Env {
+interface Env extends SupabaseEnv {
     RESEND_API_KEY?: string;
     WELCOME_FROM?: string;
     WELCOME_CUTOFF?: string;
-    SUPABASE_URL?: string;
-    SUPABASE_ANON_KEY?: string;
 }
 
-interface SupabaseUser {
-    id: string;
-    email?: string;
-    created_at: string;
-    email_confirmed_at?: string | null;
-    user_metadata?: Record<string, unknown>;
-}
-
-const DEFAULT_SUPABASE_URL = "https://hlhtvstvblvdixygchil.supabase.co";
-// Public anon key (also shipped in the web bundle); access is protected by RLS.
-const DEFAULT_SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsaHR2c3R2Ymx2ZGl4eWdjaGlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzMzU2MjAsImV4cCI6MjA3ODkxMTYyMH0.XCf-2149qp6UBXt8sOeuK-pHilBB3sBKApsphBUcGhE";
 const DEFAULT_CUTOFF = "2026-10-28T00:00:00Z";
 const DEFAULT_FROM = "Mastering Quran <hello@masteringquran.com>";
-const ALLOWED_ORIGINS = new Set([
-    "https://masteringquran.com",
-    "https://www.masteringquran.com",
-    "capacitor://localhost", // iOS app
-    "https://localhost", // Android app
-    "http://localhost:5173",
-]);
 
-function cors(request: Request): Record<string, string> {
-    const origin = request.headers.get("Origin") ?? "";
-    return ALLOWED_ORIGINS.has(origin)
-        ? { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Headers": "Authorization, Content-Type", "Access-Control-Allow-Methods": "POST, OPTIONS", Vary: "Origin" }
-        : {};
-}
-
-function json(request: Request, status: number, body: Record<string, unknown>): Response {
-    return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...cors(request) } });
-}
-
-export const onRequestOptions: PagesFunction<Env> = async ({ request }) => new Response(null, { status: 204, headers: cors(request) });
+export const onRequestOptions: PagesFunction<Env> = async ({ request }) => preflight(request);
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     if (!env.RESEND_API_KEY) return json(request, 503, { error: "welcome email not configured" });
-    const token = request.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
-    if (!token) return json(request, 401, { error: "missing token" });
-
-    const supabaseUrl = env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
-    const anonKey = env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
-    const authHeaders = { apikey: anonKey, Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
-
-    const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, { headers: authHeaders });
-    if (!userRes.ok) return json(request, 401, { error: "invalid token" });
-    const user = (await userRes.json()) as SupabaseUser;
+    const user = await getSupabaseUser(request, env);
+    if (!user) return json(request, 401, { error: "invalid token" });
+    const { url: supabaseUrl, anonKey } = supabaseConfig(env);
+    const authHeaders = { apikey: anonKey, Authorization: `Bearer ${bearerToken(request)}`, "Content-Type": "application/json" };
 
     const cutoff = Date.parse(env.WELCOME_CUTOFF || DEFAULT_CUTOFF);
     if (!user.email || !user.email_confirmed_at) return json(request, 200, { sent: false, reason: "not_confirmed" });

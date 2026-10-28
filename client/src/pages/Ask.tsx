@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import LoginModal from "@/components/LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
+import { apiUrl } from "@/lib/api";
 
 interface Message {
     role: "user" | "assistant";
@@ -28,6 +29,7 @@ const TOOL_LABELS: Record<string, string> = {
 };
 
 function AskInner() {
+    const { session } = useAuth();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
@@ -48,15 +50,19 @@ function AskInner() {
         setLoading(true);
 
         try {
-            const res = await fetch("/api/ask", {
+            const res = await fetch(apiUrl("/api/ask"), {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
                 body: JSON.stringify({ message: userText, history: messages }),
             });
 
             if (!res.ok || !res.body) {
                 const errText = await res.text();
-                throw new Error(errText || `Request failed (${res.status})`);
+                let message = errText;
+                try {
+                    message = (JSON.parse(errText) as { error?: string }).error || errText;
+                } catch { /* plain text error */ }
+                throw new Error(message || `Request failed (${res.status})`);
             }
 
             const reader = res.body.getReader();

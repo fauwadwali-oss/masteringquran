@@ -7,6 +7,7 @@ import { hasStoredSupabaseSession, isSupabaseConfigured } from "@/lib/supabase-c
 import { describeAuthError, type AuthResult } from "@/lib/auth-errors";
 import { trackAuth } from "@/lib/auth-analytics";
 import { toast } from "sonner";
+import { apiUrl } from "@/lib/api";
 
 interface AuthContextValue {
     user: User | null;
@@ -91,7 +92,6 @@ async function completeMobileSignIn(client: SupabaseClient, url: string): Promis
 
 // New accounts only (matches WELCOME_CUTOFF in functions/api/welcome.ts), so existing users are never emailed.
 const WELCOME_CUTOFF = Date.parse("2026-10-28T00:00:00Z");
-const WELCOME_ENDPOINT = "https://masteringquran.com/api/welcome";
 
 function maybeSendWelcome(session: Session) {
     const user = session.user;
@@ -102,8 +102,7 @@ function maybeSendWelcome(session: Session) {
         if (sessionStorage.getItem(key)) return;
         sessionStorage.setItem(key, "1");
     } catch { /* Fall through: the server makes it send once anyway. */ }
-    const url = isNativePlatform() ? WELCOME_ENDPOINT : "/api/welcome";
-    void fetch(url, { method: "POST", headers: { Authorization: `Bearer ${session.access_token}` } })
+    void fetch(apiUrl("/api/welcome"), { method: "POST", headers: { Authorization: `Bearer ${session.access_token}` } })
         .then((res) => (res.ok ? res.json() : null))
         .then((body: { sent?: boolean } | null) => {
             if (body?.sent) trackAuth("welcome_email_sent", { user_id: user.id });
