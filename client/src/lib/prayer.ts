@@ -2,7 +2,7 @@
 // Prayer times and qibla: the open-source adhan library (MIT). Hijri dates: the
 // browser's built-in Umm al-Qura calendar. Cities: GeoNames (CC BY 4.0), built by
 // scripts/prayer/build_cities.py into /data/cities.json.
-import { CalculationMethod, Coordinates, Madhab, PrayerTimes, Qibla, HighLatitudeRule } from "adhan";
+import { CalculationMethod, CalculationParameters, Coordinates, Madhab, PrayerTimes, Qibla, HighLatitudeRule } from "adhan";
 
 export type MethodId =
     | "MuslimWorldLeague"
@@ -104,6 +104,35 @@ export type DayTimes = Record<PrayerKey, Date>;
 export function timesFor(place: Place, settings: PrayerSettings, [y, m, d]: [number, number, number]): DayTimes {
     const t = new PrayerTimes(new Coordinates(place.latitude, place.longitude), new Date(y, m - 1, d), params(settings, place.latitude));
     return { fajr: t.fajr, sunrise: t.sunrise, dhuhr: t.dhuhr, asr: t.asr, maghrib: t.maghrib, isha: t.isha };
+}
+
+// Fasting times, for every day (not only Ramadan).
+// Sunni: Suhoor ends at Fajr and Iftar is at Maghrib, both from the chosen method (so they
+// match the prayer list, including a method's own Maghrib margin). Tehran's Maghrib is
+// already the later Shia one, so Sunni Iftar falls back to sunset there.
+// Shia (Jafari, Leva Research Institute, Qom; praytimes.org/docs/methods): Fajr with
+// the sun 16° below the horizon, and Maghrib at 4° below, once the eastern redness has
+// gone, so Iftar comes some minutes after sunset.
+export interface FastTimes {
+    suhoorEnds: Date;
+    iftar: Date;
+}
+
+function jafariParams(latitude: number) {
+    const p = new CalculationParameters("Other", 16, 14, 0, 4);
+    if (Math.abs(latitude) >= 48) p.highLatitudeRule = HighLatitudeRule.TwilightAngle;
+    return p;
+}
+
+export function fastTimes(place: Place, settings: PrayerSettings, [y, m, d]: [number, number, number]): { sunni: FastTimes; shia: FastTimes } {
+    const coords = new Coordinates(place.latitude, place.longitude);
+    const date = new Date(y, m - 1, d);
+    const sunni = new PrayerTimes(coords, date, params(settings, place.latitude));
+    const shia = new PrayerTimes(coords, date, jafariParams(place.latitude));
+    return {
+        sunni: { suhoorEnds: sunni.fajr, iftar: settings.method === "Tehran" ? sunni.sunset : sunni.maghrib },
+        shia: { suhoorEnds: shia.fajr, iftar: shia.maghrib },
+    };
 }
 
 export function addDays([y, m, d]: [number, number, number], n: number): [number, number, number] {

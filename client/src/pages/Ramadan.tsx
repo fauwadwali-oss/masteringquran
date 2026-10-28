@@ -9,6 +9,7 @@ import PageHero from "@/components/PageHero";
 import LocationPicker from "@/components/LocationPicker";
 import {
     defaultSettings,
+    fastTimes,
     formatTime,
     loadCities,
     loadPlace,
@@ -20,7 +21,6 @@ import {
     ramadanHubDescription,
     ramadanHubTitle,
     savePlace,
-    timesFor,
     upcomingRamadanYear,
     ymdInZone,
     type Place,
@@ -57,7 +57,7 @@ export default function Ramadan() {
 
     const days = useMemo(() => ramadanDates(year), [year]);
     const rows = useMemo(
-        () => (place ? days.map((d) => ({ ...d, times: timesFor(place, settings, d.ymd) })) : []),
+        () => (place ? days.map((d) => ({ ...d, fast: fastTimes(place, settings, d.ymd) })) : []),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [days, place, settings.method, settings.madhab],
     );
@@ -170,10 +170,16 @@ export default function Ramadan() {
                                     <caption className="sr-only">Ramadan {year} Suhoor and Iftar times in {place.name}</caption>
                                     <thead className="bg-slate-50 dark:bg-slate-800/60">
                                         <tr>
-                                            <th className="text-left px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Ramadan</th>
-                                            <th className="text-left px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Date</th>
-                                            <th className="text-right px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Suhoor ends (Fajr)</th>
-                                            <th className="text-right px-4 py-3 font-semibold text-amber-700 dark:text-amber-400">Iftar (Maghrib)</th>
+                                            <th className="text-left px-2 py-3 font-semibold text-slate-700 dark:text-slate-300">Ramadan</th>
+                                            <th className="text-left px-2 py-3 font-semibold text-slate-700 dark:text-slate-300">Date</th>
+                                            <th className="text-right px-2 py-3 font-semibold text-slate-700 dark:text-slate-300">
+                                                Suhoor ends
+                                                <span className="block text-xs font-normal text-slate-500 dark:text-slate-400">Sunni / Shia</span>
+                                            </th>
+                                            <th className="text-right px-2 py-3 font-semibold text-amber-700 dark:text-amber-400">
+                                                Iftar
+                                                <span className="block text-xs font-normal text-slate-500 dark:text-slate-400">Sunni / Shia</span>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -182,15 +188,22 @@ export default function Ramadan() {
                                                 key={d.hijriDay}
                                                 className={`border-t border-slate-100 dark:border-slate-800 ${isToday(d.ymd) ? "bg-amber-50 font-semibold dark:bg-amber-950/30" : d.hijriDay >= 21 && d.hijriDay % 2 === 1 ? "bg-amber-50/40 dark:bg-amber-950/10" : ""}`}
                                             >
-                                                <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                                                <td className="px-2 py-3 font-medium text-slate-900 dark:text-white">
                                                     {d.hijriDay}
                                                     {d.hijriDay >= 21 && d.hijriDay % 2 === 1 && (
                                                         <span className="ml-2 text-[11px] font-normal text-amber-700 dark:text-amber-400">odd night</span>
                                                     )}
                                                 </td>
-                                                <td className="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">{fmtDate(d.ymd, { weekday: "short", month: "short", day: "numeric" })}</td>
-                                                <td className="px-4 py-3 text-right tabular-nums text-slate-700 dark:text-slate-300">{fmt(d.times.fajr)}</td>
-                                                <td className="px-4 py-3 text-right tabular-nums font-semibold text-amber-700 dark:text-amber-400">{fmt(d.times.maghrib)}</td>
+                                                <td className="px-2 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap"><span className="hidden sm:inline">{fmtDate(d.ymd, { weekday: "short" })}, </span>
+                                                    {fmtDate(d.ymd, { month: "short", day: "numeric" })}</td>
+                                                <td className="whitespace-nowrap px-2 py-3 text-right tabular-nums text-slate-700 dark:text-slate-300">
+                                                    {fmt(d.fast.sunni.suhoorEnds)}
+                                                    <span className="block text-xs text-slate-500 dark:text-slate-400">{fmt(d.fast.shia.suhoorEnds)}</span>
+                                                </td>
+                                                <td className="whitespace-nowrap px-2 py-3 text-right tabular-nums font-semibold text-amber-700 dark:text-amber-400">
+                                                    {fmt(d.fast.sunni.iftar)}
+                                                    <span className="block text-xs font-normal text-amber-700/80 dark:text-amber-400/80">{fmt(d.fast.shia.iftar)}</span>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -206,7 +219,8 @@ export default function Ramadan() {
 
                     <p className="text-center pt-4 text-xs leading-relaxed text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
                         Dates follow the Umm al-Qura calendar. Ramadan begins with the moon sighting, so your community may start a day earlier or later.
-                        Times use the calculation method set on the <Link to="/prayer-times" className="underline">prayer times</Link> page and are calculated on your device.
+                        Sunni times use the calculation method set on the <Link to="/prayer-times" className="underline">prayer times</Link> page: Suhoor ends at Fajr and Iftar is at Maghrib.
+                        Shia times use the Jafari method, where Maghrib comes after the redness in the east fades. All times are calculated on your device.
                         Many people stop eating a few minutes before Fajr; follow your local mosque.
                     </p>
                 </div>
