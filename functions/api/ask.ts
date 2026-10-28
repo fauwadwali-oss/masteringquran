@@ -3,6 +3,7 @@
 // that fetches grounding data from Quran.com API and our nwv-islamic-data mirror.
 
 import { corsHeaders, getSupabaseUser, jsonResponse, preflight, type SupabaseEnv } from "../_lib/auth";
+import { QuoteStream, createQuranComLookup, seedVerse } from "../_lib/quran-quotes";
 
 interface Env extends SupabaseEnv {
     ANTHROPIC_API_KEY: string;
@@ -37,6 +38,7 @@ CRITICAL RULES:
 5. Be reverent. Write "Allah ﷻ" for God, and "the Prophet ﷺ" when referring to Prophet Muhammad.
 6. Keep answers concise — 2 to 4 paragraphs typically.
 7. End every response with: "*AI-generated summary — verify with a qualified scholar for religious guidance.*"
+8. When you quote Quran Arabic, copy it exactly from a get_verse result and put its (Quran X:Y) citation right after it. Every Quran quote and reference is checked against the canonical text before the user sees it.
 
 Available English tafsir editions (for the get_tafsir tool):
 - en-tafisr-ibn-kathir (Ibn Kathir, abridged — most popular)
@@ -186,11 +188,12 @@ async function executeTool(name: string, input: Record<string, unknown>, env: En
         if (name === "get_verse") {
             const { surah, ayah } = input as { surah: number; ayah: number };
             const r = await fetch(
-                `https://api.quran.com/api/v4/verses/by_key/${surah}:${ayah}?translations=22,57&language=en&fields=text_uthmani`,
+                `https://api.quran.com/api/v4/verses/by_key/${surah}:${ayah}?translations=22,57&language=en&fields=text_uthmani,text_imlaei`,
             );
             if (!r.ok) return { error: `Verse ${surah}:${ayah} not found` };
             const d = (await r.json()) as any;
             const v = d.verse;
+            seedVerse(v.verse_key, { uthmani: v.text_uthmani, imlaei: v.text_imlaei });
             const yusufAli = v.translations?.find((t: any) => t.resource_id === 22)?.text;
             const translit = v.translations?.find((t: any) => t.resource_id === 57)?.text;
             return {
@@ -491,14 +494,18 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
     const send = (obj: any) => writer.write(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
 
+    // Model text is released a paragraph at a time, after its Quran quotes and references are checked.
+    const quotes = new QuoteStream(createQuranComLookup(), (text) => send({ type: "text", text }));
+
     (async () => {
         try {
             for (let i = 0; i < MAX_ITERATIONS; i++) {
                 const { assistantContent, stopReason } = await callClaude(
                     env.ANTHROPIC_API_KEY,
                     messages,
-                    (text) => send({ type: "text", text }),
+                    (text) => quotes.push(text),
                 );
+                await quotes.flush();
 
                 if (stopReason === "tool_use" || assistantContent.some((b) => b.type === "tool_use")) {
                     messages.push({ role: "assistant", content: assistantContent });
@@ -522,6 +529,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
                 }
                 break;
             }
+            if (quotes.quotes.length) send({ type: "quote_check", quotes: quotes.quotes });
             send({ type: "done" });
         } catch (err) {
             send({ type: "error", message: err instanceof Error ? err.message : String(err) });

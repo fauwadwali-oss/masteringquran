@@ -1,15 +1,26 @@
-import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, Loader2, AlertCircle, Wrench, BookOpen, ScrollText, Search, Lightbulb, Lock, Library, MessageCircle } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Send, Sparkles, Loader2, AlertCircle, AlertTriangle, CheckCircle2, PenLine, ShieldCheck, Wrench, BookOpen, ScrollText, Search, Lightbulb, Lock, Library, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import LoginModal from "@/components/LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiUrl } from "@/lib/api";
 
+/** One Quran quote or reference checked by /api/ask against the canonical text. */
+interface QuoteCheck {
+    kind: "arabic" | "reference";
+    status: "verified" | "corrected" | "unverified";
+    text: string;
+    original?: string;
+    reference?: string;
+    note?: string;
+}
+
 interface Message {
     role: "user" | "assistant";
     content: string;
     tools?: string[];
+    quotes?: QuoteCheck[];
 }
 
 const SUGGESTIONS = [
@@ -101,6 +112,13 @@ function AskInner() {
                             if (last?.role === "assistant") {
                                 copy[copy.length - 1] = { ...last, tools: [...(last.tools || []), ...evt.tools] };
                             }
+                            return copy;
+                        });
+                    } else if (evt.type === "quote_check") {
+                        setMessages((prev) => {
+                            const copy = [...prev];
+                            const last = copy[copy.length - 1];
+                            if (last?.role === "assistant") copy[copy.length - 1] = { ...last, quotes: evt.quotes };
                             return copy;
                         });
                     } else if (evt.type === "error") {
@@ -205,12 +223,13 @@ function AskInner() {
                                     </div>
                                 )}
                                 <p className={`whitespace-pre-wrap leading-relaxed ${m.role === "user" ? "text-[15px]" : "text-[15px] text-slate-800 dark:text-slate-200"}`}>
-                                    {m.content || (m.role === "assistant" && loading && i === messages.length - 1 ? (
+                                    {m.content ? <AnswerText content={m.content} quotes={m.quotes} /> : (m.role === "assistant" && loading && i === messages.length - 1 ? (
                                         <span className="inline-flex items-center gap-2 text-slate-500">
                                             <Loader2 className="h-4 w-4 animate-spin" /> Thinking…
                                         </span>
                                     ) : "")}
                                 </p>
+                                {m.role === "assistant" && m.quotes && m.quotes.length > 0 && <QuoteBadge quotes={m.quotes} />}
                                 {m.role === "assistant" && m.content && (
                                     <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
                                         <LinkButton to="/quran" label="Continue in Quran" />
@@ -271,6 +290,79 @@ function AskInner() {
                 </p>
             </section>
         </div>
+    );
+}
+
+/** Answer text with corrected and unverified Quran quotes marked where they appear. */
+function AnswerText({ content, quotes }: { content: string; quotes?: QuoteCheck[] }) {
+    const flagged = (quotes ?? []).filter((q) => q.status !== "verified");
+    if (!flagged.length) return <>{content}</>;
+    const parts: ReactNode[] = [];
+    let pos = 0;
+    flagged.forEach((q, i) => {
+        const at = content.indexOf(q.text, pos);
+        if (at === -1) return;
+        parts.push(content.slice(pos, at));
+        const unverified = q.status === "unverified";
+        parts.push(
+            <span key={i} title={q.note}>
+                <span
+                    dir="auto"
+                    className={
+                        unverified
+                            ? "rounded bg-amber-100 px-0.5 underline decoration-amber-500 decoration-dotted underline-offset-4 dark:bg-amber-900/40"
+                            : "underline decoration-emerald-500 decoration-dotted underline-offset-4"
+                    }
+                >
+                    {q.text}
+                </span>
+                <sup className={`ml-0.5 text-[10px] font-semibold ${unverified ? "text-amber-700 dark:text-amber-400" : "text-emerald-700 dark:text-emerald-400"}`}>
+                    {unverified ? "could not verify" : "corrected"}
+                </sup>
+            </span>,
+        );
+        pos = at + q.text.length;
+    });
+    parts.push(content.slice(pos));
+    return <>{parts}</>;
+}
+
+function QuoteBadge({ quotes }: { quotes: QuoteCheck[] }) {
+    const unverified = quotes.filter((q) => q.status === "unverified").length;
+    const corrected = quotes.filter((q) => q.status === "corrected").length;
+    return (
+        <details className="mt-3 text-xs">
+            <summary
+                className={`inline-flex cursor-pointer list-none items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium ${
+                    unverified
+                        ? "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300"
+                        : "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300"
+                }`}
+            >
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Quran text checked
+                {corrected > 0 && <span className="opacity-80">· {corrected} corrected</span>}
+                {unverified > 0 && <span className="opacity-80">· {unverified} could not be verified</span>}
+            </summary>
+            <ul className="mt-2 space-y-1.5 rounded-xl border border-slate-100 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-950/40">
+                {quotes.map((q, i) => {
+                    const Icon = q.status === "verified" ? CheckCircle2 : q.status === "corrected" ? PenLine : AlertTriangle;
+                    return (
+                        <li key={i} className="flex items-start gap-2 text-slate-700 dark:text-slate-300">
+                            <Icon className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${q.status === "unverified" ? "text-amber-600" : "text-emerald-600"}`} />
+                            <span className="min-w-0">
+                                <span dir="auto" className="break-words">{q.text}</span>
+                                {q.reference && <span className="ml-1.5 text-slate-500">Quran {q.reference}</span>}
+                                <span className="block text-slate-500 dark:text-slate-400">
+                                    {q.note ?? (q.kind === "arabic" ? "Matches the Quran text." : "Reference exists.")}
+                                </span>
+                                {q.original && <span dir="auto" className="block text-slate-400 line-through">{q.original}</span>}
+                            </span>
+                        </li>
+                    );
+                })}
+            </ul>
+        </details>
     );
 }
 
