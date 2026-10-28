@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
     BookOpen, Library, Sparkles, ArrowRight, Clock, Compass, Star, Heart, Calendar,
     Target, Trophy, GraduationCap, ScrollText, BookMarked, Calculator, Share2, Mail,
-    MapPin, Flame, type LucideIcon,
+    MapPin, Flame, ListMusic, type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
@@ -47,6 +47,7 @@ export default function Home() {
                         <p className="mt-2 text-sm text-slate-300">{lastSurah ? "Return to the last surah opened on this device." : "Choose a starting point. Reading and lessons are free to browse."}</p>
                         <div className="mt-5 space-y-3">
                             <StudyLink to={lastSurah ? `/quran?verse=${lastSurah}:1` : "/quran?verse=1:1"} icon={BookOpen} title={lastSurah ? `Return to Surah ${lastSurah}` : "Begin with Al-Fatihah"} detail="Arabic, translation, audio and tafsir" />
+                            <StudyLink to="/playlists" icon={ListMusic} title="Listen to your playlists" detail="Surahs back to back, in Arabic or with translation" />
                             <StudyLink to="/learn-arabic" icon={GraduationCap} title="Explore the Arabic curriculum" detail="12 lessons, from letters to five surahs" />
                             <StudyLink to="/hadith" icon={Library} title="Browse the hadith library" detail="Collections with references and available grades" />
                         </div>

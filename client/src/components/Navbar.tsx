@@ -8,7 +8,6 @@ import {
     GraduationCap,
     Heart,
     Library,
-    ListMusic,
     Menu,
     Search,
     ScrollText,
@@ -61,7 +60,6 @@ const MORE_GROUPS: Array<{
         label: "Practice",
         items: [
             { to: "/plans", label: "Reading Plans", icon: BookOpen, description: "Build a habit" },
-            { to: "/playlists", label: "Playlists", icon: ListMusic, description: "Surahs back to back" },
             { to: "/quiz", label: "Quiz", icon: Trophy, description: "Test recall" },
             { to: "/flashcards", label: "Flash Cards", icon: GraduationCap, description: "Review quickly" },
             { to: "/share", label: "Share a Verse", icon: Heart, description: "Create images" },
@@ -72,6 +70,7 @@ const MORE_GROUPS: Array<{
 const PRIMARY_LINKS = [
     { to: "/", label: "Home" },
     { to: "/quran", label: "Quran" },
+    { to: "/playlists", label: "Playlists" },
     { to: "/hadith", label: "Hadith" },
     { to: "/learn-arabic", label: "Learn Arabic" },
 ];
@@ -85,15 +84,16 @@ export default function Navbar() {
     return (
         <nav className="w-full sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 px-4 py-3 text-slate-900 shadow-sm shadow-slate-900/5 backdrop-blur-xl transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/88 dark:text-slate-100 pt-[calc(0.75rem+env(safe-area-inset-top))] sm:px-6">
             <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-4">
-                <div className="font-bold text-lg tracking-tight flex items-center">
+                <div className="font-bold text-lg tracking-tight flex shrink-0 items-center">
                     <Link to="/" className="flex items-center gap-3" onClick={() => setIsOpen(false)}>
                         <img src="/mq-logo-mark.svg" alt="Mastering Quran Logo" className="h-9 w-auto sm:h-10" />
-                        <span className="whitespace-nowrap text-base leading-tight max-[359px]:hidden sm:text-lg">Mastering Quran</span>
+                        <span className="whitespace-nowrap text-base leading-tight max-[359px]:hidden sm:text-lg md:max-lg:hidden">Mastering Quran</span>
                     </Link>
                 </div>
 
                 {/* Desktop Menu */}
-                <div className="hidden md:flex items-center gap-1 text-sm font-medium">
+                {/* Below lg the logo stands alone so the links fit on one line. */}
+                <div className="hidden md:flex items-center gap-1 whitespace-nowrap text-sm font-medium">
                     {PRIMARY_LINKS.map((item) => {
                         const active = item.to === "/learn-arabic"
                             ? location.pathname.startsWith("/learn-arabic")
@@ -103,7 +103,7 @@ export default function Navbar() {
                                 key={item.to}
                                 to={item.to}
                                 className={cn(
-                                    "rounded-full px-3 py-2 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white",
+                                    "rounded-full px-2 py-2 text-slate-600 lg:px-3 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white",
                                     active && "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300",
                                 )}
                             >
@@ -117,7 +117,7 @@ export default function Navbar() {
                         <PopoverTrigger asChild>
                             <button
                                 className={cn(
-                                    "inline-flex items-center gap-1 rounded-full px-3 py-2 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white",
+                                    "inline-flex items-center gap-1 rounded-full px-2 py-2 text-slate-600 lg:px-3 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white",
                                     isInMore && "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300",
                                 )}
                             >
@@ -162,7 +162,7 @@ export default function Navbar() {
                     <Link
                         to="/ask"
                         className={cn(
-                            "inline-flex items-center gap-1 rounded-full px-3 py-2 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white",
+                            "inline-flex items-center gap-1 rounded-full px-2 py-2 text-slate-600 lg:px-3 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white",
                             location.pathname === "/ask" && "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300",
                         )}
                     >
