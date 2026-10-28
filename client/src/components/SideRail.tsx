@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { BookOpen, GraduationCap, Home, Library, Sparkles } from "lucide-react";
+import { BookOpen, GraduationCap, Home, Library, ListMusic, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSideRail } from "@/hooks/useSideRail";
 
 const railItems = [
     { to: "/", label: "Home", icon: Home },
     { to: "/quran", label: "Quran", icon: BookOpen },
+    { to: "/playlists", label: "Playlists", icon: ListMusic },
     { to: "/hadith", label: "Hadith", icon: Library },
     { to: "/learn-arabic", label: "Arabic", icon: GraduationCap },
     { to: "/ask", label: "Ask Wali", icon: Sparkles },
