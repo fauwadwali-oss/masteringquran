@@ -74,7 +74,9 @@
 
   <script>
     (function () {
-      if (location.hostname.endsWith('pages.dev')) {
+      // Send the production pages.dev address to the real domain. Branch previews
+      // (feat-x.masteringquran.pages.dev) stay put; Cloudflare marks them noindex.
+      if (location.hostname === 'masteringquran.pages.dev') {
         location.replace('https://masteringquran.com' + location.pathname + location.search + location.hash);
       }
     })();

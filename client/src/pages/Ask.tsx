@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import LoginModal from "@/components/LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
+import { apiUrl } from "@/lib/api";
 
 interface Message {
     role: "user" | "assistant";
@@ -28,6 +29,7 @@ const TOOL_LABELS: Record<string, string> = {
 };
 
 function AskInner() {
+    const { session } = useAuth();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
@@ -48,15 +50,19 @@ function AskInner() {
         setLoading(true);
 
         try {
-            const res = await fetch("/api/ask", {
+            const res = await fetch(apiUrl("/api/ask"), {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
                 body: JSON.stringify({ message: userText, history: messages }),
             });
 
             if (!res.ok || !res.body) {
                 const errText = await res.text();
-                throw new Error(errText || `Request failed (${res.status})`);
+                let message = errText;
+                try {
+                    message = (JSON.parse(errText) as { error?: string }).error || errText;
+                } catch { /* plain text error */ }
+                throw new Error(message || `Request failed (${res.status})`);
             }
 
             const reader = res.body.getReader();
@@ -358,7 +364,7 @@ export default function Ask() {
                                     Free sign-in unlocks Ask Wali
                                 </h2>
                                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                                    No password needed. Sign in with a magic link so your questions can run through the protected source-checking tools.
+                                    Sign in with your password or a magic link so your questions can run through the protected source-checking tools.
                                 </p>
                             </div>
                             <div className="grid gap-3 text-sm">
@@ -379,7 +385,7 @@ export default function Ask() {
                         </div>
                     </div>
                 </section>
-                <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to use the Ask Wali assistant. Free forever — no password needed." />
+                <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to use the Ask Wali assistant. Free forever." />
             </div>
         );
     }

@@ -3,7 +3,7 @@ const KEY = "mq-auth-return";
 export function safeReturnPath(value: unknown): string {
     if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//") || /[\\\x00-\x20]/.test(value)) return "/";
     const url = new URL(value, "https://masteringquran.com");
-    return url.origin === "https://masteringquran.com" && url.pathname !== "/auth/callback" ? url.pathname + url.search + url.hash : "/";
+    return url.origin === "https://masteringquran.com" && !url.pathname.startsWith("/auth/") ? url.pathname + url.search + url.hash : "/";
 }
 
 export function rememberAuthReturn(path: string) {

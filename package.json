@@ -13,7 +13,8 @@
     "mobile:android": "SKIP_PRERENDER=1 npm run build && cap sync android && cap open android",
     "mobile:ios": "SKIP_PRERENDER=1 npm run build && cap sync ios && cap open ios",
     "format": "prettier --write .",
-    "test": "vitest run --config vitest.config.ts"
+    "test": "vitest run --config vitest.config.ts",
+    "auth-emails": "esbuild scripts/auth-emails/generate.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/auth-emails.mjs && node node_modules/.cache/auth-emails.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.1",

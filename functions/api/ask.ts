@@ -1,8 +1,10 @@
 // Cloudflare Pages Function — AI chat endpoint for /ask
-// Streams Claude Haiku 4.5 responses over SSE with a hand-rolled tool-use loop
+// Streams Claude Haiku 5.5 responses over SSE with a hand-rolled tool-use loop
 // that fetches grounding data from Quran.com API and our nwv-islamic-data mirror.
 
-interface Env {
+import { corsHeaders, getSupabaseUser, jsonResponse, preflight, type SupabaseEnv } from "../_lib/auth";
+
+interface Env extends SupabaseEnv {
     ANTHROPIC_API_KEY: string;
     UMMAH_API_KEY?: string;
 }
@@ -18,11 +20,12 @@ interface RequestBody {
 }
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-haiku-4-5-20251001";
+const MODEL = "claude-haiku-5-5";
 const DATA_BASE = "https://cdn.jsdelivr.net/gh/fauwadwali-oss/nwv-islamic-data@main";
 const UMMAH_BASE = "https://ummahapi.com/api";
 const MAX_ITERATIONS = 6;
-const MAX_TOKENS = 1500;
+// Thinking counts toward max_tokens on Haiku 5.5, so leave room above the ~1500-token answers.
+const MAX_TOKENS = 8000;
 
 const SYSTEM_PROMPT = `You are a scholarly Islamic knowledge assistant for masteringquran.com. You help users explore the Quran, authentic hadith, and classical tafsir.
 
@@ -338,8 +341,10 @@ const cleanHtml = (s: string): string =>
 // ────────────────────────── Anthropic streaming client ──────────────────────────
 
 interface ContentBlock {
-    type: "text" | "tool_use";
+    type: "text" | "tool_use" | "thinking";
     text?: string;
+    thinking?: string;
+    signature?: string;
     id?: string;
     name?: string;
     input?: Record<string, unknown>;
@@ -353,6 +358,8 @@ async function callClaude(
     const body = {
         model: MODEL,
         max_tokens: MAX_TOKENS,
+        thinking: { type: "adaptive" },
+        output_config: { effort: "medium" },
         system: [
             {
                 type: "text",
@@ -408,6 +415,9 @@ async function callClaude(
                 const cb = evt.content_block;
                 if (cb.type === "text") {
                     blocks[evt.index] = { type: "text", text: "" };
+                } else if (cb.type === "thinking") {
+                    // Must be sent back unchanged (with its signature) alongside tool results.
+                    blocks[evt.index] = { type: "thinking", thinking: cb.thinking ?? "", signature: cb.signature ?? "" };
                 } else if (cb.type === "tool_use") {
                     blocks[evt.index] = { type: "tool_use", id: cb.id, name: cb.name, input: {} };
                     partialJson = "";
@@ -420,6 +430,12 @@ async function callClaude(
                         block.text = (block.text || "") + delta.text;
                     }
                     onTextDelta(delta.text);
+                } else if (delta.type === "thinking_delta" || delta.type === "signature_delta") {
+                    const block = blocks[evt.index];
+                    if (block && block.type === "thinking") {
+                        if (delta.type === "thinking_delta") block.thinking = (block.thinking || "") + delta.thinking;
+                        else block.signature = (block.signature || "") + delta.signature;
+                    }
                 } else if (delta.type === "input_json_delta") {
                     partialJson += delta.partial_json;
                 }
@@ -446,31 +462,24 @@ async function callClaude(
 
 // ──────────────────────────────── Entrypoint ────────────────────────────────
 
+export const onRequestOptions: PagesFunction<Env> = async ({ request }) => preflight(request);
+
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
-    if (!env.ANTHROPIC_API_KEY) {
-        return new Response(
-            JSON.stringify({ error: "ANTHROPIC_API_KEY not configured on the server." }),
-            { status: 503, headers: { "Content-Type": "application/json" } },
-        );
-    }
+    // Ask Wali is for signed-in users only; this also keeps the Anthropic key from open use.
+    const user = await getSupabaseUser(request, env);
+    if (!user) return jsonResponse(request, 401, { error: "Please sign in again to use Ask Wali." });
+
+    if (!env.ANTHROPIC_API_KEY) return jsonResponse(request, 503, { error: "Ask Wali is not available right now. Please try again later." });
 
     let body: RequestBody;
     try {
         body = await request.json();
     } catch {
-        return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-        });
+        return jsonResponse(request, 400, { error: "Invalid JSON body" });
     }
 
     const userMessage = (body.message || "").trim();
-    if (!userMessage) {
-        return new Response(JSON.stringify({ error: "Empty message" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-        });
-    }
+    if (!userMessage) return jsonResponse(request, 400, { error: "Empty message" });
 
     const history = (body.history || []).slice(-10);
     const messages: any[] = history.map((m) => ({ role: m.role, content: m.content }));
@@ -508,6 +517,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
                     continue;
                 }
 
+                if (stopReason === "refusal") {
+                    send({ type: "text", text: "\n\nI can't help with that question. Please ask about the Quran, hadith, or tafsir." });
+                }
                 break;
             }
             send({ type: "done" });
@@ -524,6 +536,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
             "Cache-Control": "no-cache, no-transform",
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no",
+            ...corsHeaders(request),
         },
     });
 };
