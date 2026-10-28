@@ -37,6 +37,7 @@ export default function Footer() {
                     <div className="flex flex-col gap-3 text-sm">
                         <FooterLink to="/prayer-times" icon={BookOpen} label="Prayer Times" />
                         <FooterLink to="/duas" icon={Heart} label="Duas" />
+                        <FooterLink to="/adhkar" icon={Heart} label="Adhkar" />
                         <FooterLink to="/plans" icon={BookOpen} label="Reading Plans" />
                         <FooterLink to="/daily" icon={Mail} label="Daily Reminder" />
                     </div>

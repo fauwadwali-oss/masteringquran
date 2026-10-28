@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Search, BookOpen, ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SEO from "@/components/SEO";
 import PageHero from "@/components/PageHero";
 import { DUAS, DUA_CATEGORIES, searchDuas, type Dua, type DuaCategory } from "@/lib/islamic-data";
+
+// Dua categories that have a matching adhkar routine with a counter.
+const ROUTINE_FOR_CATEGORY: Record<string, string> = { "morning-evening": "morning", sleep: "sleep", prayer: "salah" };
 
 function DuaCard({ d, showCategory }: { d: Dua; showCategory?: boolean }) {
     const category = DUA_CATEGORIES.find((c) => c.id === d.category);
@@ -118,6 +121,16 @@ export default function Duas() {
                             accent="teal"
                         />
                     </div>
+
+                    {(!selected || ROUTINE_FOR_CATEGORY[selected.id]) && (
+                        <Link
+                            to={selected ? `/adhkar?routine=${ROUTINE_FOR_CATEGORY[selected.id]}` : "/adhkar"}
+                            className="mb-6 flex min-h-11 items-center justify-between gap-3 rounded-xl border border-teal-200 bg-teal-50/60 px-4 py-3 text-sm text-teal-800 hover:border-teal-400 dark:border-teal-900/40 dark:bg-teal-950/30 dark:text-teal-300"
+                        >
+                            <span>Say the daily adhkar one at a time, with a counter for each.</span>
+                            <span className="shrink-0 font-semibold">Open adhkar routines</span>
+                        </Link>
+                    )}
 
                     {targetDua && selected && (
                         <button onClick={() => setSelected(selected)} className="mb-4 min-h-11 font-semibold text-teal-700 dark:text-teal-300 hover:underline">

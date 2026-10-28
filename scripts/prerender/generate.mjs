@@ -120,6 +120,15 @@ const publicPages = [
         links: [["Browse all duas", "/duas"], ["Review the source methodology", "/sources"]],
     },
     {
+        pathname: "/adhkar",
+        title: "Morning and Evening Adhkar with a Counter | Mastering Quran",
+        description: "Daily adhkar routines for the morning, evening, before sleep, on waking and after salah, with a tap counter. Each dhikr is quoted from the Quran or hadith with its reference and count.",
+        heading: "Adhkar Routines",
+        lede: "Five daily routines following Hisn al-Muslim. Say each dhikr one at a time with a counter that starts fresh every day.",
+        sections: [["Sourced text and counts", "Arabic, English or transliteration, the reference with its grading, and the words of the hadith that give each count and time."], ["Five routines", "Morning, evening, before sleep, on waking, and after each obligatory prayer."]],
+        links: [["Open the adhkar routines", "/adhkar"], ["Browse all duas", "/duas"], ["Review the source methodology", "/sources"]],
+    },
+    {
         pathname: "/learn-arabic",
         title: "Learn Quranic Arabic from Zero | Mastering Quran",
         description: "Learn Quranic Arabic from zero with a 12-lesson path covering letters, harakat, tajweed, vocabulary, grammar, roots, writing, and five surahs.",

@@ -32,6 +32,7 @@ const MORE_GROUPS: Array<{
             { to: "/prayer-times", label: "Prayer Times", icon: Calendar, description: "Salah timings" },
             { to: "/qibla", label: "Qibla", icon: Compass, description: "Find direction" },
             { to: "/duas", label: "Duas", icon: Heart, description: "Daily supplications" },
+            { to: "/adhkar", label: "Adhkar", icon: Heart, description: "Routines with a counter" },
             { to: "/ramadan", label: "Ramadan", icon: Calendar, description: "Fasting tools" },
             { to: "/daily", label: "Daily Reminder", icon: BookOpen, description: "Verse delivery" },
         ],
