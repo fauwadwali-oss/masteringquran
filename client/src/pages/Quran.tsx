@@ -17,6 +17,10 @@ import SimilarVersesPanel from "@/components/SimilarVersesPanel";
 import CompareTranslationsModal from "@/components/CompareTranslationsModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { RECITERS } from "@/lib/reciters";
+import { usePlayer } from "@/contexts/PlayerContext";
+import { claimAudioFocus, onAudioFocusLost } from "@/lib/audio-focus";
+import AddToPlaylist from "@/components/AddToPlaylist";
 
 const VerseActionsModal = lazy(() => import("@/components/VerseActionsModal"));
 
@@ -65,18 +69,6 @@ interface Bookmark {
     surahName: string;
     timestamp: number;
 }
-
-// Reciters list (Quran.com API v4 recitation IDs)
-const RECITERS = [
-    { id: "3", name: "Abdurrahmaan As-Sudais", arabicName: "عبدالرحمن السديس" },
-    { id: "7", name: "Mishary Alafasy", arabicName: "مشاري العفاسي" },
-    { id: "6", name: "Mahmoud Khalil Al-Husary", arabicName: "محمود خليل الحصري" },
-    { id: "9", name: "Muhammad Siddiq Al-Minshawi", arabicName: "محمد صديق المنشاوي" },
-    { id: "2", name: "Abdul Basit (Murattal)", arabicName: "عبد الباسط عبد الصمد" },
-    { id: "10", name: "Saood Ash-Shuraym", arabicName: "سعود الشريم" },
-    { id: "4", name: "Abu Bakr al-Shatri", arabicName: "أبو بكر الشاطري" },
-    { id: "5", name: "Hani ar-Rifai", arabicName: "هاني الرفاعي" },
-];
 
 // Strip HTML footnote markers from Quran.com translation text
 const cleanTranslation = (text: string | undefined | null): string =>
@@ -129,7 +121,8 @@ export default function Quran() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentPlayingVerse, setCurrentPlayingVerse] = useState<number | null>(null);
     const [isContinuousPlay, setIsContinuousPlay] = useState(false);
-    const [selectedReciter, setSelectedReciter] = useState("3");
+    // Shared with playlists, so one choice of reciter applies everywhere and is remembered.
+    const { reciter: selectedReciter, setReciter: setSelectedReciter } = usePlayer();
 
     // Translation state
     // Saheeh International by default (matches the prerendered pages and the Shorts); the reader's choice is remembered.
@@ -543,6 +536,7 @@ export default function Quran() {
             const url = d.audio_file?.audio_url;
             if (!url) throw new Error("no url");
             const audio = new Audio(url);
+            audio.onplay = () => claimAudioFocus("quran-page");
             audio.onended = () => {
                 setFullSurahPlaying(false);
                 fullSurahAudioRef.current = null;
@@ -561,6 +555,35 @@ export default function Quran() {
             setFullSurahLoading(false);
         }
     };
+
+    // The playlist mini player sits on top of this page's verse bar instead of under it.
+    const verseBarRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+        const bar = verseBarRef.current;
+        if (!bar) return;
+        const root = document.documentElement;
+        const update = () => {
+            root.style.setProperty("--mq-page-bar", `${bar.offsetHeight}px`);
+            root.style.setProperty("--mq-mini-pad", "0px");
+        };
+        const observer = new ResizeObserver(update);
+        observer.observe(bar);
+        update();
+        return () => {
+            observer.disconnect();
+            root.style.removeProperty("--mq-page-bar");
+            root.style.removeProperty("--mq-mini-pad");
+        };
+    }, []);
+
+    // A playlist starting elsewhere pauses this page's audio.
+    useEffect(() => onAudioFocusLost("quran-page", () => {
+        audioRef.current?.pause();
+        if (fullSurahAudioRef.current) {
+            fullSurahAudioRef.current.pause();
+            setFullSurahPlaying(false);
+        }
+    }), []);
 
     // Stop full-surah audio when surah or reciter changes
     useEffect(() => {
@@ -1300,10 +1323,11 @@ export default function Quran() {
                                     {currentSurah.numberOfAyahs} Verses
                                 </Badge>
                             </div>
+                            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                             <Button
                                 onClick={toggleFullSurahAudio}
                                 disabled={fullSurahLoading}
-                                className="mt-3 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-6 py-2 rounded-xl shadow-md"
+                                className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-6 py-2 rounded-xl shadow-md"
                             >
                                 {fullSurahLoading ? (
                                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading…</>
@@ -1313,6 +1337,8 @@ export default function Quran() {
                                     <><Play className="mr-2 h-4 w-4" /> Play whole surah</>
                                 )}
                             </Button>
+                            <AddToPlaylist surah={currentSurah.number} surahName={currentSurah.englishName} />
+                            </div>
                         </div>
                     </div>
                 )}
@@ -1646,7 +1672,7 @@ export default function Quran() {
             )}
 
             {/* Floating Audio Player */}
-            <div className="fixed bottom-0 left-0 right-0 z-50">
+            <div ref={verseBarRef} className="fixed bottom-0 left-0 right-0 z-50">
                 <div className="border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
                     <div className="mx-auto max-w-4xl px-3 py-3 md:px-4 md:py-4">
                         <div className="flex items-center justify-between gap-4">
@@ -1727,7 +1753,10 @@ export default function Quran() {
                 ref={audioRef}
                 onEnded={handleAudioEnded}
                 onPause={() => setIsPlaying(false)}
-                onPlay={() => setIsPlaying(true)}
+                onPlay={() => {
+                    setIsPlaying(true);
+                    claimAudioFocus("quran-page");
+                }}
                 className="hidden"
             />
         </div>

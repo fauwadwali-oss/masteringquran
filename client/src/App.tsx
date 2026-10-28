@@ -5,11 +5,13 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { PlayerProvider, usePlayer } from "./contexts/PlayerContext";
 import UserPreferences from "./components/UserPreferences";
 import KeyboardShortcutsProvider from "./components/KeyboardShortcutsProvider";
 import Navbar from "./components/Navbar";
 import SideRail from "./components/SideRail";
 import Footer from "./components/Footer";
+import MiniPlayer, { MINI_PLAYER_HEIGHT } from "./components/MiniPlayer";
 import ScrollToTop from "./components/ScrollToTop";
 import GoogleAnalytics from "./components/GoogleAnalytics";
 
@@ -34,6 +36,7 @@ const Bookmarks = lazy(() => import("./pages/Bookmarks"));
 const Notes = lazy(() => import("./pages/Notes"));
 const Memorize = lazy(() => import("./pages/Memorize"));
 const Plans = lazy(() => import("./pages/Plans"));
+const Playlists = lazy(() => import("./pages/Playlists"));
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Flashcards = lazy(() => import("./pages/Flashcards"));
 const Prophets = lazy(() => import("./pages/Prophets"));
@@ -62,12 +65,16 @@ const Terms = lazy(() => import("./pages/Terms"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function Layout({ children }: { children: ReactNode }) {
+  const { nowPlaying } = usePlayer();
   return (
     <div className="flex min-h-screen flex-col bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.08),transparent_30%),linear-gradient(180deg,#f8fffb_0%,#f8fafc_42%,#ffffff_100%)] text-slate-950 dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_28%),linear-gradient(180deg,#020617_0%,#0f172a_52%,#020617_100%)] dark:text-slate-100">
       <Navbar />
       <SideRail />
       <main className="flex-grow">{children}</main>
       <Footer />
+      {/* Room for the mini player, so it never covers the end of a page */}
+      {nowPlaying && <div aria-hidden style={{ height: `calc(${MINI_PLAYER_HEIGHT} + env(safe-area-inset-bottom))` }} />}
+      <MiniPlayer />
     </div>
   );
 }
@@ -95,6 +102,7 @@ function App() {
                 <GoogleAnalytics />
                 <ScrollToTop />
                 <KeyboardShortcutsProvider />
+                <PlayerProvider>
                 <Suspense fallback={<RouteLoading />}>
                   <Layout>
                     <Routes>
@@ -123,6 +131,7 @@ function App() {
                       <Route path="/notes" element={<Notes />} />
                       <Route path="/memorize" element={<Memorize />} />
                       <Route path="/plans" element={<Plans />} />
+                      <Route path="/playlists" element={<Playlists />} />
                       <Route path="/quiz" element={<Quiz />} />
                       <Route path="/flashcards" element={<Flashcards />} />
                       <Route path="/prophets" element={<Prophets />} />
@@ -152,6 +161,7 @@ function App() {
                     </Routes>
                   </Layout>
                 </Suspense>
+                </PlayerProvider>
               </BrowserRouter>
             </TooltipProvider>
           </AuthProvider>
