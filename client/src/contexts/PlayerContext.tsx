@@ -10,7 +10,7 @@ import {
     type NowPlayingAction,
     type NowPlayingHandler,
 } from "@/lib/now-playing";
-import { DEFAULT_RECITER, reciterName } from "@/lib/reciters";
+import { chapterAudioId, DEFAULT_RECITER, reciterName, RECITERS, verseAudioId } from "@/lib/reciters";
 import { getSurah, type SurahInfo } from "@/lib/surah-list";
 import {
     buildOrder,
@@ -103,7 +103,7 @@ function readSettings() {
     try {
         const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
         return {
-            reciter: typeof s.reciter === "string" ? s.reciter : DEFAULT_RECITER,
+            reciter: RECITERS.some((r) => r.id === s.reciter) ? (s.reciter as string) : DEFAULT_RECITER,
             repeat: (["off", "all", "one"].includes(s.repeat) ? s.repeat : "off") as RepeatMode,
             shuffle: s.shuffle === true,
         };
@@ -124,7 +124,7 @@ async function fetchSegments(surah: number, mode: ListenMode, reciter: string, v
 
     let segments: Segment[];
     if (mode === "arabic") {
-        const r = await fetch(`https://api.quran.com/api/v4/chapter_recitations/${reciter}/${surah}`);
+        const r = await fetch(`https://api.quran.com/api/v4/chapter_recitations/${chapterAudioId(reciter)}/${surah}`);
         if (!r.ok) throw new Error(`chapter audio ${r.status}`);
         const url = (await r.json())?.audio_file?.audio_url;
         if (!url) throw new Error("no chapter audio");
@@ -133,7 +133,7 @@ async function fetchSegments(surah: number, mode: ListenMode, reciter: string, v
         const ayahs = getSurah(surah)?.ayahs ?? 0;
         let arabic: string[] = [];
         if (mode === "arabic-translation") {
-            const r = await fetch(`https://api.quran.com/api/v4/recitations/${reciter}/by_chapter/${surah}?per_page=300`);
+            const r = await fetch(`https://api.quran.com/api/v4/recitations/${verseAudioId(reciter)}/by_chapter/${surah}?per_page=300`);
             if (!r.ok) throw new Error(`verse audio ${r.status}`);
             const files: { verse_key: string; url: string }[] = (await r.json())?.audio_files ?? [];
             arabic = Array.from({ length: ayahs }, (_, i) => {

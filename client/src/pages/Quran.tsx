@@ -17,7 +17,8 @@ import SimilarVersesPanel from "@/components/SimilarVersesPanel";
 import CompareTranslationsModal from "@/components/CompareTranslationsModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import { RECITERS } from "@/lib/reciters";
+import { RECITERS, verseAudioId, chapterAudioId } from "@/lib/reciters";
+import { ReciterPicker } from "@/components/ReciterPicker";
 import { usePlayer } from "@/contexts/PlayerContext";
 import { claimAudioFocus, onAudioFocusLost } from "@/lib/audio-focus";
 import AddToPlaylist from "@/components/AddToPlaylist";
@@ -391,7 +392,7 @@ export default function Quran() {
         setError(null);
         try {
             const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_chapter/${currentSurah.number}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
+                `https://api.quran.com/api/v4/verses/by_chapter/${currentSurah.number}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
             );
             const data = await response.json();
 
@@ -421,7 +422,7 @@ export default function Quran() {
         setError(null);
         try {
             const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_juz/${currentJuz}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
+                `https://api.quran.com/api/v4/verses/by_juz/${currentJuz}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
             );
             const data = await response.json();
 
@@ -442,7 +443,7 @@ export default function Quran() {
         setError(null);
         try {
             const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_page/${currentPage}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=50`
+                `https://api.quran.com/api/v4/verses/by_page/${currentPage}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=50`
             );
             const data = await response.json();
 
@@ -463,7 +464,7 @@ export default function Quran() {
         setError(null);
         try {
             const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_hizb/${currentHizb}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
+                `https://api.quran.com/api/v4/verses/by_hizb/${currentHizb}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
             );
             const data = await response.json();
 
@@ -484,7 +485,7 @@ export default function Quran() {
         setError(null);
         try {
             const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_rub/${currentRub}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
+                `https://api.quran.com/api/v4/verses/by_rub/${currentRub}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
             );
             const data = await response.json();
             if (Array.isArray(data.verses)) setVerses(mapQuranComVerses(data.verses));
@@ -501,7 +502,7 @@ export default function Quran() {
         setError(null);
         try {
             const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_manzil/${currentManzil}?translations=${selectedTranslation},${secondaryTranslation}&audio=${selectedReciter}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=700`
+                `https://api.quran.com/api/v4/verses/by_manzil/${currentManzil}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=700`
             );
             const data = await response.json();
             if (Array.isArray(data.verses)) setVerses(mapQuranComVerses(data.verses));
@@ -531,7 +532,7 @@ export default function Quran() {
         // Fetch the full-surah audio URL
         setFullSurahLoading(true);
         try {
-            const r = await fetch(`https://api.quran.com/api/v4/chapter_recitations/${selectedReciter}/${currentSurah.number}`);
+            const r = await fetch(`https://api.quran.com/api/v4/chapter_recitations/${chapterAudioId(selectedReciter)}/${currentSurah.number}`);
             const d: any = await r.json();
             const url = d.audio_file?.audio_url;
             if (!url) throw new Error("no url");
@@ -1207,26 +1208,7 @@ export default function Quran() {
                                 <Mic className="h-4 w-4 text-emerald-500" />
                                 Reciter
                             </label>
-                            <Select value={selectedReciter} onValueChange={setSelectedReciter}>
-                                <SelectTrigger aria-label="Reciter" className="w-full h-11 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                                    <SelectValue placeholder="Select Reciter" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {RECITERS.map((reciter) => (
-                                        <SelectItem key={reciter.id} value={reciter.id}>
-                                            <span className="flex items-center gap-3">
-                                                <span className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center">
-                                                    <Mic className="w-4 h-4" />
-                                                </span>
-                                                <span>
-                                                    <span className="font-medium">{reciter.name}</span>
-                                                    <span className="text-xs text-slate-400 block font-amiri">{reciter.arabicName}</span>
-                                                </span>
-                                            </span>
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <ReciterPicker value={selectedReciter} onChange={setSelectedReciter} />
                         </div>
 
                         <div className="space-y-2">
