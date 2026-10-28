@@ -352,7 +352,7 @@ function QuoteBadge({ quotes }: { quotes: QuoteCheck[] }) {
                             <Icon className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${q.status === "unverified" ? "text-amber-600" : "text-emerald-600"}`} />
                             <span className="min-w-0">
                                 <span dir="auto" className="break-words">{q.text}</span>
-                                {q.reference && <span className="ml-1.5 text-slate-500">Quran {q.reference}</span>}
+                                {q.kind === "arabic" && q.reference && <span className="ml-1.5 text-slate-500">Quran {q.reference}</span>}
                                 <span className="block text-slate-500 dark:text-slate-400">
                                     {q.note ?? (q.kind === "arabic" ? "Matches the Quran text." : "Reference exists.")}
                                 </span>

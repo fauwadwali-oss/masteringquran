@@ -43,7 +43,12 @@ const MIN_QUOTE_WORDS = 3;
 // Correcting a reference to wherever else a phrase occurs is only safe for longer passages.
 const MIN_WORDS_TO_MOVE_REFERENCE = 6;
 
-/** Base skeleton: no vowels, tatweel, Quranic annotation marks, verse numbers or bidi controls. */
+/**
+ * Base skeleton: no vowels, tatweel, Quranic annotation marks, verse numbers or bidi controls.
+ * Hamza seats on alef are folded, but ى/ي and ة/ه are kept apart because they can change the word
+ * (هدى "guidance" vs هدي "offering"); spelling differences between scripts come from comparing
+ * against both the Uthmani and the Imla'i text instead.
+ */
 function skeleton(word: string, daggerAlef: "" | "ا"): string {
     return word
         .normalize("NFKC")
@@ -53,8 +58,6 @@ function skeleton(word: string, daggerAlef: "" | "ا"): string {
         .replace(/[٠-٩۰-۹﴾﴿۝۞()]/g, "")
         .replace(/^ءا/, "ا")
         .replace(/[أإآٱ]/g, "ا")
-        .replace(/ى/g, "ي")
-        .replace(/ة/g, "ه")
         .replace(/[^ء-ي]/g, "");
 }
 
@@ -148,9 +151,10 @@ const NAME = String.raw`((?:[Aa][a-z]{0,2}[-\s'’])?[A-Z][A-Za-z'’ʿʾāīū�
 const VERSE_WORD = String.raw`(?:verses?|ayahs?|ayat|ayas?|āyah|v\.)`;
 const REF_PATTERNS: { re: RegExp; kind: "num" | "name-num" | "name-verse" }[] = [
     { re: new RegExp(String.raw`\b(?:Qur['’]?an|Q)\.?\s*,?\s*` + NUM + String.raw`(?!\s*[AaPp]\.?[Mm]\b)`, "g"), kind: "num" },
-    { re: new RegExp(String.raw`\(` + NUM_COLON + String.raw`\)`, "g"), kind: "num" },
-    { re: new RegExp(String.raw`(?:\b(?:Surah|Surat|Sura)\s+)?` + NAME + String.raw`[,]?\s*\(?` + NUM_COLON, "g"), kind: "name-num" },
-    { re: new RegExp(String.raw`\b(?:Surah|Surat|Sura)\s+` + NAME + String.raw`[,]?\s*(?:` + VERSE_WORD + String.raw`\s*)?(\d{1,3})(?:\s*[-–]\s*(\d{1,3}))?\b(?!\s*:)`, "g"), kind: "name-verse" },
+    { re: new RegExp(String.raw`[(\[]` + NUM_COLON + String.raw`[)\]]`, "g"), kind: "num" },
+    // Case-insensitive so "surah al-ikhlas 1" counts; the name must still resolve to a real surah.
+    { re: new RegExp(String.raw`(?:\b(?:Surah|Surat|Sura)\s+)?` + NAME + String.raw`[,]?\s*[(\[]?` + NUM_COLON, "gi"), kind: "name-num" },
+    { re: new RegExp(String.raw`\b(?:Surah|Surat|Sura)\s+` + NAME + String.raw`[,]?\s*(?:` + VERSE_WORD + String.raw`\s*)?(\d{1,3})(?:\s*[-–]\s*(\d{1,3}))?\b(?!\s*:)`, "gi"), kind: "name-verse" },
 ];
 
 export function findReferences(text: string): Reference[] {
@@ -162,10 +166,10 @@ export function findReferences(text: string): Reference[] {
             if (kind === "num") {
                 const [s, a, b] = [m[1], m[2], m[3]].map((x) => (x ? Number(x) : undefined));
                 const digits = m[0].search(/\d/);
-                ref = { start: m.index, end: m.index + m[0].length, surah: s!, ayahStart: a!, ayahEnd: b ?? a!, numStart: m.index + digits, numEnd: m.index + m[0].replace(/\)$/, "").length };
+                ref = { start: m.index, end: m.index + m[0].length, surah: s!, ayahStart: a!, ayahEnd: b ?? a!, numStart: m.index + digits, numEnd: m.index + m[0].replace(/[)\]]$/, "").length };
             } else if (kind === "name-num") {
                 const named = surahFromName(m[1]);
-                const hasSurahWord = /^(?:Surah|Surat|Sura)\s/.test(m[0]);
+                const hasSurahWord = /^(?:Surah|Surat|Sura)\s/i.test(m[0]);
                 // "Al-Baqarah 2:255" counts; an arbitrary capitalised word before "3:4" does not.
                 if (!named && !hasSurahWord) continue;
                 const [s, a, b] = [m[2], m[3], m[4]].map((x) => (x ? Number(x) : undefined));
@@ -224,14 +228,22 @@ export interface Passage {
     end: number;
     text: string;
     words: string[];
+    /** Fewer than three words: checked against its own citation only, never searched or rewritten. */
+    short?: boolean;
 }
+
+// A citation straight after the Arabic, e.g. "ٱلرَّحْمَٰنُ (Quran 55:1)".
+const CITATION_NEXT = /^[\s*_"'”»)\]]*[(\[]?\s*(?:Qur['’]?an|Q\b|Surah|Surat|Sura|\d{1,3}\s*:)/i;
 
 export function findArabicPassages(text: string): Passage[] {
     const out: Passage[] = [];
     ARABIC_RUN.lastIndex = 0;
     for (let m: RegExpExecArray | null; (m = ARABIC_RUN.exec(text)); ) {
         const words = modelWords(m[0]);
-        if (words.length >= MIN_QUOTE_WORDS) out.push({ start: m.index, end: m.index + m[0].length, text: m[0], words });
+        const end = m.index + m[0].length;
+        // One or two words are only a quote when a citation follows at once; otherwise they are terms like تقوى.
+        const short = words.length > 0 && words.length < MIN_QUOTE_WORDS && CITATION_NEXT.test(text.slice(end, end + 24));
+        if (words.length >= MIN_QUOTE_WORDS || short) out.push({ start: m.index, end, text: m[0], words, short });
     }
     return out;
 }
@@ -414,6 +426,11 @@ export async function checkQuranQuotes(
             continue;
         }
 
+        if (p.short) {
+            add({ kind: "arabic", status: "unverified", text: p.text, reference: ref && refLabel(ref), note: ref ? `Could not verify: this Arabic does not match Quran ${refLabel(ref)}.` : "Could not verify this Arabic." });
+            continue;
+        }
+
         let found: { exact?: Match; near?: Match; ambiguous: boolean };
         try {
             found = await searchElsewhere(p.words, lookup);
@@ -427,7 +444,9 @@ export async function checkQuranQuotes(
             continue;
         }
         const actual = found.exact && matchRef(found.exact);
-        if (actual && ref && actual !== refLabel(ref) && !found.ambiguous && p.words.length >= MIN_WORDS_TO_MOVE_REFERENCE) {
+        // Never move a citation out of the surah it names: "Al-Baqarah 112:1" would be worse than flagging it.
+        const sameNamedSurah = !ref?.namedSurah || (actual && Number(actual.split(":")[0]) === ref.namedSurah);
+        if (actual && ref && actual !== refLabel(ref) && sameNamedSurah && !found.ambiguous && p.words.length >= MIN_WORDS_TO_MOVE_REFERENCE) {
             if (refInBlock && refInBlock.numStart !== undefined && refInBlock.numEnd !== undefined) {
                 replacements.push({ start: refInBlock.numStart, end: refInBlock.numEnd, text: actual });
                 refStatus.set(refInBlock, {
@@ -636,8 +655,8 @@ export function createQuranComLookup(fetchImpl: typeof fetch = fetch): QuranLook
                     if (verseCache.has(key)) continue;
                     const p = batch.then((m) => m.get(key));
                     verseCache.set(key, p);
-                    // A failed request must not poison the cache.
-                    p.catch(() => verseCache.delete(key));
+                    // A failed request or a verse missing from the reply must not poison the cache.
+                    p.then((v) => v || verseCache.delete(key), () => verseCache.delete(key));
                 }
             }
             const out = new Map<string, VerseText>();

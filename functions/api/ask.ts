@@ -532,6 +532,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
             if (quotes.quotes.length) send({ type: "quote_check", quotes: quotes.quotes });
             send({ type: "done" });
         } catch (err) {
+            // Release (checked) whatever the model already wrote before reporting the error.
+            await quotes.flush().catch(() => undefined);
             send({ type: "error", message: err instanceof Error ? err.message : String(err) });
         } finally {
             writer.close();

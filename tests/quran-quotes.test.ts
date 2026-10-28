@@ -68,6 +68,11 @@ describe("findReferences", () => {
         expect(refs.every((r) => !r.problem)).toBe(true);
     });
 
+    it("reads bracketed and lower-case citations", () => {
+        const refs = findReferences("[2:255] and surah al-ikhlas 1 and al-baqarah 2:256");
+        expect(refs.map((r) => [r.surah, r.ayahStart])).toEqual([[2, 255], [112, 1], [2, 256]]);
+    });
+
     it("ignores clock times, decimals and hadith numbers", () => {
         expect(findReferences("Fajr is at 5:12 AM, Asr at (3:45 pm), see section (3.5) and (Bukhari #1).")).toEqual([]);
     });
@@ -134,6 +139,30 @@ describe("checkQuranQuotes", () => {
         const r = await checkQuranQuotes(text, fakeLookup());
         expect(r.text).toBe(text);
         expect(statuses(r.quotes)).toEqual(["arabic:unverified", "reference:verified"]);
+    });
+
+    it("keeps ى/ي apart, so a changed letter is not verified", async () => {
+        const text = "اهدنا الصراط المستقيم (Quran 1:6)";
+        expect((await checkQuranQuotes(text, fakeLookup())).quotes[0].status).toBe("verified");
+        const swapped = "اهدنى الصراط المستقيم (Quran 1:6)";
+        expect((await checkQuranQuotes(swapped, fakeLookup())).quotes[0].status).not.toBe("verified");
+    });
+
+    it("checks a one-word quote only when a citation follows it", async () => {
+        const ok = await checkQuranQuotes("ٱلصَّمَدُ (Quran 112:2)", fakeLookup());
+        expect(ok.quotes[0]).toMatchObject({ kind: "arabic", status: "verified" });
+        const wrong = await checkQuranQuotes("الصمدية (Quran 112:2)", fakeLookup());
+        expect(wrong.quotes[0]).toMatchObject({ kind: "arabic", status: "unverified" });
+        expect(wrong.text).toBe("الصمدية (Quran 112:2)");
+        const term = await checkQuranQuotes("Taqwa (تقوى) is a theme, see (Quran 112:2).", fakeLookup());
+        expect(term.quotes.map((q) => q.kind)).toEqual(["reference"]);
+    });
+
+    it("does not move a citation out of the surah it names", async () => {
+        const text = "الله لا إله إلا هو الحي القيوم لا تأخذه سنة ولا نوم (Al-Fatihah 1:4)";
+        const r = await checkQuranQuotes(text, fakeLookup());
+        expect(r.text).toBe(text);
+        expect(r.quotes[0]).toMatchObject({ kind: "arabic", status: "unverified" });
     });
 
     it("marks references that do not exist", async () => {
