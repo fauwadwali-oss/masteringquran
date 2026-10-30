@@ -29,7 +29,7 @@ import json, os, subprocess, time, urllib.request, html, ssl, sys, re
 HERE = os.path.dirname(os.path.abspath(__file__))
 VERSES = os.path.join(HERE, "verses")
 VB = "http://127.0.0.1:17493"
-VOICEBOX_PROFILE = "f8be227d-8a76-4491-b9fc-2a34c907e4d9"  # MHAMBA Narrator (en) — swap for a dedicated MQ voice
+VOICEBOX_PROFILE = "a9c5ccc8-3630-474b-bbbc-eb3812ea45a6"  # English Narrator v2 (PVC clone), qwen 1.7B
 try:
     import certifi
     SSL_CTX = ssl.create_default_context(cafile=certifi.where())
