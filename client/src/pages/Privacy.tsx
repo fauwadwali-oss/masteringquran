@@ -11,7 +11,7 @@ export default function Privacy() {
         <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
           Privacy Policy
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-12">Effective date: May 5, 2026</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-12">Effective date: November 24, 2026</p>
 
         <div className="space-y-8 text-slate-700 dark:text-slate-300 leading-relaxed">
           <section>
@@ -25,12 +25,14 @@ export default function Privacy() {
           <section>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Information we collect</h2>
             <ul className="list-disc list-inside space-y-2">
-              <li><strong>Account information.</strong> If you sign in, we store your email address, Supabase user ID, and (if you choose one) a securely hashed password so bookmarks, notes, memorization progress, reading plans, and daily reminder settings can sync across your devices.</li>
+              <li><strong>Account information.</strong> If you sign in, we store your email address, Supabase user ID, and (if you choose one) a securely hashed password so bookmarks, notes, memorization progress, playlists, and daily reminder settings can sync across your devices. Reading-plan progress, bookmark collections, and the zakat form draft stay on your device.</li>
               <li><strong>Content you save.</strong> We store the bookmarks, notes, learning progress, memorization status, zakat records, and reminder preferences you choose to save.</li>
-              <li><strong>Optional location.</strong> Prayer times and Qibla can use your device location when you grant permission. Coordinates are used to calculate results and are not stored by us for that feature.</li>
+              <li><strong>Optional location.</strong> Prayer times and Qibla can use your device location when you grant permission. They are calculated on your device; we do not receive your coordinates.</li>
               <li><strong>Messages and support.</strong> If you email us or submit a form, we receive your email address and the contents of your message.</li>
               <li><strong>Sign-in activity.</strong> We record the steps of signing up, signing in, and resetting a password (for example, which option you chose and whether it worked) to find and fix problems. These records do not include your email address or password.</li>
-              <li><strong>Usage data.</strong> We may use privacy-respecting analytics to count page views and referrers. We do not use advertising trackers or sell personal information.</li>
+              <li><strong>Ask Wali questions.</strong> When you use Ask Wali, your question and the recent messages in that conversation are sent to Anthropic to write the answer. Your name and email are not included. We do not save your questions; we store how many you asked each day to apply the daily limit.</li>
+              <li><strong>Daily reminders.</strong> If you turn them on, we store your email address or a push notification address, your timezone, and your delivery time.</li>
+              <li><strong>Usage data.</strong> We use Google Analytics to count page views, referrers, and some actions, and a page-speed script from msdrills.com, a site we operate, to measure loading speed. We do not show ads or sell personal information.</li>
               <li><strong>Server logs.</strong> Our host (Cloudflare) keeps standard access logs (IP, user agent, request URL) for security and performance.</li>
             </ul>
           </section>
@@ -46,14 +48,17 @@ export default function Privacy() {
             <ul className="list-disc list-inside space-y-2 mt-3">
               <li><strong>Cloudflare Pages</strong> — hosting and CDN.</li>
               <li><strong>Supabase</strong> — authentication and database for saved app features.</li>
-              <li><strong>Quran.com API, UmmahAPI, and related source APIs</strong> — Quran text, recitation, prayer times, Qibla, hadith, and study content.</li>
-              <li><strong>Analytics providers, if enabled</strong> — privacy-respecting usage analytics.</li>
+              <li><strong>Anthropic</strong>: writes Ask Wali answers (the Claude AI model).</li>
+              <li><strong>Resend</strong>: sends sign-in, welcome, and daily verse emails.</li>
+              <li><strong>Quran.com, AlQuran.cloud, Islamic Network, and jsDelivr</strong>: Quran text, recitation, tafsir, hadith, and study content.</li>
+              <li><strong>metals.dev</strong>: gold and silver prices for the zakat calculator.</li>
+              <li><strong>Google Analytics</strong>: usage statistics.</li>
             </ul>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Your choices</h2>
-            <p>You can sign out at any time and remove saved items from the app where supported. You can request deletion of your account data or messages by emailing{" "}
+            <p>You can sign out at any time and remove saved items from the app where supported. You can permanently delete your account and its data at <a href="/account" className="text-blue-600 dark:text-blue-400 hover:underline">masteringquran.com/account</a> or in the app under your profile menu, then Account. You can also request deletion by emailing{" "}
               <a href="mailto:fauwad@nusratwaliventures.com" className="text-blue-600 dark:text-blue-400 hover:underline">fauwad@nusratwaliventures.com</a>. You can also deny location and notification permissions in your device settings.
             </p>
           </section>

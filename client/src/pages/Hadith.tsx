@@ -7,8 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import SEO from "@/components/SEO";
+import HadithGrades from "@/components/HadithGrades";
+import { ISLAMIC_DATA_BASE as DATA_BASE, matchesPublishedNumber, publishedNumber, type HadithRecord as Hadith } from "@/lib/hadith";
 
-const DATA_BASE = "https://cdn.jsdelivr.net/gh/fauwadwali-oss/nwv-islamic-data@main";
 
 interface Collection {
     slug: string;
@@ -31,13 +32,6 @@ const COLLECTIONS: Collection[] = [
     { slug: "dehlawi", name: "40 Hadith of Shah Waliullah", arabic: "أربعون حديثاً للدهلوي", count: 40, description: "Forty foundational hadiths selected by Shah Waliullah Dehlawi." },
 ];
 
-interface Hadith {
-    hadithnumber: number | string;
-    arabicnumber: number | string;
-    text: string;
-    grades?: Array<{ name?: string; grade?: string }>;
-    reference?: { book: number; hadith: number };
-}
 
 interface CollectionData {
     metadata: {
@@ -77,7 +71,8 @@ export default function Hadith() {
             .then(async (r) => {
                 if (!r.ok) throw new Error("failed");
                 const j: CollectionData = await r.json();
-                setData(j);
+                // Some entries have no English text in this edition; an empty card helps nobody.
+                setData({ ...j, hadiths: j.hadiths.filter((h) => h.text?.trim()) });
                 setLoading(false);
             })
             .catch(() => {
@@ -91,17 +86,17 @@ export default function Hadith() {
     // Filter hadiths by book + search
     const filtered = useMemo(() => {
         if (!data) return [] as Hadith[];
-        let list = targetHadith ? data.hadiths.filter(h => String(h.hadithnumber) === targetHadith) : data.hadiths;
+        let list = targetHadith ? data.hadiths.filter(h => matchesPublishedNumber(h, selected?.slug ?? "", targetHadith)) : data.hadiths;
         if (selectedBook !== "all") {
             const bookNum = parseInt(selectedBook);
             list = list.filter((h) => h.reference?.book === bookNum);
         }
         if (search.trim()) {
             const q = search.toLowerCase();
-            list = list.filter((h) => h.text?.toLowerCase().includes(q));
+            list = list.filter((h) => h.text?.toLowerCase().includes(q) || matchesPublishedNumber(h, selected?.slug ?? "", q));
         }
         return list;
-    }, [data, selectedBook, search, targetHadith]);
+    }, [data, selectedBook, search, targetHadith, selected]);
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
     const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -136,7 +131,7 @@ export default function Hadith() {
                         <div className="text-center mb-12 space-y-4">
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-full border border-emerald-200 dark:border-emerald-800">
                                 <Library className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                                <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Authentic Sunnah</span>
+                                <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Hadith with gradings</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
                                 Hadith Collections
@@ -269,7 +264,7 @@ export default function Hadith() {
                                     <div className="relative">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
                                         <Input
-                                            aria-label="Search within collection" placeholder="e.g. intention, mercy, prayer…"
+                                            aria-label="Search within collection" placeholder="Word, phrase or hadith number"
                                             value={search}
                                             onChange={(e) => setSearch(e.target.value)}
                                             className="pl-10 h-11 bg-white dark:bg-slate-800 rounded-xl"
@@ -294,18 +289,14 @@ export default function Hadith() {
                                             <CardContent className="p-6 space-y-3">
                                                 <div className="flex items-center gap-3 flex-wrap">
                                                     <span className="inline-flex items-center justify-center min-w-10 h-10 px-3 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 font-semibold text-sm">
-                                                        #{h.hadithnumber}
+                                                        {publishedNumber(h, selected.slug) ? `#${publishedNumber(h, selected.slug)}` : "Unnumbered"}
                                                     </span>
-                                                    {h.reference && (
+                                                    {h.reference && h.reference.book > 0 && (
                                                         <Badge variant="outline" className="text-xs">
                                                             Book {h.reference.book} · Hadith {h.reference.hadith}
                                                         </Badge>
                                                     )}
-                                                    {Array.isArray(h.grades) && h.grades.length > 0 && (
-                                                        <Badge variant="secondary" className="text-xs">
-                                                            {h.grades[0]?.grade || h.grades[0]?.name || "Graded"}
-                                                        </Badge>
-                                                    )}
+                                                    <HadithGrades grades={h.grades} collection={selected.slug} />
                                                 </div>
                                                 <p className="text-slate-800 dark:text-slate-200 leading-relaxed text-[15px] whitespace-pre-wrap">
                                                     {h.text}

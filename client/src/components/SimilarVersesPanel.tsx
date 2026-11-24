@@ -1,3 +1,4 @@
+import { ISLAMIC_DATA_BASE as DATA_BASE } from "@/lib/hadith";
 import { useEffect, useState } from "react";
 import { Loader2, Sparkles, Scroll } from "lucide-react";
 
@@ -20,7 +21,6 @@ interface Props {
     verseKey: string;
 }
 
-const DATA_BASE = "https://cdn.jsdelivr.net/gh/fauwadwali-oss/nwv-islamic-data@main";
 
 // Lazy singleton cache for the two big JSONs (shared across verse cards)
 let semanticCache: Promise<SimilarIndex> | null = null;

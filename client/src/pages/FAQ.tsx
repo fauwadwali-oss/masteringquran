@@ -24,24 +24,24 @@ const FAQS: QA[] = [
     },
     {
         q: "Which hadith collections are included?",
-        a: "Ten English collection datasets: Sahih al-Bukhari, Sahih Muslim, Sunan Abi Dawud, Jami' at-Tirmidhi, Sunan an-Nasa'i, Sunan Ibn Majah, Muwatta Malik, 40 Hadith of an-Nawawi, 40 Hadith Qudsi, and 40 Hadith of Shah Waliullah Dehlawi. Collection, book, number, and grade are shown where the source dataset provides them.",
+        a: "Ten English collection datasets: Sahih al-Bukhari, Sahih Muslim, Sunan Abi Dawud, Jami' at-Tirmidhi, Sunan an-Nasa'i, Sunan Ibn Majah, Muwatta Malik, 40 Hadith of an-Nawawi, 40 Hadith Qudsi, and 40 Hadith of Shah Waliullah Dehlawi. Collection, book, number, and every grading in the source dataset are shown, including weak gradings.",
     },
     {
         q: "How does the AI avoid fabricated citations?",
         a: (
             <>
-                Every factual claim the AI makes must come from a tool call. Before it writes an answer, it fetches the actual verse, hadith, or tafsir text from a verified source and is shown that text. The system prompt forbids inventing references. See the full scope and guardrails in the{" "}
+                The AI is instructed to look up verse, hadith, and tafsir text before answering and to cite it. Quran quotes and verse references are then checked by code against the Quran text. Hadith and tafsir statements are not checked automatically, so please open the source yourself. You can ask 5 questions a day. See the full scope and guardrails in the{" "}
                 <Link to="/ask" className="text-emerald-600 dark:text-emerald-400 hover:underline">Ask Wali</Link> page.
             </>
         ),
     },
     {
         q: "What is the AI scoped to?",
-        a: "Quran, authentic hadith, and classical tafsir only. The AI is explicitly told to decline fiqh rulings, fatwas, personal religious guidance, and matters of ijtihad — for those, consult a qualified scholar. It is a study companion, not a jurist.",
+        a: "Quran, hadith (with gradings where available), and tafsir only. The AI is explicitly told to decline fiqh rulings, fatwas, personal religious guidance, and matters of ijtihad — for those, consult a qualified scholar. It is a study companion, not a jurist.",
     },
     {
         q: "How are prayer times calculated?",
-        a: "Prayer times come from UmmahAPI with 22 calculation methods (Muslim World League, ISNA, Umm al-Qura, Egyptian, Karachi, and more) plus Hanafi/Shafi madhab for Asr. Location is computed in your browser and never sent to our servers — UmmahAPI receives only latitude and longitude.",
+        a: "Prayer times are calculated on your device with the open-source adhan library. You can choose the calculation method and the Hanafi or Shafi time for Asr. Your location stays on your device.",
     },
     {
         q: "Why is there sometimes an ayah number difference?",
@@ -55,7 +55,7 @@ const FAQS: QA[] = [
         q: "What do you do with my data?",
         a: (
             <>
-                Very little. Anonymous browsing is not logged beyond standard server access logs. With an account, your bookmarks, notes, and reading progress are stored on our Supabase backend. We never sell data. See the full{" "}
+                Very little. We use Google Analytics for page statistics. Ask Wali questions are sent to Anthropic to write the answer. With an account, your bookmarks, notes, and reading progress are stored on our Supabase backend, and you can delete your account at any time from the Account page. We never sell data. See the full{" "}
                 <Link to="/privacy" className="text-emerald-600 dark:text-emerald-400 hover:underline">Privacy Policy</Link>.
             </>
         ),

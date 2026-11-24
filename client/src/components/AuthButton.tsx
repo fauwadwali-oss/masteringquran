@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogIn, User, LogOut, BookMarked, NotebookText, Target } from "lucide-react";
+import { LogIn, User, LogOut, BookMarked, NotebookText, Target, Settings } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -68,6 +68,12 @@ export default function AuthButton() {
                     className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                     <Target className="h-4 w-4" /> Memorization
+                </button>
+                <button
+                    onClick={() => navigate("/account")}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                >
+                    <Settings className="h-4 w-4" /> Account
                 </button>
                 <button
                     onClick={() => signOut()}

@@ -8,6 +8,7 @@ import { describeAuthError, type AuthResult } from "@/lib/auth-errors";
 import { trackAuth } from "@/lib/auth-analytics";
 import { toast } from "sonner";
 import { apiUrl } from "@/lib/api";
+import { clearLocalStudyData } from "@/lib/local-data";
 
 interface AuthContextValue {
     user: User | null;
@@ -23,6 +24,8 @@ interface AuthContextValue {
     sendPasswordReset: (email: string) => Promise<AuthResult>;
     updatePassword: (password: string) => Promise<AuthResult>;
     signOut: () => Promise<void>;
+    /** Permanently deletes the signed-in account and its data. */
+    deleteAccount: () => Promise<AuthResult>;
 }
 
 const Ctx = createContext<AuthContextValue | null>(null);
@@ -259,6 +262,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRecoveryPending(false);
     };
 
+    const deleteAccount = async (): Promise<AuthResult> => {
+        const failed = { error: "We could not delete your account. Please try again, or email us." };
+        if (!configured || !session) return failed;
+        try {
+            const { supabase } = await import("@/lib/supabase");
+            const { error } = await supabase.rpc("mq_delete_account");
+            if (error) return failed;
+            // The user no longer exists on the server, so only clear this device.
+            await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
+            clearLocalStudyData();
+            setSession(null);
+            return { error: null };
+        } catch {
+            return failed;
+        }
+    };
+
     return (
         <Ctx.Provider
             value={{
@@ -274,6 +294,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 sendPasswordReset,
                 updatePassword,
                 signOut,
+                deleteAccount,
             }}
         >
             {children}

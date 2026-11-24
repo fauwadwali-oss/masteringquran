@@ -22,7 +22,7 @@ const TOPICS: Topic[] = [
     { id: "mercy", name: "Mercy", arabic: "الرَّحْمَة", icon: Heart, color: "emerald", description: "Allah's boundless compassion toward His creation.", verses: ["1:3", "6:54", "7:156", "39:53", "21:107"] },
     { id: "patience", name: "Patience", arabic: "الصَّبْر", icon: Anchor, color: "blue", description: "Sabr — endurance in trial, restraint in hardship.", verses: ["2:153", "2:155", "3:200", "103:3", "16:126"] },
     { id: "charity", name: "Charity", arabic: "الصَّدَقَة", icon: HandCoins, color: "amber", description: "Zakat, sadaqah, and the ethic of giving.", verses: ["2:177", "2:261", "2:274", "9:103", "63:10"] },
-    { id: "prayer", name: "Prayer", arabic: "الصَّلَاة", icon: BookCheck, color: "indigo", description: "Salah as the pillar of worship.", verses: ["2:3", "2:45", "20:14", "29:45", "107:4"] },
+    { id: "prayer", name: "Prayer", arabic: "الصَّلَاة", icon: BookCheck, color: "indigo", description: "Salah as the pillar of worship.", verses: ["2:3", "2:45", "20:14", "29:45", "23:2"] },
     { id: "tawhid", name: "Oneness of Allah", arabic: "التَّوْحِيد", icon: Sparkles, color: "purple", description: "La ilaha illa Allah — the heart of the Quran.", verses: ["112:1", "2:255", "3:18", "59:22", "39:67"] },
     { id: "justice", name: "Justice", arabic: "العَدْل", icon: Scale, color: "slate", description: "'Adl — the divine demand for fairness.", verses: ["4:135", "5:8", "16:90", "57:25", "4:58"] },
     { id: "forgiveness", name: "Forgiveness", arabic: "المَغْفِرَة", icon: Shield, color: "teal", description: "Allah's promise to forgive the repentant.", verses: ["39:53", "4:110", "2:199", "24:22", "3:133"] },

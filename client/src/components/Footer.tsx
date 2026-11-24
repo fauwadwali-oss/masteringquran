@@ -61,6 +61,7 @@ export default function Footer() {
                 <span>&copy; 2026 Nusrat Wali Ventures LLC · Dedicated to <Link to="/in-loving-memory" className="hover:text-white transition-colors underline">Dr. Nusrat Wali and Dr. Wali Ahmad</Link></span>
                 <div className="flex gap-6">
                     <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                    <Link to="/account" className="hover:text-white transition-colors">Account</Link>
                     <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
                 </div>
             </div>

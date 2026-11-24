@@ -46,6 +46,7 @@ const Glossary = lazy(() => import("./pages/Glossary"));
 const HajjPage = lazy(() => import("./pages/Hajj"));
 const Share = lazy(() => import("./pages/Share"));
 const Daily = lazy(() => import("./pages/Daily"));
+const Account = lazy(() => import("./pages/Account"));
 const Zakat = lazy(() => import("./pages/Zakat"));
 const LearnArabic = lazy(() => import("./pages/LearnArabic"));
 const LearnLetters = lazy(() => import("./pages/learn/Letters"));
@@ -142,6 +143,7 @@ function App() {
                       <Route path="/hajj" element={<HajjPage />} />
                       <Route path="/share" element={<Share />} />
                       <Route path="/daily" element={<Daily />} />
+                      <Route path="/account" element={<Account />} />
                       <Route path="/zakat" element={<Zakat />} />
                       <Route path="/learn-arabic" element={<LearnArabic />} />
                       <Route path="/learn-arabic/letters" element={<LearnLetters />} />

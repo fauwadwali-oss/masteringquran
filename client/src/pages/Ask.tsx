@@ -37,9 +37,24 @@ const TOOL_LABELS: Record<string, string> = {
     get_tafsir: "reading tafsir",
     get_hadith: "reading a hadith",
     search_hadith_collection: "searching hadith",
+    get_hijri_today: "checking the Hijri date",
+    get_duas_by_category: "reading duas",
+    get_99_names: "reading the Names of Allah",
 };
 
+const CONSENT_KEY = "mq-ask-consent-v1";
+
+function hasConsent(): boolean {
+    try {
+        return localStorage.getItem(CONSENT_KEY) === "1";
+    } catch {
+        return false;
+    }
+}
+
 function AskInner() {
+    const [consented, setConsented] = useState(hasConsent);
+    const [quota, setQuota] = useState<{ used: number; limit: number } | null>(null);
     const { session } = useAuth();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
@@ -53,7 +68,7 @@ function AskInner() {
     }, [messages, loading]);
 
     const submit = async (userText: string) => {
-        if (!userText.trim() || loading) return;
+        if (!userText.trim() || loading || !consented) return;
         setError(null);
         const nextHistory = [...messages, { role: "user" as const, content: userText }];
         setMessages([...nextHistory, { role: "assistant", content: "" }]);
@@ -64,14 +79,16 @@ function AskInner() {
             const res = await fetch(apiUrl("/api/ask"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token ?? ""}` },
-                body: JSON.stringify({ message: userText, history: messages }),
+                body: JSON.stringify({ message: userText, history: messages.map(({ role, content }) => ({ role, content })) }),
             });
 
             if (!res.ok || !res.body) {
                 const errText = await res.text();
                 let message = errText;
                 try {
-                    message = (JSON.parse(errText) as { error?: string }).error || errText;
+                    const parsed = JSON.parse(errText) as { error?: string; used?: number; limit?: number };
+                    message = parsed.error || errText;
+                    if (res.status === 429 && parsed.limit) setQuota({ used: parsed.used ?? parsed.limit, limit: parsed.limit });
                 } catch { /* plain text error */ }
                 throw new Error(message || `Request failed (${res.status})`);
             }
@@ -96,7 +113,9 @@ function AskInner() {
                     } catch {
                         continue;
                     }
-                    if (evt.type === "text") {
+                    if (evt.type === "quota") {
+                        setQuota({ used: evt.used, limit: evt.limit });
+                    } else if (evt.type === "text") {
                         setMessages((prev) => {
                             const copy = [...prev];
                             const last = copy[copy.length - 1];
@@ -136,6 +155,8 @@ function AskInner() {
             setTimeout(() => inputRef.current?.focus(), 0);
         }
     };
+
+    const limitReached = !!quota && quota.used >= quota.limit;
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 font-sans">
@@ -178,7 +199,7 @@ function AskInner() {
                                 <button
                                     key={s.prompt}
                                     onClick={() => submit(s.prompt)}
-                                    disabled={loading}
+                                    disabled={loading || !consented || limitReached}
                                     className="text-left p-3 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20 transition-all disabled:opacity-50"
                                 >
                                     <span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
@@ -253,6 +274,24 @@ function AskInner() {
                     </div>
                 )}
 
+                {!consented && (
+                    <div className="mb-4 rounded-2xl border border-emerald-200 dark:border-emerald-900/50 bg-white dark:bg-slate-900 p-5 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                        <p className="font-semibold text-slate-900 dark:text-white">Before you ask</p>
+                        <p>
+                            Ask Wali is an AI assistant. Your questions and this conversation are sent to Anthropic, the company behind the Claude AI model, to write the answer. Your name and email are not sent. Please leave out private details. See the <a href="/privacy" className="underline">Privacy Policy</a>.
+                        </p>
+                        <Button
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                            onClick={() => {
+                                try { localStorage.setItem(CONSENT_KEY, "1"); } catch { /* Asked again next time. */ }
+                                setConsented(true);
+                            }}
+                        >
+                            I agree, continue
+                        </Button>
+                    </div>
+                )}
+
                 {/* Composer */}
                 <form
                     onSubmit={(e) => {
@@ -273,12 +312,13 @@ function AskInner() {
                         }}
                         placeholder="Ask about a verse, a hadith, or a tafsir…"
                         rows={1}
-                        disabled={loading}
+                        maxLength={2000}
+                        disabled={loading || !consented || limitReached}
                         className="flex-1 resize-none px-3 py-2 text-[15px] bg-transparent text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none min-h-[44px] max-h-36"
                     />
                     <Button
                         type="submit"
-                        disabled={!input.trim() || loading}
+                        disabled={!input.trim() || loading || !consented || limitReached}
                         className="h-11 w-11 shrink-0 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-40"
                     >
                         {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
@@ -286,6 +326,7 @@ function AskInner() {
                 </form>
 
                 <p className="text-center text-[11px] text-slate-400 dark:text-slate-500 mt-4">
+                    {quota ? `${Math.max(0, quota.limit - quota.used)} of ${quota.limit} questions left today. Resets at midnight UTC. ` : "5 questions a day. "}
                     Press Enter to send, Shift+Enter for a new line. AI-generated — verify with a qualified scholar for religious guidance.
                 </p>
             </section>
@@ -477,7 +518,7 @@ export default function Ask() {
                         </div>
                     </div>
                 </section>
-                <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to use the Ask Wali assistant. Free forever." />
+                <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to use the Ask Wali assistant. Free, 5 questions a day." />
             </div>
         );
     }

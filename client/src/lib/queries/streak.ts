@@ -7,7 +7,8 @@ export interface StreakInfo {
 }
 
 function dayStr(d: Date): string {
-    return d.toISOString().slice(0, 10); // YYYY-MM-DD UTC
+    // The reader's own calendar day, so evening reading never counts as tomorrow.
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 export async function recordReading(userId: string, verseKey: string): Promise<void> {
@@ -39,7 +40,7 @@ export async function recordReading(userId: string, verseKey: string): Promise<v
 
 export async function getStreak(userId: string): Promise<StreakInfo> {
     // Fetch last 365 days of activity
-    const sinceIso = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const sinceIso = dayStr(new Date(Date.now() - 365 * 24 * 60 * 60 * 1000));
     const { data, error } = await supabase
         .from("mq_reading_activity")
         .select("day")
@@ -56,11 +57,11 @@ export async function getStreak(userId: string): Promise<StreakInfo> {
     let currentStreak = 0;
     const cursor = new Date();
     if (!todayRead) {
-        cursor.setUTCDate(cursor.getUTCDate() - 1);
+        cursor.setDate(cursor.getDate() - 1);
     }
     while (days.has(dayStr(cursor))) {
         currentStreak += 1;
-        cursor.setUTCDate(cursor.getUTCDate() - 1);
+        cursor.setDate(cursor.getDate() - 1);
     }
 
     // Longest streak over the last year

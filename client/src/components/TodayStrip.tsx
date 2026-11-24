@@ -1,3 +1,4 @@
+import { ISLAMIC_DATA_BASE } from "@/lib/hadith";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, Library, Heart, Star, Calendar, Loader2 } from "lucide-react";
@@ -80,7 +81,7 @@ export default function TodayStrip() {
             setVerse({ verse_key: v.verse_key, arabic: v.text_uthmani, english: v.translations[0].text.replace(/<sup[^>]*>.*?<\/sup>/g, "").replace(/<[^>]+>/g, ""), surahName: `Surah ${key.split(":")[0]}` });
         })().catch(() => failed("verse"));
         const hadithTask = (async () => {
-            const data = await json("https://cdn.jsdelivr.net/gh/fauwadwali-oss/nwv-islamic-data@main/hadith/editions/eng-nawawi.min.json");
+            const data = await json(`${ISLAMIC_DATA_BASE}/hadith/editions/eng-nawawi.min.json`);
             const h = data.hadiths[dailyIndex(day, data.hadiths.length)];
             if (!h?.text) throw new Error("Missing hadith");
             setHadith({ collection: data.metadata.name, slug: "nawawi", number: String(h.hadithnumber), text: h.text });

@@ -7,6 +7,7 @@
 // replaces #root on load and the reader takes over at the same URL.
 import fs from "node:fs";
 import path from "node:path";
+import { build } from "esbuild";
 import { renderPrayerPages } from "./prayer-pages.mjs";
 
 // The Capacitor apps bundle dist/public, and 6,000+ crawler pages don't belong there.
@@ -19,6 +20,9 @@ const ROOT = path.resolve(import.meta.dirname, "..", "..");
 const DIST = path.join(ROOT, "dist", "public");
 const ORIGIN = "https://masteringquran.com";
 const snapshot = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, "data", "quran-snapshot.json"), "utf8"));
+const duasData = JSON.parse(fs.readFileSync(path.join(ROOT, "client", "src", "data", "duas.json"), "utf8"));
+const duaCount = duasData.duas.length;
+const duaCategoryCount = duasData.categories.length;
 const namesData = JSON.parse(fs.readFileSync(path.join(ROOT, "client", "src", "data", "names.json"), "utf8"));
 const template = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
 
@@ -113,9 +117,9 @@ const publicPages = [
     {
         pathname: "/duas",
         title: "Duas from the Quran and Sunnah | Mastering Quran",
-        description: "Browse 126 supplications quoted from the Quran and hadith collections, organized into 27 categories with references and available grading.",
+        description: `Browse ${duaCount} supplications quoted from the Quran and hadith collections, organized into ${duaCategoryCount} categories with references and available grading.`,
         heading: "Duas and Supplications",
-        lede: "Study 126 supplications across 27 categories. Each entry identifies its Quran or hadith source and includes grading information when the source dataset provides it.",
+        lede: `Study ${duaCount} supplications across ${duaCategoryCount} categories. Each entry identifies its Quran or hadith source and includes grading information when the source dataset provides it.`,
         sections: [["Sourced text", "Arabic, transliteration where available, English meaning, and a direct source reference are presented together."], ["Search by need", "Browse categories including worship, forgiveness, protection, family, travel, morning, evening, and daily life."]],
         links: [["Browse all duas", "/duas"], ["Review the source methodology", "/sources"]],
     },
@@ -192,6 +196,35 @@ const publicPages = [
         links: [["Review all sources", "/sources"], ["Ask a question", "/ask"], ["About the project", "/about"]],
     },
 ];
+
+// Every other public route: its own title, description, canonical and a short summary, so
+// none of them falls through to the homepage shell. Titles match each page's <SEO>.
+const simple = (pathname, title, description, heading, lede, links = []) => ({ pathname, title, description, heading, lede, sections: [], links });
+publicPages.push(
+    simple("/ask", "Ask Quran AI with Cited Sources | Mastering Quran", "Preview the Mastering Quran AI assistant. Ask about Quran verses, hadith, and classical tafsir with answers grounded in verified sources.", "Ask Wali with cited sources", "An AI study assistant for questions about the Quran, hadith and tafsir. Quran quotes are checked against the Quran text, and it declines fatwas. Free with an account, 5 questions a day.", [["Review sources", "/sources"], ["Read the Quran", "/quran"]]),
+    simple("/daily", "Daily Reminders, Mastering Quran", "Get a verse a day via email or push notification. Pick your timezone and delivery time.", "Daily reminders", "Receive one Quran verse each day by email or push notification, at the hour you choose.", [["Reading plans", "/plans"]]),
+    simple("/qibla", "Qibla Direction from Your City | Mastering Quran", "The exact compass bearing to the Kaaba in Makkah from any city, with distance and a live phone compass.", "Qibla direction", "Find the bearing and distance to the Kaaba from your city or current location. Calculated on your device.", [["Prayer times", "/prayer-times"]]),
+    simple("/calendar", "Islamic Calendar - Mastering Quran", "Hijri-Gregorian date converter, upcoming Islamic events, and a reference for the 12 Islamic months.", "Islamic calendar", "Today's Hijri date, a date converter, upcoming events and the twelve months. Dates use the Umm al-Qura calendar; moon sighting can differ by a day.", [["Ramadan", "/ramadan"]]),
+    simple("/topics", "Topics in the Quran - Mastering Quran", "Browse the Holy Quran by topic: mercy, patience, charity, prayer, family, justice, and more.", "Topics in the Quran", "Browse key verses by theme, including mercy, patience, charity and prayer.", [["Read the Quran", "/quran"]]),
+    simple("/plans", "Reading Plans - Mastering Quran", "Curated Quran reading plans: 30-day, Ramadan, weekly, and themed plans to sustain your daily connection.", "Quran reading plans", "Follow a plan that splits the Quran into manageable daily portions.", [["Read the Quran", "/quran"]]),
+    simple("/quiz", "Quiz - Mastering Quran", "Test your knowledge of the Quran and the 99 Names of Allah with interactive quizzes.", "Quran quiz", "Test what you remember with short interactive quizzes.", [["Flash cards", "/flashcards"]]),
+    simple("/flashcards", "Flash Cards - Mastering Quran", "Practice 99 Names, Arabic roots, and Surah names with interactive flash cards.", "Flash cards", "Practice the Names of Allah, Arabic roots and surah names.", [["Quiz", "/quiz"]]),
+    simple("/share", "Share a Verse as Image, Mastering Quran", "Create beautiful Quran verse images to share. Choose a template, pick a verse, and download or share directly.", "Share a verse", "Choose a verse and a template, then download or share the image.", [["Read the Quran", "/quran"]]),
+    simple("/zakat", "Zakat Calculator, Mastering Quran", "Calculate your annual zakat. Live gold and silver nisab, cash, investments, business inventory, liabilities, all in one form.", "Zakat calculator", "Estimate your annual zakat from cash, gold, silver, investments and business assets.", [["Frequently asked questions", "/faq"]]),
+    simple("/in-loving-memory", "In Loving Memory, Dr. Nusrat Wali and Dr. Wali Ahmad", "A tribute to the late Dr. Nusrat Wali and Dr. Wali Ahmad, whose commitment to education, service, and care shaped Mastering Quran.", "In Loving Memory", "A tribute to Dr. Nusrat Wali and Dr. Wali Ahmad.", [["About", "/about"]]),
+    simple("/privacy", "Privacy Policy - Mastering Quran", "How Mastering Quran (operated by Nusrat Wali Ventures LLC) collects, uses, and protects information.", "Privacy Policy", "How Mastering Quran collects, uses and protects information, and how to delete your account.", [["Delete your account", "/account"], ["Terms", "/terms"]]),
+    simple("/terms", "Terms of Service - Mastering Quran", "Terms governing the use of Mastering Quran, operated by Nusrat Wali Ventures LLC.", "Terms of Service", "The terms for using Mastering Quran.", [["Privacy", "/privacy"]]),
+    simple("/account", "Your Account and Data Deletion | Mastering Quran", "Delete your Mastering Quran account and the data saved with it, on the website or in the app.", "Your account", "Sign in on this page to permanently delete your account and everything saved with it: bookmarks, notes, memorization, reading streak, playlists, lesson progress, zakat records and reminders.", [["Privacy Policy", "/privacy"]]),
+);
+
+// The lesson list is TypeScript, so bundle it to read the real titles.
+const lessonBundle = await build({ entryPoints: [path.join(ROOT, "client", "src", "lib", "content", "arabic-foundations.ts")], bundle: true, write: false, format: "esm", platform: "node" });
+const { LESSONS } = await import(`data:text/javascript;base64,${Buffer.from(lessonBundle.outputFiles[0].text).toString("base64")}`);
+for (const l of LESSONS) {
+    publicPages.push(
+        simple(`/learn-arabic/${l.slug}`, `${l.title}, Learn Arabic`, l.subtitle, l.title, `Lesson ${l.number} of ${LESSONS.length}. ${l.subtitle}`, [["All lessons", "/learn-arabic"]]),
+    );
+}
 const publicPagePaths = new Set(publicPages.map(page => page.pathname));
 
 for (const page of publicPages) {
@@ -207,7 +240,9 @@ for (const page of publicPages) {
         isPartOf: page.pathname === "/" ? undefined : { "@type": "WebSite", name: "Mastering Quran", url: ORIGIN },
     };
     const html = setBody(setHead(template, { title: page.title, description: page.description, pathname: page.pathname, jsonLd }), body);
-    write(page.pathname === "/" ? "index.html" : `${page.pathname.slice(1)}/index.html`, html);
+    // sources.html, not sources/index.html: Cloudflare Pages 308-redirects a directory
+    // URL to its trailing-slash form, which contradicts the canonical and sitemap URL.
+    write(page.pathname === "/" ? "index.html" : `${page.pathname.slice(1)}.html`, html);
 }
 
 // Public FAQ: ship the questions and answers in the first response so search
@@ -227,15 +262,15 @@ const faqItems = [
     ],
     [
         "Which hadith collections are included?",
-        "Ten English collection datasets are available. Collection, book, number, and grade are shown where the source dataset provides them.",
+        "Ten English collection datasets are available. Collection, book, number, and every grading in the source dataset are shown, including weak gradings.",
     ],
     [
         "How does the AI avoid fabricated citations?",
-        "The AI is required to fetch Quran, hadith, or tafsir source text before making factual claims and to show references. Users should still open and verify the cited sources.",
+        "The AI is instructed to look up source text before answering and to cite it. Quran quotes and verse references are checked by code against the Quran text. Hadith and tafsir statements are not checked automatically, so users should still open and verify the cited sources.",
     ],
     [
         "What is the AI scoped to?",
-        "The AI is scoped to Quran text and meaning, authentic hadith, and classical tafsir. It declines fatwas, personal religious guidance, theological disputes, and matters requiring qualified scholarly judgment.",
+        "The AI is scoped to Quran text and meaning, hadith, and tafsir. It declines fatwas, personal religious guidance, theological disputes, and matters requiring qualified scholarly judgment.",
     ],
     [
         "Does Mastering Quran replace a qualified scholar?",
@@ -263,6 +298,23 @@ write(
             },
         }),
         faqBody
+    )
+);
+
+// /quran: without its own page the SPA rewrite served the homepage shell, whose
+// canonical is "/". The reader moves to /quran/N on load, so /quran stays out of the sitemap.
+const quranIndexPath = "/quran";
+write(
+    "quran.html",
+    setBody(
+        setHead(template, {
+            title: "Quran Reader | Word-by-Word Translation and Tafsir",
+            description: "Read the Holy Quran in Uthmani script with word-by-word study, tajweed, audio recitation, 17 translations, bookmarks, notes, and 10 English tafsirs.",
+            pathname: quranIndexPath,
+            jsonLd: crumbs([["Quran", quranIndexPath]]),
+        }),
+        `<nav><a href="/">Mastering Quran</a> / Quran</nav><h1>The Holy Quran</h1><p class="meta">114 surahs with Arabic text, English translation and tafsir</p>` +
+            `<ol>${surahs.map(s => `<li><a href="/quran/${s.number}">${s.number}. Surah ${esc(s.nameSimple)}</a> <span lang="ar" dir="rtl">${esc(s.nameArabic)}</span> · ${esc(s.nameTranslated)} · ${s.versesCount} verses</li>`).join("")}</ol>`
     )
 );
 
@@ -406,16 +458,23 @@ const entries = surahs
         ...s.verses.map(v => `  <url><loc>${ORIGIN}/quran/${s.number}/${v.n}</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>`),
     ])
     .join("\n");
-fs.writeFileSync(sitemapFile, sitemap.replace("</urlset>", `${entries}\n${prayer.sitemap.join("\n")}\n</urlset>`));
+const fullSitemap = sitemap.replace("</urlset>", `${entries}\n${prayer.sitemap.join("\n")}\n</urlset>`);
+fs.writeFileSync(sitemapFile, fullSitemap);
+// A sitemap URL with no page of its own would serve the homepage under the wrong address.
+for (const [, loc] of fullSitemap.matchAll(/<loc>([^<]+)<\/loc>/g)) {
+    const p = new URL(loc).pathname;
+    const file = path.join(DIST, p === "/" ? "index.html" : `${p.slice(1)}.html`);
+    if (!fs.existsSync(file) || !fs.readFileSync(file, "utf8").includes(`<link rel="canonical" href="${loc}"`)) throw new Error(`${p} is in the sitemap but has no page with its own canonical`);
+}
 
 // Routing: rewrite only the app's real routes to the SPA shell, so unknown paths
 // get 404.html with a 404 status instead of a soft 200. /quran/S and /quran/S/A
 // are served by the static files above; an out-of-range one is a true 404.
 const appSource = fs.readFileSync(path.join(ROOT, "client", "src", "App.tsx"), "utf8");
-const routes = [...appSource.matchAll(/<Route path="([^"]+)"/g)]
-    .map(m => m[1])
-    .filter(p => p !== "*" && p !== namesPath && !publicPagePaths.has(p) && !p.includes(":") && !prayer.staticRoutes.has(p));
-if (routes.length < 20) throw new Error(`only found ${routes.length} routes in App.tsx`);
+const allRoutes = [...appSource.matchAll(/<Route path="([^"]+)"/g)].map(m => m[1]);
+if (allRoutes.length < 40) throw new Error(`only found ${allRoutes.length} routes in App.tsx`);
+const routes = allRoutes
+    .filter(p => p !== "*" && p !== namesPath && p !== quranIndexPath && !publicPagePaths.has(p) && !p.includes(":") && !prayer.staticRoutes.has(p));
 fs.writeFileSync(
     path.join(DIST, "_redirects"),
     routes

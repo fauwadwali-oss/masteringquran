@@ -43,10 +43,11 @@ const DAILY_DUAS = [
     { title: "Good in both worlds", arabic: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً", text: "Our Lord, grant us good in this world and good in the Hereafter." },
 ];
 
+// Short excerpts of the English editions in our hadith dataset, with their published numbers.
 const DAILY_HADITHS = [
-    { source: "Bukhari and Muslim", text: "Actions are only by intentions, and every person will have only what they intended." },
-    { source: "Tirmidhi", text: "The best of you are those who learn the Quran and teach it." },
-    { source: "Muslim", text: "Purity is half of faith." },
+    { source: "Sahih al-Bukhari 1", text: "The reward of deeds depends upon the intentions and every person will get the reward according to what he has intended.", to: "/hadith?collection=bukhari&hadith=1" },
+    { source: "Sahih al-Bukhari 5027", text: "The best among you (Muslims) are those who learn the Qur'an and teach it.", to: "/hadith?collection=bukhari&hadith=5027" },
+    { source: "Sahih Muslim 223", text: "Cleanliness is half of faith.", to: "/hadith?collection=muslim&hadith=223" },
 ];
 
 function dailyIndex(length: number, offset = 0): number {
@@ -183,7 +184,7 @@ function TodayHabitDashboard() {
                 </div>
                 <div className="grid gap-3 p-4 md:grid-cols-3">
                     <DailyTile icon={Heart} label="Dua" title={dua.title} body={dua.text} to="/duas" />
-                    <DailyTile icon={Quote} label="Hadith" title={hadith.source} body={hadith.text} to="/hadith" />
+                    <DailyTile icon={Quote} label="Hadith" title={hadith.source} body={hadith.text} to={hadith.to} />
                     <DailyTile icon={GraduationCap} label="Lesson" title="Arabic foundations" body="Continue letters, harakat, and recitation practice." to="/learn-arabic" />
                 </div>
             </CardContent>
@@ -211,7 +212,8 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
     const [sub, setSub] = useState<EmailSubscription | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [email, setEmail] = useState(defaultEmail);
+    // The daily verse only goes to the confirmed address on the account.
+    const email = defaultEmail;
     const [hour, setHour] = useState(7);
     const [timezone, setTimezone] = useState(localTz());
 
@@ -222,7 +224,6 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
                 if (cancelled) return;
                 setSub(s);
                 if (s) {
-                    setEmail(s.email);
                     setHour(s.delivery_hour);
                     setTimezone(s.timezone);
                 }
@@ -256,7 +257,6 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
                 timezone: normalizedTimezone,
                 active: true,
             });
-            setEmail(normalizedEmail);
             setTimezone(normalizedTimezone);
             setSub(s);
             if (!wasActive && s.active) trackDailyEmailSubscription(userId);
@@ -310,8 +310,8 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
                                 <Input
                                     type="email"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="you@example.com"
+                                    readOnly
+                                    aria-label="Email on your account"
                                 />
                             </div>
                             <div>
