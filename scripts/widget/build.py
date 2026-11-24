@@ -14,7 +14,7 @@ snap = json.loads((ROOT / "scripts/prerender/data/quran-snapshot.json").read_tex
 worker = (ROOT / "workers/daily-delivery/src/index.ts").read_text(encoding="utf-8")
 pool = re.search(r"const VERSE_POOL: string\[\] = \[(.*?)\];", worker, re.S).group(1)
 # Reviewed by hand: these pass the automatic checks but need the verses around them.
-NEEDS_CONTEXT = set("2:156 3:8 10:82 11:90 13:28 13:29 17:24 17:32 18:10 21:23 23:96 25:30 26:214 29:2 36:58 37:182 39:66 40:44 50:37 51:19 53:58 55:27 56:79 67:13 68:4 76:1 76:29 87:17 108:1 109:6 14:40 17:80 33:70 38:35 3:200 21:35 64:11 47:7 7:23 29:6 17:36 16:18 9:51".split())
+NEEDS_CONTEXT = set("2:156 3:8 10:82 11:90 13:28 13:29 17:24 17:32 18:10 21:23 23:96 25:30 26:214 29:2 36:58 37:182 39:66 40:44 50:37 51:19 53:58 55:27 56:79 67:13 68:4 76:1 76:29 87:17 108:1 109:6 14:40 17:80 33:70 38:35 3:200 21:35 64:11 47:7 7:23 29:6 17:36 16:18 9:51 17:82 15:99".split())
 out = []
 for s, a in re.findall(r'"(\d+):(\d+)"', pool):
     surah = snap["surahs"][int(s) - 1]

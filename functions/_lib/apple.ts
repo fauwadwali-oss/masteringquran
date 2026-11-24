@@ -32,19 +32,24 @@ export async function appleClientSecret(env: AppleEnv, now = Date.now()): Promis
 
 export const appleConfigured = (env: AppleEnv) => Boolean(env.APPLE_TEAM_ID && env.APPLE_KEY_ID && env.APPLE_PRIVATE_KEY);
 
-/** True when Apple confirmed the access was revoked. */
-export async function revokeApple(env: AppleEnv, code: string): Promise<boolean> {
+export type RevokeResult = "revoked" | "wrong_account" | "failed";
+
+/** Revokes access only when the code belongs to the Apple account on this user (`sub`). */
+export async function revokeApple(env: AppleEnv, code: string, sub: string): Promise<RevokeResult> {
     const credentials = { client_id: env.APPLE_CLIENT_ID || DEFAULT_CLIENT_ID, client_secret: await appleClientSecret(env) };
     const exchange = await fetch("https://appleid.apple.com/auth/token", {
         method: "POST",
         body: new URLSearchParams({ ...credentials, code, grant_type: "authorization_code" }),
     });
-    if (!exchange.ok) return false;
-    const { refresh_token } = (await exchange.json()) as { refresh_token?: string };
-    if (!refresh_token) return false;
+    if (!exchange.ok) return "failed";
+    const { refresh_token, id_token } = (await exchange.json()) as { refresh_token?: string; id_token?: string };
+    if (!refresh_token || !id_token) return "failed";
+    // The token came straight from Apple over TLS, so its claims can be read without checking the signature.
+    const claims = JSON.parse(atob(id_token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))) as { sub?: string };
+    if (claims.sub !== sub) return "wrong_account";
     const revoke = await fetch("https://appleid.apple.com/auth/revoke", {
         method: "POST",
         body: new URLSearchParams({ ...credentials, token: refresh_token, token_type_hint: "refresh_token" }),
     });
-    return revoke.ok;
+    return revoke.ok ? "revoked" : "failed";
 }

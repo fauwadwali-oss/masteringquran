@@ -14,6 +14,7 @@ export default function Account() {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [done, setDone] = useState(false);
+    const [appleStillLinked, setAppleStillLinked] = useState(false);
 
     const onDelete = async () => {
         setBusy(true);
@@ -21,7 +22,10 @@ export default function Account() {
         const result = await deleteAccount();
         setBusy(false);
         if (result.error) setError(result.error);
-        else setDone(true);
+        else {
+            setAppleStillLinked(!!result.appleStillLinked);
+            setDone(true);
+        }
     };
 
     return (
@@ -39,6 +43,7 @@ export default function Account() {
                 {done ? (
                     <div role="status" className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 dark:border-emerald-900/50 dark:bg-emerald-950/30">
                         <p className="font-semibold text-slate-900 dark:text-white">Your account has been deleted.</p>
+                        {appleStillLinked && <p className="mt-1 text-sm">To finish on Apple's side, open Settings on your iPhone, tap your name, then Sign in with Apple, choose Mastering Quran, and tap Delete.</p>}
                         <p className="mt-1 text-sm">You can keep reading without an account. <Link to="/" className="underline">Go to the home page</Link></p>
                     </div>
                 ) : (

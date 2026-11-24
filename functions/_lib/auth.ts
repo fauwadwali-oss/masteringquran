@@ -12,6 +12,7 @@ export interface SupabaseUser {
     created_at: string;
     email_confirmed_at?: string | null;
     user_metadata?: Record<string, unknown>;
+    identities?: { provider: string; identity_data?: { sub?: string } }[];
 }
 
 const DEFAULT_SUPABASE_URL = "https://hlhtvstvblvdixygchil.supabase.co";

@@ -29,7 +29,7 @@ interface AuthContextValue {
     updatePassword: (password: string) => Promise<AuthResult>;
     signOut: () => Promise<void>;
     /** Permanently deletes the signed-in account and its data. */
-    deleteAccount: () => Promise<AuthResult>;
+    deleteAccount: () => Promise<AuthResult & { appleStillLinked?: boolean }>;
 }
 
 const Ctx = createContext<AuthContextValue | null>(null);
@@ -301,19 +301,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRecoveryPending(false);
     };
 
-    const deleteAccount = async (): Promise<AuthResult> => {
+    const deleteAccount = async (): Promise<AuthResult & { appleStillLinked?: boolean }> => {
         const failed = { error: "We could not delete your account. Please try again, or email us." };
         if (!configured || !session) return failed;
         try {
             const { supabase } = await import("@/lib/supabase");
             // Accounts made with Apple: confirm with Apple and end the app's access there first.
-            if (isIosApp() && session.user.identities?.some((i) => i.provider === "apple")) {
+            const usesApple = !!session.user.identities?.some((i) => i.provider === "apple");
+            let appleStillLinked = usesApple;
+            if (usesApple && isIosApp()) {
                 const { authorizationCode } = await appleCredential();
-                await fetch(apiUrl("/api/apple-revoke"), {
+                const res = await fetch(apiUrl("/api/apple-revoke"), {
                     method: "POST",
                     headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" },
                     body: JSON.stringify({ code: authorizationCode }),
-                }).catch(() => undefined);
+                }).catch(() => null);
+                if (res?.status === 409) return { error: "That is a different Apple account. Please confirm with the one you use here." };
+                // An Apple outage must not trap someone in an account: delete, and say what is left to do.
+                appleStillLinked = !res?.ok;
             }
             const { error } = await supabase.rpc("mq_delete_account");
             if (error) return failed;
@@ -321,7 +326,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
             clearLocalStudyData();
             setSession(null);
-            return { error: null };
+            return { error: null, appleStillLinked };
         } catch (e) {
             if ((e as { code?: string })?.code === "cancelled") return { error: "Your account was not deleted. Please confirm with Apple to delete it." };
             return failed;
