@@ -20,31 +20,27 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 // whole pool by day number, so every verse is reached.
 const VERSE_POOL: string[] = [
     "1:1","1:2","1:3","1:4","1:5","1:6","1:7","2:2","2:3","2:45","2:152","2:153","2:155","2:156",
-    "2:177","2:183","2:186","2:195","2:201","2:216","2:255","2:256","2:261","2:286","3:8","3:26","3:31","3:54",
-    "3:104","3:133","3:134","3:139","3:144","3:159","3:173","3:186","3:190","3:200","4:1","4:36","4:59","4:69",
-    "4:77","4:86","4:100","4:110","4:135","5:2","5:3","5:8","5:32","5:35","5:54","6:17","6:54","6:59",
-    "6:73","6:103","6:151","6:162","7:23","7:26","7:55","7:56","7:156","7:180","7:199","8:2","8:24","8:46",
-    "8:70","9:51","9:71","9:105","9:128","9:129","10:26","10:57","10:62","10:82","10:107","11:6","11:88","11:90",
-    "11:112","11:114","11:123","12:4","12:53","12:87","12:100","12:111","13:11","13:22","13:28","13:29","14:7","14:24",
-    "14:27","14:34","14:40","15:9","15:49","15:88","15:99","16:18","16:53","16:90","16:97","16:125","16:128","17:9",
-    "17:23","17:24","17:32","17:36","17:70","17:80","17:81","17:82","17:110","18:10","18:28","18:29","18:45","18:46",
-    "18:110","19:4","19:31","19:33","19:96","20:2","20:14","20:25","20:27","20:28","20:114","20:130","20:132","21:23",
-    "21:35","21:83","21:87","21:107","22:78","23:1","23:2","23:96","23:115","23:118","24:22","24:26","24:31","24:35",
-    "24:55","25:30","25:63","25:70","25:74","26:78","26:80","26:88","26:89","26:214","27:19","27:40","27:62","27:88",
-    "28:24","28:56","28:77","28:88","29:2","29:6","29:45","29:64","29:69","30:21","30:30","30:60","31:12","31:13",
-    "31:14","31:17","31:18","31:22","32:16","32:17","33:35","33:41","33:56","33:70","33:71","34:13","34:39","35:5",
-    "35:15","35:28","36:12","36:36","36:58","36:65","36:78","36:82","37:100","37:107","37:180","37:182","38:29","38:35",
-    "39:7","39:9","39:10","39:22","39:53","39:66","40:44","40:60","40:65","41:30","41:33","41:34","41:35","41:53",
-    "42:11","42:13","42:23","42:25","42:40","43:32","43:67","45:13","46:35","47:7","47:19","48:1","48:10","48:18",
-    "48:29","49:10","49:11","49:12","49:13","50:16","50:37","50:39","50:40","51:19","51:49","51:55","51:56","53:32",
-    "53:39","53:58","54:49","54:55","55:13","55:26","55:27","55:60","55:78","56:74","56:79","56:96","57:3","57:4",
-    "57:16","57:20","57:25","58:11","59:10","59:18","59:21","59:22","59:23","59:24","60:8","60:12","61:10","61:11",
-    "61:13","62:10","63:9","64:11","64:14","64:16","65:2","65:3","65:7","66:6","66:8","67:1","67:2","67:3",
-    "67:13","67:15","68:4","71:10","71:11","71:12","73:8","73:20","76:1","76:3","76:9","76:29","76:30","84:6",
-    "87:14","87:15","87:16","87:17","89:27","89:28","89:29","89:30","91:9","91:10","93:3","93:4","93:5","93:6",
-    "93:7","93:8","93:11","94:1","94:2","94:3","94:4","94:5","94:6","94:7","94:8","95:4","95:6","96:1",
-    "96:2","96:3","96:5","97:1","97:2","97:3","97:5","98:8","99:7","99:8","102:8","103:3","108:1","108:2",
-    "108:3","109:6","110:3","112:1","112:2","112:4","113:1","114:1",
+    "2:177","2:183","2:186","2:195","2:201","2:216","2:255","2:256","2:261","2:286","3:8","3:26","3:31","3:104",
+    "3:133","3:134","3:139","3:144","3:159","3:173","3:186","3:190","3:200","4:1","4:36","4:59","4:69","4:77",
+    "4:86","4:100","4:110","4:135","5:2","5:3","5:8","5:32","5:35","5:54","6:17","6:54","6:59","6:73",
+    "6:103","6:151","6:162","7:23","7:26","7:55","7:56","7:156","7:180","7:199","8:2","8:24","8:46","8:70",
+    "9:51","9:71","9:105","9:128","9:129","10:57","10:62","10:82","10:107","11:6","11:88","11:90","11:112","11:114",
+    "11:123","12:53","12:87","12:111","13:11","13:22","13:28","13:29","14:7","14:24","14:27","14:34","14:40","15:9",
+    "15:49","15:88","15:99","16:18","16:53","16:90","16:97","16:125","16:128","17:9","17:23","17:24","17:32","17:36",
+    "17:70","17:80","17:81","17:82","17:110","18:10","18:28","18:29","18:45","18:46","18:110","19:96","20:2","20:14",
+    "20:114","20:130","20:132","21:23","21:35","21:83","21:87","21:107","22:78","23:96","23:115","23:118","24:22","24:31",
+    "24:35","24:55","25:30","25:63","25:70","25:74","26:214","27:19","27:62","27:88","28:24","28:56","28:77","28:88",
+    "29:2","29:6","29:45","29:64","29:69","30:21","30:30","30:60","31:12","31:13","31:14","31:17","31:18","31:22",
+    "32:16","32:17","33:35","33:41","33:56","33:70","33:71","34:13","34:39","35:5","35:15","35:28","36:12","36:36",
+    "36:58","36:65","36:82","37:107","37:182","38:29","38:35","39:7","39:9","39:10","39:22","39:53","39:66","40:44",
+    "40:60","40:65","41:30","41:33","41:34","41:35","41:53","42:11","42:13","42:23","42:25","42:40","43:32","43:67",
+    "45:13","46:35","47:7","47:19","48:1","48:10","48:18","48:29","49:10","49:11","49:12","49:13","50:16","50:37",
+    "50:39","50:40","51:19","51:49","51:55","51:56","53:32","53:39","53:58","55:13","55:26","55:27","55:60","55:78",
+    "56:74","56:79","56:96","57:3","57:4","57:16","57:20","57:25","58:11","59:10","59:18","59:21","59:22","59:23",
+    "59:24","60:8","60:12","61:11","61:13","62:10","63:9","64:11","64:14","64:16","65:2","65:3","65:7","66:6",
+    "66:8","67:1","67:2","67:3","67:13","67:15","68:4","73:8","73:20","76:1","76:3","76:29","76:30","84:6",
+    "87:14","87:15","87:16","87:17","89:27","91:9","93:11","94:5","94:6","95:4","96:1","98:8","99:7","102:8",
+    "108:1","109:6","110:3","112:1","113:1","114:1",
 ];
 
 const WORKER_URL = "https://mq-daily-delivery.fauwadwali.workers.dev";
@@ -124,7 +120,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function unsubscribePage(body: string, status = 200): Response {
     return new Response(
         `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Daily verse email | Mastering Quran</title></head><body style="font-family:system-ui,sans-serif;max-width:480px;margin:64px auto;padding:0 16px;color:#0f172a">${body}</body></html>`,
-        { status, headers: { "Content-Type": "text/html; charset=utf-8", "Referrer-Policy": "no-referrer" } },
+        { status, headers: { "Content-Type": "text/html; charset=utf-8", "Referrer-Policy": "no-referrer", "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'" } },
     );
 }
 
@@ -195,35 +191,53 @@ async function fetchVerse(verseKey: string): Promise<VerseData> {
 // ──────────────────────────────────────────────────────────────────────
 // Email delivery via Resend
 // ──────────────────────────────────────────────────────────────────────
+const PAGE = 500;
+
+// Supabase returns at most 1,000 rows per request, so read every page in a stable order.
+async function loadActive<T>(supabase: SupabaseClient, table: string, columns: string, key: string): Promise<T[] | null> {
+    const rows: T[] = [];
+    for (let from = 0; ; from += PAGE) {
+        const { data, error } = await supabase.from(table).select(columns).eq("active", true).order(key).range(from, from + PAGE - 1);
+        if (error) {
+            console.error("DB error", error);
+            return null;
+        }
+        rows.push(...((data ?? []) as T[]));
+        if ((data ?? []).length < PAGE) return rows;
+    }
+}
+
+// Marks the row as sent before sending. Only one of two overlapping runs can win.
+async function claimToday(supabase: SupabaseClient, table: string, key: string, id: string, lastSentAt: string | null): Promise<boolean> {
+    const update = supabase.from(table).update({ last_sent_at: new Date().toISOString() }).eq(key, id).eq("active", true);
+    const { data, error } = await (lastSentAt === null ? update.is("last_sent_at", null) : update.eq("last_sent_at", lastSentAt)).select(key);
+    if (error) console.error("claim failed", error);
+    return !error && (data ?? []).length === 1;
+}
+
 async function deliverEmails(env: Env, supabase: SupabaseClient, verse: VerseData) {
     if (!env.RESEND_API_KEY) {
         console.log("RESEND_API_KEY not set — skipping email");
         return;
     }
 
-    const { data, error } = await supabase
-        .from("mq_email_subscriptions")
-        .select("user_id, email, delivery_hour, timezone, active, last_sent_at, last_sent_verse, unsubscribe_token")
-        .eq("active", true);
-    if (error) {
-        console.error("DB error", error);
-        return;
-    }
-    const subs = (data ?? []) as EmailSub[];
+    const subs = await loadActive<EmailSub>(supabase, "mq_email_subscriptions", "user_id, email, delivery_hour, timezone, active, last_sent_at, last_sent_verse, unsubscribe_token", "user_id");
+    if (!subs) return;
 
     for (const sub of subs) {
         try {
             if (!isDueNow(sub.delivery_hour, sub.timezone)) continue;
             if (wasSentToday(sub.last_sent_at, sub.timezone)) continue;
 
-            const ok = await sendVerseEmail(env.RESEND_API_KEY, sub.email, verse, `${WORKER_URL}/unsubscribe?t=${sub.unsubscribe_token}`);
-            if (ok) {
+            if (!(await claimToday(supabase, "mq_email_subscriptions", "user_id", sub.user_id, sub.last_sent_at))) continue;
+
+            let ok = false;
+            try {
+                ok = await sendVerseEmail(env.RESEND_API_KEY, sub.email, verse, `${WORKER_URL}/unsubscribe?t=${sub.unsubscribe_token}`);
+            } finally {
                 await supabase
                     .from("mq_email_subscriptions")
-                    .update({
-                        last_sent_at: new Date().toISOString(),
-                        last_sent_verse: verse.verseKey,
-                    })
+                    .update(ok ? { last_sent_verse: verse.verseKey } : { last_sent_at: sub.last_sent_at })
                     .eq("user_id", sub.user_id);
             }
         } catch (e) {
@@ -311,15 +325,8 @@ async function deliverPushes(env: Env, supabase: SupabaseClient, verse: VerseDat
         return;
     }
 
-    const { data, error } = await supabase
-        .from("mq_push_subscriptions")
-        .select("id, user_id, endpoint, keys_p256dh, keys_auth, delivery_hour, timezone, active, last_sent_at")
-        .eq("active", true);
-    if (error) {
-        console.error("DB error", error);
-        return;
-    }
-    const subs = (data ?? []) as PushSub[];
+    const subs = await loadActive<PushSub>(supabase, "mq_push_subscriptions", "id, user_id, endpoint, keys_p256dh, keys_auth, delivery_hour, timezone, active, last_sent_at", "id");
+    if (!subs) return;
 
     const payload = JSON.stringify({
         title: `Quran ${verse.verseKey}`,
@@ -332,7 +339,12 @@ async function deliverPushes(env: Env, supabase: SupabaseClient, verse: VerseDat
             if (!isDueNow(sub.delivery_hour, sub.timezone)) continue;
             if (wasSentToday(sub.last_sent_at, sub.timezone)) continue;
 
-            const ok = await sendWebPush(
+            if (!sub.endpoint.startsWith("https://")) continue;
+            if (!(await claimToday(supabase, "mq_push_subscriptions", "id", sub.id, sub.last_sent_at))) continue;
+
+            let ok: boolean | null = false;
+            try {
+                ok = await sendWebPush(
                 sub.endpoint,
                 sub.keys_p256dh,
                 sub.keys_auth,
@@ -340,15 +352,10 @@ async function deliverPushes(env: Env, supabase: SupabaseClient, verse: VerseDat
                 env.VAPID_PUBLIC_KEY!,
                 env.VAPID_PRIVATE_KEY!,
                 env.VAPID_SUBJECT!,
-            );
-            if (ok) {
-                await supabase
-                    .from("mq_push_subscriptions")
-                    .update({ last_sent_at: new Date().toISOString() })
-                    .eq("id", sub.id);
-            } else if (ok === null) {
-                // 404/410 — endpoint dead, mark inactive
-                await supabase.from("mq_push_subscriptions").update({ active: false }).eq("id", sub.id);
+                );
+            } finally {
+                // null = 404/410, the endpoint is dead; false = failed, so release the claim.
+                if (!ok) await supabase.from("mq_push_subscriptions").update(ok === null ? { active: false } : { last_sent_at: sub.last_sent_at }).eq("id", sub.id);
             }
         } catch (e) {
             console.error(`Push delivery failed for sub ${sub.id}`, e);

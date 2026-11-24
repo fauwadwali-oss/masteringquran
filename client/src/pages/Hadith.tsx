@@ -86,7 +86,7 @@ export default function Hadith() {
     // Filter hadiths by book + search
     const filtered = useMemo(() => {
         if (!data) return [] as Hadith[];
-        let list = targetHadith ? data.hadiths.filter(h => String(h.hadithnumber) === targetHadith) : data.hadiths;
+        let list = targetHadith ? data.hadiths.filter(h => matchesPublishedNumber(h, selected?.slug ?? "", targetHadith)) : data.hadiths;
         if (selectedBook !== "all") {
             const bookNum = parseInt(selectedBook);
             list = list.filter((h) => h.reference?.book === bookNum);

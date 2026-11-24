@@ -458,13 +458,14 @@ const entries = surahs
         ...s.verses.map(v => `  <url><loc>${ORIGIN}/quran/${s.number}/${v.n}</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>`),
     ])
     .join("\n");
+const fullSitemap = sitemap.replace("</urlset>", `${entries}\n${prayer.sitemap.join("\n")}\n</urlset>`);
+fs.writeFileSync(sitemapFile, fullSitemap);
 // A sitemap URL with no page of its own would serve the homepage under the wrong address.
-for (const [, loc] of sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)) {
+for (const [, loc] of fullSitemap.matchAll(/<loc>([^<]+)<\/loc>/g)) {
     const p = new URL(loc).pathname;
     const file = path.join(DIST, p === "/" ? "index.html" : `${p.slice(1)}.html`);
     if (!fs.existsSync(file) || !fs.readFileSync(file, "utf8").includes(`<link rel="canonical" href="${loc}"`)) throw new Error(`${p} is in the sitemap but has no page with its own canonical`);
 }
-fs.writeFileSync(sitemapFile, sitemap.replace("</urlset>", `${entries}\n${prayer.sitemap.join("\n")}\n</urlset>`));
 
 // Routing: rewrite only the app's real routes to the SPA shell, so unknown paths
 // get 404.html with a 404 status instead of a soft 200. /quran/S and /quran/S/A

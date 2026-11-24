@@ -80,3 +80,37 @@ create policy "mq_email_subs_self_update" on public.mq_email_subscriptions
     with check (auth.uid() = user_id and lower(email) = lower(auth.jwt() ->> 'email'));
 create policy "mq_email_subs_self_delete" on public.mq_email_subscriptions
     for delete using (auth.uid() = user_id);
+
+-- Rows saved under the old policy may hold another person's address. Point every row at
+-- the account's own address; switch off the few whose account has no confirmed email.
+update public.mq_email_subscriptions s
+set email = u.email
+from auth.users u
+where u.id = s.user_id and u.email is not null and lower(s.email) is distinct from lower(u.email);
+
+update public.mq_email_subscriptions s
+set active = false
+from auth.users u
+where u.id = s.user_id and (u.email is null or u.email_confirmed_at is null);
+
+-- Keep the delivery address in step when the account's email changes.
+create or replace function public.mq_sync_subscription_email()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+    update public.mq_email_subscriptions set email = new.email
+    where user_id = new.id and new.email is not null;
+    return new;
+end;
+$$;
+
+revoke all on function public.mq_sync_subscription_email() from public, anon, authenticated;
+
+drop trigger if exists mq_on_auth_email_changed on auth.users;
+create trigger mq_on_auth_email_changed
+    after update of email on auth.users
+    for each row when (old.email is distinct from new.email)
+    execute procedure public.mq_sync_subscription_email();

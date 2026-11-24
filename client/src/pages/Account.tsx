@@ -49,7 +49,7 @@ export default function Account() {
                                 <AlertTriangle className="h-5 w-5 text-red-600" /> Delete account
                             </h2>
                             <p className="text-sm">
-                                This permanently deletes your sign-in and everything saved with it: bookmarks, notes, memorization, reading streak, playlists, lesson progress, zakat records, reminders and question counts. It cannot be undone.
+                                This permanently deletes your sign-in and everything saved with it: bookmarks, notes, memorization, reading streak, playlists, lesson progress, zakat records, reminders and question counts. It also clears study data saved in this browser or app, such as reading plans. Data on your other devices stays there until you clear it. It cannot be undone.
                             </p>
                             <p className="text-sm">
                                 The same sign-in works on nusratwaliventures.com, so a profile there is deleted too. Sign-in diagnostics are kept without any link to you.
@@ -61,12 +61,12 @@ export default function Account() {
                                     <label className="block text-sm font-medium" htmlFor="confirm-delete">Type DELETE to confirm</label>
                                     <Input id="confirm-delete" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" className="max-w-xs" />
                                     {error && <p role="alert" className="text-sm text-red-700 dark:text-red-400">{error}</p>}
-                                    <Button variant="destructive" disabled={busy || confirm.trim().toUpperCase() !== "DELETE"} onClick={onDelete}>
+                                    <Button className="bg-red-600 text-white hover:bg-red-700" disabled={busy || confirm.trim().toUpperCase() !== "DELETE"} onClick={onDelete}>
                                         {busy && <Loader2 className="h-4 w-4 animate-spin" />} Delete my account
                                     </Button>
                                 </>
                             ) : (
-                                <Button onClick={() => setShowLogin(true)}>Sign in to delete your account</Button>
+                                <Button className="bg-emerald-600 text-white hover:bg-emerald-700" onClick={() => setShowLogin(true)}>Sign in to delete your account</Button>
                             )}
                             <p className="text-xs text-slate-500">
                                 Can't sign in? Email <a className="underline" href="mailto:fauwad@nusratwaliventures.com">fauwad@nusratwaliventures.com</a> from the address on the account.

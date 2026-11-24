@@ -283,7 +283,8 @@ const cleanHtml = (s: string): string =>
 // ────────────────────────── Anthropic streaming client ──────────────────────────
 
 interface ContentBlock {
-    type: "text" | "tool_use" | "thinking";
+    type: "text" | "tool_use" | "thinking" | "redacted_thinking";
+    data?: string;
     text?: string;
     thinking?: string;
     signature?: string;
@@ -365,6 +366,8 @@ async function callClaude(
                 } else if (cb.type === "thinking") {
                     // Must be sent back unchanged (with its signature) alongside tool results.
                     blocks[evt.index] = { type: "thinking", thinking: cb.thinking ?? "", signature: cb.signature ?? "" };
+                } else if (cb.type === "redacted_thinking") {
+                    blocks[evt.index] = { type: "redacted_thinking", data: cb.data };
                 } else if (cb.type === "tool_use") {
                     blocks[evt.index] = { type: "tool_use", id: cb.id, name: cb.name, input: {} };
                     partialJson = "";

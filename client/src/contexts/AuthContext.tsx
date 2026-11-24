@@ -8,6 +8,7 @@ import { describeAuthError, type AuthResult } from "@/lib/auth-errors";
 import { trackAuth } from "@/lib/auth-analytics";
 import { toast } from "sonner";
 import { apiUrl } from "@/lib/api";
+import { clearLocalStudyData } from "@/lib/local-data";
 
 interface AuthContextValue {
     user: User | null;
@@ -270,6 +271,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (error) return failed;
             // The user no longer exists on the server, so only clear this device.
             await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
+            clearLocalStudyData();
             setSession(null);
             return { error: null };
         } catch {
