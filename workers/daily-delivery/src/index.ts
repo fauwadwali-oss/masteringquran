@@ -19,7 +19,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 // or after them to be understood (for example 107:4) are left out. Cycles through the
 // whole pool by day number, so every verse is reached.
 const VERSE_POOL: string[] = [
-    "1:1","1:2","1:3","1:4","1:5","1:6","1:7","2:2","2:3","2:45","2:152","2:153","2:155","2:156",
+    "1:2","1:5","2:2","2:3","2:45","2:152","2:153","2:155","2:156",
     "2:177","2:183","2:186","2:195","2:201","2:216","2:255","2:256","2:261","2:286","3:8","3:26","3:31","3:104",
     "3:133","3:134","3:139","3:144","3:159","3:173","3:186","3:190","3:200","4:1","4:36","4:59","4:69","4:77",
     "4:86","4:100","4:110","4:135","5:2","5:3","5:8","5:32","5:35","5:54","6:17","6:54","6:59","6:73",
@@ -32,15 +32,15 @@ const VERSE_POOL: string[] = [
     "24:35","24:55","25:30","25:63","25:70","25:74","26:214","27:19","27:62","27:88","28:24","28:56","28:77","28:88",
     "29:2","29:6","29:45","29:64","29:69","30:21","30:30","30:60","31:12","31:13","31:14","31:17","31:18","31:22",
     "32:16","32:17","33:35","33:41","33:56","33:70","33:71","34:13","34:39","35:5","35:15","35:28","36:12","36:36",
-    "36:58","36:65","36:82","37:107","37:182","38:29","38:35","39:7","39:9","39:10","39:22","39:53","39:66","40:44",
+    "36:58","36:65","36:82","37:182","38:29","38:35","39:7","39:9","39:10","39:22","39:53","39:66","40:44",
     "40:60","40:65","41:30","41:33","41:34","41:35","41:53","42:11","42:13","42:23","42:25","42:40","43:32","43:67",
     "45:13","46:35","47:7","47:19","48:1","48:10","48:18","48:29","49:10","49:11","49:12","49:13","50:16","50:37",
-    "50:39","50:40","51:19","51:49","51:55","51:56","53:32","53:39","53:58","55:13","55:26","55:27","55:60","55:78",
-    "56:74","56:79","56:96","57:3","57:4","57:16","57:20","57:25","58:11","59:10","59:18","59:21","59:22","59:23",
-    "59:24","60:8","60:12","61:11","61:13","62:10","63:9","64:11","64:14","64:16","65:2","65:3","65:7","66:6",
+    "50:39","51:19","51:49","51:55","51:56","53:32","53:39","53:58","55:13","55:26","55:27","55:60","55:78",
+    "56:74","56:79","56:96","57:4","57:16","57:20","57:25","58:11","59:10","59:18","59:21","59:22","59:23",
+    "59:24","60:8","60:12","62:10","63:9","64:11","64:14","64:16","65:2","65:3","65:7","66:6",
     "66:8","67:1","67:2","67:3","67:13","67:15","68:4","73:8","73:20","76:1","76:3","76:29","76:30","84:6",
-    "87:14","87:15","87:16","87:17","89:27","91:9","93:11","94:5","94:6","95:4","96:1","98:8","99:7","102:8",
-    "108:1","109:6","110:3","112:1","113:1","114:1",
+    "87:17","91:9","93:11","94:5","94:6","95:4","96:1","99:7","102:8",
+    "108:1","109:6","112:1",
 ];
 
 const WORKER_URL = "https://mq-daily-delivery.fauwadwali.workers.dev";
@@ -233,7 +233,7 @@ async function deliverEmails(env: Env, supabase: SupabaseClient, verse: VerseDat
 
             let ok = false;
             try {
-                ok = await sendVerseEmail(env.RESEND_API_KEY, sub.email, verse, `${WORKER_URL}/unsubscribe?t=${sub.unsubscribe_token}`);
+                ok = await sendVerseEmail(env.RESEND_API_KEY, sub.email, verse, `daily-verse/${sub.user_id}/${localDay(sub.timezone)}`, `${WORKER_URL}/unsubscribe?t=${sub.unsubscribe_token}`);
             } finally {
                 await supabase
                     .from("mq_email_subscriptions")
@@ -246,12 +246,14 @@ async function deliverEmails(env: Env, supabase: SupabaseClient, verse: VerseDat
     }
 }
 
-async function sendVerseEmail(apiKey: string, to: string, verse: VerseData, unsubscribeUrl: string): Promise<boolean> {
+async function sendVerseEmail(apiKey: string, to: string, verse: VerseData, idempotencyKey: string, unsubscribeUrl: string): Promise<boolean> {
     const html = renderEmailHtml(verse, unsubscribeUrl);
     const r = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
             Authorization: `Bearer ${apiKey}`,
+            // A retry after a lost response must not send a second copy.
+            "Idempotency-Key": idempotencyKey,
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -452,7 +454,7 @@ async function encryptPayload(payload: string, p256dhB64Url: string, authB64Url:
         true,
         ["deriveBits"],
     )) as CryptoKeyPair;
-    const serverPublicRaw = new Uint8Array(await crypto.subtle.exportKey("raw", serverKeyPair.publicKey));
+    const serverPublicRaw = new Uint8Array((await crypto.subtle.exportKey("raw", serverKeyPair.publicKey)) as ArrayBuffer);
 
     // Derive shared secret
     const clientPublicKey = await crypto.subtle.importKey(
@@ -463,7 +465,7 @@ async function encryptPayload(payload: string, p256dhB64Url: string, authB64Url:
         [],
     );
     const ikm = new Uint8Array(
-        await crypto.subtle.deriveBits({ name: "ECDH", public: clientPublicKey }, serverKeyPair.privateKey, 256),
+        await crypto.subtle.deriveBits({ name: "ECDH", public: clientPublicKey } as unknown as SubtleCryptoDeriveKeyAlgorithm, serverKeyPair.privateKey, 256),
     );
 
     // HKDF step 1: PRK_key = HMAC-SHA256(authSecret, ikm)
@@ -528,6 +530,10 @@ function isDueNow(hour: number, timezone: string): boolean {
     } catch {
         return false;
     }
+}
+
+function localDay(timezone: string): string {
+    return new Intl.DateTimeFormat("en-CA", { timeZone: timezone || "UTC" }).format(new Date());
 }
 
 function wasSentToday(lastSentAt: string | null, timezone: string): boolean {
