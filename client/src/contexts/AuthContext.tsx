@@ -9,6 +9,7 @@ import { trackAuth } from "@/lib/auth-analytics";
 import { toast } from "sonner";
 import { apiUrl } from "@/lib/api";
 import { appShortcutPath } from "@/lib/app-shortcuts";
+import { appleCredential, closeProviderBrowser, exchangeProviderCode, isIosApp, openProviderInBrowser, type SocialProvider } from "@/lib/social-auth";
 import { clearLocalStudyData } from "@/lib/local-data";
 
 interface AuthContextValue {
@@ -19,6 +20,8 @@ interface AuthContextValue {
     /** True while the user arrived from a password reset link and still needs to choose a new password. */
     recoveryPending: boolean;
     signInWithEmail: (email: string, redirectTo?: string) => Promise<AuthResult>;
+    /** Google or Apple. On the web this leaves the page; in the apps it opens the system browser or Apple sheet. */
+    signInWithProvider: (provider: SocialProvider) => Promise<AuthResult & { cancelled?: boolean }>;
     signUpWithPassword: (email: string, password: string) => Promise<AuthResult & { needsConfirmation?: boolean }>;
     signInWithPassword: (email: string, password: string) => Promise<AuthResult>;
     resendConfirmation: (email: string) => Promise<AuthResult>;
@@ -77,7 +80,8 @@ async function completeMobileSignIn(client: SupabaseClient, url: string): Promis
     const { code, accessToken, refreshToken } = getAuthParams(url);
 
     if (code) {
-        const { data, error } = await client.auth.exchangeCodeForSession(code);
+        const { access_token, refresh_token } = await exchangeProviderCode(code);
+        const { data, error } = await client.auth.setSession({ access_token, refresh_token });
         if (error) throw error;
         return data.session ?? null;
     }
@@ -162,7 +166,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (!url.startsWith(MOBILE_AUTH_CALLBACK)) return;
                 const recovery = isRecoveryUrl(url);
                 const { errorCode } = getAuthParams(url);
+                void closeProviderBrowser();
                 try {
+                    // Closed the Google page without signing in.
+                    if (errorCode === "access_denied") return;
                     if (errorCode) throw new Error(errorCode);
                     const newSession = await completeMobileSignIn(supabase, url);
                     if (newSession) setSession(newSession);
@@ -205,6 +212,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             options: { emailRedirectTo: redirectTo || authRedirectUrl(), shouldCreateUser: true },
         });
         return error ? describeAuthError(error) : { error: null };
+    };
+
+    const signInWithProvider = async (provider: SocialProvider): Promise<AuthResult & { cancelled?: boolean }> => {
+        const failed = { error: `${provider === "apple" ? "Apple" : "Google"} sign-in did not finish. Please try again.` };
+        if (!configured) return failed;
+        try {
+            const { supabase } = await import("@/lib/supabase");
+            if (provider === "apple" && isIosApp()) {
+                const credential = await appleCredential();
+                const { data, error } = await supabase.auth.signInWithIdToken({ provider: "apple", token: credential.identityToken, nonce: credential.nonce });
+                if (error) return { ...failed, code: error.code };
+                // Apple gives the name only the first time, so keep it now.
+                if (credential.name) await supabase.auth.updateUser({ data: { full_name: credential.name } }).catch(() => undefined);
+                setSession(data.session);
+                return { error: null, userId: data.user?.id };
+            }
+            if (isNativePlatform()) {
+                await openProviderInBrowser(provider, MOBILE_AUTH_CALLBACK);
+                return { error: null };
+            }
+            const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: authRedirectUrl() } });
+            return error ? { ...failed, code: error.code } : { error: null };
+        } catch (e) {
+            if ((e as { code?: string })?.code === "cancelled") return { error: null, cancelled: true };
+            return failed;
+        }
     };
 
     const signUpWithPassword = async (email: string, password: string) => {
@@ -273,6 +306,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!configured || !session) return failed;
         try {
             const { supabase } = await import("@/lib/supabase");
+            // Accounts made with Apple: confirm with Apple and end the app's access there first.
+            if (isIosApp() && session.user.identities?.some((i) => i.provider === "apple")) {
+                const { authorizationCode } = await appleCredential();
+                await fetch(apiUrl("/api/apple-revoke"), {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ code: authorizationCode }),
+                }).catch(() => undefined);
+            }
             const { error } = await supabase.rpc("mq_delete_account");
             if (error) return failed;
             // The user no longer exists on the server, so only clear this device.
@@ -280,7 +322,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             clearLocalStudyData();
             setSession(null);
             return { error: null };
-        } catch {
+        } catch (e) {
+            if ((e as { code?: string })?.code === "cancelled") return { error: "Your account was not deleted. Please confirm with Apple to delete it." };
             return failed;
         }
     };
@@ -294,6 +337,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 configured,
                 recoveryPending,
                 signInWithEmail,
+                signInWithProvider,
                 signUpWithPassword,
                 signInWithPassword,
                 resendConfirmation,

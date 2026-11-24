@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import { rememberAuthReturn } from "@/lib/auth-return";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
+import { enabledProviders, type SocialProvider } from "@/lib/social-auth";
 import { trackAuth } from "@/lib/auth-analytics";
 import { isValidEmail, MIN_PASSWORD_LENGTH, passwordProblem } from "@/lib/auth-errors";
 
@@ -27,7 +28,7 @@ const TITLES: Record<View, string> = {
 };
 
 export default function LoginModal({ open, onClose, reason, initialView = "signin" }: Props) {
-    const { signInWithEmail, signUpWithPassword, signInWithPassword, resendConfirmation, sendPasswordReset, configured, user } = useAuth();
+    const { signInWithProvider, signInWithEmail, signUpWithPassword, signInWithPassword, resendConfirmation, sendPasswordReset, configured, user } = useAuth();
     const [view, setView] = useState<View>(initialView);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -37,6 +38,14 @@ export default function LoginModal({ open, onClose, reason, initialView = "signi
     const [error, setError] = useState<string | null>(null);
     const [errorCode, setErrorCode] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
+
+    const [providers, setProviders] = useState<SocialProvider[]>([]);
+    useEffect(() => {
+        if (!open || !configured) return;
+        let cancelled = false;
+        void enabledProviders().then((list) => { if (!cancelled) setProviders(list); });
+        return () => { cancelled = true; };
+    }, [open, configured]);
 
     const location = useLocation();
     const source = location.pathname;
@@ -143,6 +152,20 @@ export default function LoginModal({ open, onClose, reason, initialView = "signi
         }
     };
 
+    const withProvider = async (provider: SocialProvider) => {
+        setError(null);
+        setErrorCode(null);
+        setLoading(true);
+        rememberReturn();
+        trackAuth("signin_submit", { view: provider, source });
+        const { error, code, userId } = await signInWithProvider(provider);
+        setLoading(false);
+        if (error) {
+            trackAuth("signin_error", { view: provider, error_code: code, source });
+            fail(error, code);
+        } else if (userId) trackAuth("signin_success", { view: provider, source, user_id: userId });
+    };
+
     const resend = async () => {
         const cleanEmail = email.trim().toLowerCase();
         setLoading(true);
@@ -223,6 +246,26 @@ export default function LoginModal({ open, onClose, reason, initialView = "signi
                                         {tab === "signin" ? "Sign in" : "Create account"}
                                     </button>
                                 ))}
+                            </div>
+                        )}
+
+                        {usesPassword && providers.length > 0 && (
+                            <div className="space-y-2">
+                                {providers.map((provider) => (
+                                    <Button
+                                        key={provider}
+                                        type="button"
+                                        variant="outline"
+                                        disabled={loading}
+                                        onClick={() => withProvider(provider)}
+                                        className={`w-full h-11 gap-2 ${provider === "apple" ? "bg-black text-white hover:bg-slate-800 hover:text-white dark:bg-white dark:text-black dark:hover:bg-slate-200 dark:hover:text-black" : ""}`}
+                                    >
+                                        {provider === "apple" ? <AppleLogo /> : <GoogleLogo />} Continue with {provider === "apple" ? "Apple" : "Google"}
+                                    </Button>
+                                ))}
+                                <div className="flex items-center gap-3 pt-1 text-xs text-slate-400">
+                                    <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" /> or use your email <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
+                                </div>
                             </div>
                         )}
 
@@ -334,5 +377,24 @@ export default function LoginModal({ open, onClose, reason, initialView = "signi
                 )}
             </DialogContent>
         </Dialog>
+    );
+}
+
+function AppleLogo() {
+    return (
+        <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+            <path d="M16.37 12.76c.02 2.6 2.28 3.46 2.3 3.47-.02.06-.36 1.23-1.18 2.44-.71 1.04-1.45 2.08-2.61 2.1-1.14.02-1.51-.68-2.82-.68-1.3 0-1.71.66-2.79.7-1.12.04-1.98-1.13-2.7-2.17-1.46-2.12-2.58-5.99-1.08-8.6a4.2 4.2 0 0 1 3.54-2.15c1.1-.02 2.14.74 2.82.74.67 0 1.94-.92 3.27-.78.56.02 2.12.22 3.13 1.7-.08.05-1.87 1.09-1.88 3.23M14.22 6.2c.6-.72 1-1.72.89-2.72-.86.03-1.9.57-2.52 1.29-.55.64-1.04 1.66-.9 2.64.95.07 1.93-.49 2.53-1.21" />
+        </svg>
+    );
+}
+
+function GoogleLogo() {
+    return (
+        <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4">
+            <path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.09 3.57-5.16 3.57-8.81" />
+            <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.87-3.01c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96h-4v3.1A12 12 0 0 0 12 24" />
+            <path fill="#FBBC05" d="M5.27 14.27a7.2 7.2 0 0 1 0-4.56V6.62h-4a12 12 0 0 0 0 10.76z" />
+            <path fill="#EA4335" d="M12 4.77c1.76 0 3.35.6 4.6 1.8l3.43-3.44A11.5 11.5 0 0 0 12 0 12 12 0 0 0 1.27 6.62l4 3.1C6.22 6.88 8.87 4.77 12 4.77" />
+        </svg>
     );
 }

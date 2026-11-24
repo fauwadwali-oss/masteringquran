@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1CAAED4F041B721E9632343B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FC74B4692667F5C6ED5C4266 /* PrivacyInfo.xcprivacy */; };
+		24DFEA31D0DEB1880A92739E /* AppleSignInPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4F16015D1FE19FD040462A /* AppleSignInPlugin.swift */; };
 		285459A897AAFD0418161D33 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 68822EBCC103049E16A16CEA /* PrivacyInfo.xcprivacy */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		35CE520EAE1D7EF6400209F2 /* verses.json in Resources */ = {isa = PBXBuildFile; fileRef = A74344469E990E5232A505F8 /* verses.json */; };
@@ -18,6 +19,7 @@
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		708A4137447D96703457D7C1 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D3D8180BFFEC2B344DF807 /* MainViewController.swift */; };
 		71A7EA4A68A1CE31E42249C6 /* QuranWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC44961477C6111A8DF4567 /* QuranWidget.swift */; };
 		7A1C5E012F00000100A1B2C3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C5E002F00000100A1B2C3 /* SceneDelegate.swift */; };
 		F286D7E5FA1451337B2C5588 /* Amiri-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4EF99C05E5E801671AC3103 /* Amiri-Regular.ttf */; };
@@ -50,7 +52,9 @@
 
 /* Begin PBXFileReference section */
 		02724DEB60797BE3061826DB /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		05D3D8180BFFEC2B344DF807 /* MainViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
+		4C4F16015D1FE19FD040462A /* AppleSignInPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleSignInPlugin.swift; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* Mastering Quran.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mastering Quran.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -65,6 +69,7 @@
 		7A1C5E002F00000100A1B2C3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 		A74344469E990E5232A505F8 /* verses.json */ = {isa = PBXFileReference; includeInIndex = 1; path = verses.json; sourceTree = "<group>"; };
+		D3689FC84F54AA5C4A3BF93F /* App.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		F4EF99C05E5E801671AC3103 /* Amiri-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "Amiri-Regular.ttf"; sourceTree = "<group>"; };
 		FC74B4692667F5C6ED5C4266 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -128,6 +133,9 @@
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
 				68822EBCC103049E16A16CEA /* PrivacyInfo.xcprivacy */,
+				05D3D8180BFFEC2B344DF807 /* MainViewController.swift */,
+				4C4F16015D1FE19FD040462A /* AppleSignInPlugin.swift */,
+				D3689FC84F54AA5C4A3BF93F /* App.entitlements */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -267,6 +275,8 @@
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				7A1C5E012F00000100A1B2C3 /* SceneDelegate.swift in Sources */,
+				708A4137447D96703457D7C1 /* MainViewController.swift in Sources */,
+				24DFEA31D0DEB1880A92739E /* AppleSignInPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,6 +433,7 @@
 			baseConfigurationReference = 958DCC722DB07C7200EA8C5F /* debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				INFOPLIST_FILE = App/Info.plist;
@@ -445,6 +456,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				INFOPLIST_FILE = App/Info.plist;

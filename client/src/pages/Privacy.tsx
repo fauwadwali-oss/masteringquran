@@ -48,6 +48,7 @@ export default function Privacy() {
             <ul className="list-disc list-inside space-y-2 mt-3">
               <li><strong>Cloudflare Pages</strong> — hosting and CDN.</li>
               <li><strong>Supabase</strong> — authentication and database for saved app features.</li>
+              <li><strong>Google and Apple</strong>: sign-in, if you choose them. They share your email address (Apple can hide it) and, if you allow it, your name.</li>
               <li><strong>Anthropic</strong>: writes Ask Wali answers (the Claude AI model).</li>
               <li><strong>Resend</strong>: sends sign-in, welcome, and daily verse emails.</li>
               <li><strong>Quran.com, AlQuran.cloud, Islamic Network, and jsDelivr</strong>: Quran text, recitation, tafsir, hadith, and study content.</li>
