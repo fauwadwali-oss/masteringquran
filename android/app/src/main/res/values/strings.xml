@@ -4,4 +4,7 @@
     <string name="title_activity_main">Mastering Quran</string>
     <string name="package_name">com.nusratwaliventures.masteringquran</string>
     <string name="custom_url_scheme">com.nusratwaliventures.masteringquran</string>
+    <string name="widget_name">Verse of the Day</string>
+    <string name="widget_description">A verse of the Quran in Arabic and English, new each day.</string>
+    <string name="widget_continue">Continue reading</string>
 </resources>

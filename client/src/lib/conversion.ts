@@ -1,3 +1,5 @@
+import { isNativePlatform } from "@/lib/api";
+
 const ENDPOINT = 'https://msdrills.com/site-monitoring/api/events';
 
 async function stableSubscriptionEventId(userId: string): Promise<string> {
@@ -9,6 +11,7 @@ async function stableSubscriptionEventId(userId: string): Promise<string> {
 }
 
 export function trackDailyEmailSubscription(userId: string): void {
+    if (isNativePlatform()) return;
     void (async () => {
         try {
             const body = JSON.stringify({

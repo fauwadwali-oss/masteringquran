@@ -22,7 +22,8 @@ function useProgress(audio: HTMLAudioElement | null) {
 }
 
 export function nowPlayingDetail(nowPlaying: NonNullable<ReturnType<typeof usePlayer>["nowPlaying"]>): string {
-    const { surah, mode, ayah, kind, pos, total } = nowPlaying;
+    const { source, surah, mode, ayah, kind, pos, total } = nowPlaying;
+    if (source === "verses") return `Verse ${ayah} of ${surah.ayahs}`;
     if (mode === "arabic" || !ayah) return total > 1 ? `Surah ${pos + 1} of ${total}` : "Whole surah";
     const part = mode === "arabic-translation" ? (kind === "arabic" ? "Arabic" : "Translation") : "Translation";
     return `Verse ${ayah} of ${surah.ayahs} · ${part}`;
@@ -33,11 +34,11 @@ export function nowPlayingDetail(nowPlaying: NonNullable<ReturnType<typeof usePl
  * the safe area, so on iPhone Duo it stops short of the right-hand rail.
  */
 export default function MiniPlayer() {
-    const { nowPlaying, status, audio, toggle, next, previous, stop } = usePlayer();
+    const { nowPlaying, status, audio, toggle, next, previous, stop, readerBar } = usePlayer();
     const progress = useProgress(audio);
     const location = useLocation();
 
-    if (!nowPlaying) return null;
+    if (!nowPlaying || (readerBar && nowPlaying.source === "verses")) return null;
 
     // Segments within a surah (verse by verse) fill the bar by verse, not by file.
     const surahProgress =
@@ -65,7 +66,7 @@ export default function MiniPlayer() {
                     </div>
                     <div className="flex items-center gap-2 px-3 py-2">
                         <Link
-                            to="/playlists"
+                            to={nowPlaying.source === "playlist" ? "/playlists" : `/quran/${nowPlaying.surah.number}${nowPlaying.ayah ? `/${nowPlaying.ayah}` : ""}`}
                             aria-current={location.pathname === "/playlists" ? "page" : undefined}
                             className="flex min-w-0 flex-1 items-center gap-3"
                         >
@@ -84,7 +85,7 @@ export default function MiniPlayer() {
                             </span>
                         </Link>
                         <div className="flex shrink-0 items-center">
-                            <Button variant="ghost" size="icon" aria-label="Previous surah" onClick={previous} className="h-9 w-9 rounded-xl">
+                            <Button variant="ghost" size="icon" aria-label={nowPlaying.source === "verses" ? "Previous verse" : "Previous surah"} onClick={previous} className="h-9 w-9 rounded-xl">
                                 <SkipBack className="h-4 w-4" />
                             </Button>
                             <Button
@@ -101,7 +102,7 @@ export default function MiniPlayer() {
                                     <Play className="ml-0.5 h-5 w-5" />
                                 )}
                             </Button>
-                            <Button variant="ghost" size="icon" aria-label="Next surah" onClick={next} className="h-9 w-9 rounded-xl">
+                            <Button variant="ghost" size="icon" aria-label={nowPlaying.source === "verses" ? "Next verse" : "Next surah"} onClick={next} className="h-9 w-9 rounded-xl">
                                 <SkipForward className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="icon" aria-label="Close player" onClick={stop} className="h-9 w-9 rounded-xl text-slate-400">

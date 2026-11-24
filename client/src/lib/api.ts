@@ -2,7 +2,7 @@
 // https://localhost), so server routes must use the live site's address there.
 const SITE_ORIGIN = "https://masteringquran.com";
 
-function isNativePlatform(): boolean {
+export function isNativePlatform(): boolean {
     const capacitor = (window as typeof window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
     return Boolean(capacitor?.isNativePlatform?.());
 }

@@ -4,7 +4,14 @@ import fs from "node:fs";
 import path from "path";
 import { defineConfig } from "vite";
 
-const plugins = [react(), tailwindcss()];
+// App builds (SKIP_PRERENDER) leave out the page-speed script, so the apps send no analytics.
+const stripVitals = {
+  name: "strip-vitals",
+  transformIndexHtml: (html: string) =>
+    process.env.SKIP_PRERENDER ? html.replace(/\s*<script[^>]*site-monitoring\/vitals\.js[^>]*><\/script>/, "") : html,
+};
+
+const plugins = [react(), tailwindcss(), stripVitals];
 
 export default defineConfig({
   plugins,
