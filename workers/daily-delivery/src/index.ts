@@ -15,117 +15,39 @@
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-// Verse-of-the-day pool — 366 hand-selected verses. Cycles through the year.
-// Index = (dayOfYear - 1) % POOL.length.
+// Verse-of-the-day pool. One verse is sent on its own, so verses that need the one before
+// or after them to be understood (for example 107:4) are left out. Cycles through the
+// whole pool by day number, so every verse is reached.
 const VERSE_POOL: string[] = [
-    "1:1","1:2","1:3","1:4","1:5","1:6","1:7",
-    "2:2","2:3","2:45","2:152","2:153","2:155","2:156","2:177","2:183","2:186","2:195",
-    "2:201","2:216","2:255","2:256","2:261","2:268","2:286",
-    "3:8","3:26","3:31","3:54","3:104","3:133","3:134","3:139","3:144","3:159","3:173","3:186","3:190","3:200",
-    "4:1","4:36","4:59","4:69","4:77","4:86","4:100","4:110","4:135","4:142",
-    "5:2","5:3","5:8","5:32","5:35","5:54","5:105",
-    "6:17","6:54","6:59","6:73","6:103","6:151","6:162",
-    "7:23","7:26","7:55","7:56","7:156","7:180","7:199","7:204",
-    "8:2","8:17","8:24","8:46","8:70",
-    "9:36","9:40","9:51","9:71","9:105","9:111","9:128","9:129",
-    "10:5","10:26","10:57","10:62","10:82","10:107",
-    "11:6","11:88","11:90","11:112","11:114","11:123",
-    "12:4","12:53","12:87","12:100","12:111",
-    "13:11","13:22","13:28","13:29",
-    "14:7","14:24","14:27","14:34","14:40",
-    "15:9","15:49","15:88","15:99",
-    "16:18","16:53","16:90","16:97","16:125","16:128",
-    "17:9","17:11","17:23","17:24","17:32","17:36","17:70","17:80","17:81","17:82","17:110",
-    "18:10","18:28","18:29","18:45","18:46","18:110",
-    "19:4","19:31","19:33","19:96",
-    "20:2","20:14","20:25","20:27","20:28","20:114","20:130","20:132",
-    "21:23","21:35","21:83","21:87","21:107",
-    "22:41","22:78",
-    "23:1","23:2","23:8","23:11","23:96","23:115","23:118",
-    "24:22","24:26","24:31","24:35","24:55",
-    "25:30","25:63","25:70","25:74",
-    "26:78","26:80","26:88","26:89","26:214",
-    "27:19","27:40","27:62","27:88",
-    "28:24","28:56","28:77","28:88",
-    "29:2","29:6","29:45","29:64","29:69",
-    "30:21","30:30","30:41","30:60",
-    "31:12","31:13","31:14","31:17","31:18","31:22",
-    "32:16","32:17",
-    "33:35","33:40","33:41","33:56","33:70","33:71",
-    "34:13","34:39",
-    "35:5","35:15","35:28",
-    "36:12","36:36","36:58","36:65","36:78","36:82",
-    "37:100","37:102","37:107","37:180","37:182",
-    "38:29","38:35",
-    "39:7","39:9","39:10","39:22","39:53","39:66",
-    "40:44","40:60","40:65",
-    "41:30","41:33","41:34","41:35","41:53",
-    "42:11","42:13","42:23","42:25","42:40",
-    "43:32","43:36","43:67",
-    "44:41","44:42",
-    "45:13",
-    "46:15","46:35",
-    "47:7","47:15","47:19","47:36",
-    "48:1","48:10","48:18","48:29",
-    "49:10","49:11","49:12","49:13",
-    "50:16","50:37","50:39","50:40",
-    "51:19","51:49","51:55","51:56",
-    "53:32","53:39","53:58",
-    "54:17","54:49","54:55",
-    "55:13","55:26","55:27","55:60","55:78",
-    "56:74","56:79","56:96",
-    "57:3","57:4","57:16","57:20","57:25",
-    "58:11","58:22",
-    "59:10","59:18","59:21","59:22","59:23","59:24",
-    "60:8","60:12",
-    "61:10","61:11","61:13",
-    "62:10",
-    "63:9",
-    "64:11","64:14","64:16",
-    "65:2","65:3","65:7",
-    "66:6","66:8",
-    "67:1","67:2","67:3","67:13","67:15",
-    "68:4","68:51","68:52",
-    "69:33",
-    "70:5","70:19","70:20","70:21","70:22",
-    "71:10","71:11","71:12",
-    "73:8","73:20",
-    "74:42","74:43","74:44","74:45","74:46",
-    "76:1","76:3","76:7","76:8","76:9","76:10","76:29","76:30",
-    "77:50",
-    "78:8","78:38",
-    "79:40","79:41",
-    "80:17",
-    "81:29",
-    "82:6","82:7","82:8",
-    "84:6",
-    "86:17",
-    "87:14","87:15","87:16","87:17",
-    "88:17","88:18","88:19","88:20","88:21","88:22","88:26",
-    "89:14","89:15","89:16","89:27","89:28","89:29","89:30",
-    "90:4","90:11","90:12","90:13","90:14","90:15","90:16","90:17",
-    "91:7","91:8","91:9","91:10",
-    "92:18","92:19","92:20","92:21",
-    "93:1","93:2","93:3","93:4","93:5","93:6","93:7","93:8","93:9","93:10","93:11",
-    "94:1","94:2","94:3","94:4","94:5","94:6","94:7","94:8",
-    "95:4","95:6",
-    "96:1","96:2","96:3","96:4","96:5",
-    "97:1","97:2","97:3","97:4","97:5",
-    "98:7","98:8",
-    "99:7","99:8",
-    "100:6","100:7","100:8",
-    "102:1","102:2","102:3","102:8",
-    "103:1","103:2","103:3",
-    "104:1","104:2","104:3",
-    "105:1","105:2","105:3","105:4","105:5",
-    "107:4","107:5","107:6","107:7",
-    "108:1","108:2","108:3",
-    "109:1","109:6",
-    "110:1","110:2","110:3",
-    "112:1","112:2","112:3","112:4",
-    "113:1","113:2","113:3","113:4","113:5",
-    "114:1","114:2","114:3","114:4","114:5","114:6",
+    "1:1","1:2","1:3","1:4","1:5","1:6","1:7","2:2","2:3","2:45","2:152","2:153","2:155","2:156",
+    "2:177","2:183","2:186","2:195","2:201","2:216","2:255","2:256","2:261","2:286","3:8","3:26","3:31","3:54",
+    "3:104","3:133","3:134","3:139","3:144","3:159","3:173","3:186","3:190","3:200","4:1","4:36","4:59","4:69",
+    "4:77","4:86","4:100","4:110","4:135","5:2","5:3","5:8","5:32","5:35","5:54","6:17","6:54","6:59",
+    "6:73","6:103","6:151","6:162","7:23","7:26","7:55","7:56","7:156","7:180","7:199","8:2","8:24","8:46",
+    "8:70","9:51","9:71","9:105","9:128","9:129","10:26","10:57","10:62","10:82","10:107","11:6","11:88","11:90",
+    "11:112","11:114","11:123","12:4","12:53","12:87","12:100","12:111","13:11","13:22","13:28","13:29","14:7","14:24",
+    "14:27","14:34","14:40","15:9","15:49","15:88","15:99","16:18","16:53","16:90","16:97","16:125","16:128","17:9",
+    "17:23","17:24","17:32","17:36","17:70","17:80","17:81","17:82","17:110","18:10","18:28","18:29","18:45","18:46",
+    "18:110","19:4","19:31","19:33","19:96","20:2","20:14","20:25","20:27","20:28","20:114","20:130","20:132","21:23",
+    "21:35","21:83","21:87","21:107","22:78","23:1","23:2","23:96","23:115","23:118","24:22","24:26","24:31","24:35",
+    "24:55","25:30","25:63","25:70","25:74","26:78","26:80","26:88","26:89","26:214","27:19","27:40","27:62","27:88",
+    "28:24","28:56","28:77","28:88","29:2","29:6","29:45","29:64","29:69","30:21","30:30","30:60","31:12","31:13",
+    "31:14","31:17","31:18","31:22","32:16","32:17","33:35","33:41","33:56","33:70","33:71","34:13","34:39","35:5",
+    "35:15","35:28","36:12","36:36","36:58","36:65","36:78","36:82","37:100","37:107","37:180","37:182","38:29","38:35",
+    "39:7","39:9","39:10","39:22","39:53","39:66","40:44","40:60","40:65","41:30","41:33","41:34","41:35","41:53",
+    "42:11","42:13","42:23","42:25","42:40","43:32","43:67","45:13","46:35","47:7","47:19","48:1","48:10","48:18",
+    "48:29","49:10","49:11","49:12","49:13","50:16","50:37","50:39","50:40","51:19","51:49","51:55","51:56","53:32",
+    "53:39","53:58","54:49","54:55","55:13","55:26","55:27","55:60","55:78","56:74","56:79","56:96","57:3","57:4",
+    "57:16","57:20","57:25","58:11","59:10","59:18","59:21","59:22","59:23","59:24","60:8","60:12","61:10","61:11",
+    "61:13","62:10","63:9","64:11","64:14","64:16","65:2","65:3","65:7","66:6","66:8","67:1","67:2","67:3",
+    "67:13","67:15","68:4","71:10","71:11","71:12","73:8","73:20","76:1","76:3","76:9","76:29","76:30","84:6",
+    "87:14","87:15","87:16","87:17","89:27","89:28","89:29","89:30","91:9","91:10","93:3","93:4","93:5","93:6",
+    "93:7","93:8","93:11","94:1","94:2","94:3","94:4","94:5","94:6","94:7","94:8","95:4","95:6","96:1",
+    "96:2","96:3","96:5","97:1","97:2","97:3","97:5","98:8","99:7","99:8","102:8","103:3","108:1","108:2",
+    "108:3","109:6","110:3","112:1","112:2","112:4","113:1","114:1",
 ];
+
+const WORKER_URL = "https://mq-daily-delivery.fauwadwali.workers.dev";
 
 // ──────────────────────────────────────────────────────────────────────
 interface Env {
@@ -135,6 +57,7 @@ interface Env {
     VAPID_PUBLIC_KEY?: string;
     VAPID_PRIVATE_KEY?: string;
     VAPID_SUBJECT?: string;
+    RUN_TOKEN?: string;
 }
 
 interface EmailSub {
@@ -145,6 +68,7 @@ interface EmailSub {
     active: boolean;
     last_sent_at: string | null;
     last_sent_verse: string | null;
+    unsubscribe_token: string;
 }
 
 interface PushSub {
@@ -174,17 +98,49 @@ export default {
     async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
         ctx.waitUntil(runDelivery(env));
     },
-    // Also expose /run over HTTP for manual testing + /health for monitoring.
+    // /health for monitoring, /unsubscribe for the link and one-click header in each email,
+    // and /run for manual testing (needs the RUN_TOKEN secret; off when it is not set).
     async fetch(req: Request, env: Env): Promise<Response> {
         const url = new URL(req.url);
         if (url.pathname === "/health") return new Response("ok");
+        if (url.pathname === "/unsubscribe") return handleUnsubscribe(req, url, env);
         if (url.pathname === "/run" && req.method === "POST") {
+            if (!env.RUN_TOKEN || !(await sameSecret(req.headers.get("Authorization") ?? "", `Bearer ${env.RUN_TOKEN}`))) return new Response("not found", { status: 404 });
             await runDelivery(env);
             return new Response("done");
         }
-        return new Response("mq-daily-delivery — see /health or POST /run", { status: 200 });
+        return new Response("not found", { status: 404 });
     },
 };
+
+async function sameSecret(a: string, b: string): Promise<boolean> {
+    const digest = async (v: string) => new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v)));
+    const [x, y] = await Promise.all([digest(a), digest(b)]);
+    return x.reduce((diff, byte, i) => diff | (byte ^ y[i]), 0) === 0;
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function unsubscribePage(body: string, status = 200): Response {
+    return new Response(
+        `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Daily verse email | Mastering Quran</title></head><body style="font-family:system-ui,sans-serif;max-width:480px;margin:64px auto;padding:0 16px;color:#0f172a">${body}</body></html>`,
+        { status, headers: { "Content-Type": "text/html; charset=utf-8", "Referrer-Policy": "no-referrer" } },
+    );
+}
+
+// GET only asks (mail scanners follow links); POST unsubscribes.
+async function handleUnsubscribe(req: Request, url: URL, env: Env): Promise<Response> {
+    const token = url.searchParams.get("t") ?? "";
+    if (!UUID.test(token)) return unsubscribePage("<p>This unsubscribe link is not valid.</p>", 400);
+    if (req.method === "GET") {
+        return unsubscribePage(`<h1>Stop the daily verse email?</h1><form method="post" action="/unsubscribe?t=${token}"><button style="padding:10px 18px;background:#047857;color:#fff;border:0;border-radius:8px;font-size:16px">Unsubscribe</button></form>`);
+    }
+    if (req.method !== "POST") return new Response("method not allowed", { status: 405 });
+    const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+    const { error } = await supabase.from("mq_email_subscriptions").update({ active: false }).eq("unsubscribe_token", token);
+    if (error) return unsubscribePage("<p>Something went wrong. Please try again.</p>", 500);
+    return unsubscribePage('<h1>You are unsubscribed.</h1><p>You can turn the email back on at <a href="https://masteringquran.com/daily">masteringquran.com/daily</a>.</p>');
+}
 
 async function runDelivery(env: Env) {
     const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
@@ -193,8 +149,7 @@ async function runDelivery(env: Env) {
 
     // Pick the verse for today (UTC-based for determinism across edge instances).
     const today = new Date();
-    const dayOfYear = getDayOfYear(today);
-    const verseKey = VERSE_POOL[(dayOfYear - 1) % VERSE_POOL.length];
+    const verseKey = VERSE_POOL[Math.floor(today.getTime() / 86_400_000) % VERSE_POOL.length];
     let verse: VerseData | null = null;
     try {
         verse = await fetchVerse(verseKey);
@@ -248,7 +203,7 @@ async function deliverEmails(env: Env, supabase: SupabaseClient, verse: VerseDat
 
     const { data, error } = await supabase
         .from("mq_email_subscriptions")
-        .select("user_id, email, delivery_hour, timezone, active, last_sent_at, last_sent_verse")
+        .select("user_id, email, delivery_hour, timezone, active, last_sent_at, last_sent_verse, unsubscribe_token")
         .eq("active", true);
     if (error) {
         console.error("DB error", error);
@@ -261,7 +216,7 @@ async function deliverEmails(env: Env, supabase: SupabaseClient, verse: VerseDat
             if (!isDueNow(sub.delivery_hour, sub.timezone)) continue;
             if (wasSentToday(sub.last_sent_at, sub.timezone)) continue;
 
-            const ok = await sendVerseEmail(env.RESEND_API_KEY, sub.email, verse);
+            const ok = await sendVerseEmail(env.RESEND_API_KEY, sub.email, verse, `${WORKER_URL}/unsubscribe?t=${sub.unsubscribe_token}`);
             if (ok) {
                 await supabase
                     .from("mq_email_subscriptions")
@@ -277,8 +232,8 @@ async function deliverEmails(env: Env, supabase: SupabaseClient, verse: VerseDat
     }
 }
 
-async function sendVerseEmail(apiKey: string, to: string, verse: VerseData): Promise<boolean> {
-    const html = renderEmailHtml(verse);
+async function sendVerseEmail(apiKey: string, to: string, verse: VerseData, unsubscribeUrl: string): Promise<boolean> {
+    const html = renderEmailHtml(verse, unsubscribeUrl);
     const r = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -290,6 +245,7 @@ async function sendVerseEmail(apiKey: string, to: string, verse: VerseData): Pro
             to: [to],
             subject: `Quran ${verse.verseKey} — a verse for today`,
             html,
+            headers: { "List-Unsubscribe": `<${unsubscribeUrl}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },
         }),
     });
     if (!r.ok) {
@@ -299,7 +255,7 @@ async function sendVerseEmail(apiKey: string, to: string, verse: VerseData): Pro
     return true;
 }
 
-function renderEmailHtml(v: VerseData): string {
+function renderEmailHtml(v: VerseData, unsubscribeUrl: string): string {
     return `
 <!doctype html>
 <html>
@@ -338,7 +294,8 @@ function renderEmailHtml(v: VerseData): string {
       Translation: Al-Hilali &amp; Khan, <em>Noble Qur'an</em>.<br/>
       You're receiving this because you subscribed at
       <a href="https://masteringquran.com/daily">masteringquran.com/daily</a>.
-      <a href="https://masteringquran.com/daily">Manage preferences</a>.
+      <a href="https://masteringquran.com/daily">Manage preferences</a> or
+      <a href="${unsubscribeUrl}">unsubscribe</a>.
     </p>
   </div>
 </body>
@@ -576,12 +533,6 @@ function wasSentToday(lastSentAt: string | null, timezone: string): boolean {
     } catch {
         return false;
     }
-}
-
-function getDayOfYear(d: Date): number {
-    const start = Date.UTC(d.getUTCFullYear(), 0, 0);
-    const diff = d.getTime() - start;
-    return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
 function truncate(s: string, n: number): string {

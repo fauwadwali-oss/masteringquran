@@ -211,7 +211,8 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
     const [sub, setSub] = useState<EmailSubscription | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [email, setEmail] = useState(defaultEmail);
+    // The daily verse only goes to the confirmed address on the account.
+    const email = defaultEmail;
     const [hour, setHour] = useState(7);
     const [timezone, setTimezone] = useState(localTz());
 
@@ -222,7 +223,6 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
                 if (cancelled) return;
                 setSub(s);
                 if (s) {
-                    setEmail(s.email);
                     setHour(s.delivery_hour);
                     setTimezone(s.timezone);
                 }
@@ -256,7 +256,6 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
                 timezone: normalizedTimezone,
                 active: true,
             });
-            setEmail(normalizedEmail);
             setTimezone(normalizedTimezone);
             setSub(s);
             if (!wasActive && s.active) trackDailyEmailSubscription(userId);
@@ -310,8 +309,8 @@ function EmailSubscriptionCard({ userId, defaultEmail }: { userId: string; defau
                                 <Input
                                     type="email"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="you@example.com"
+                                    readOnly
+                                    aria-label="Email on your account"
                                 />
                             </div>
                             <div>

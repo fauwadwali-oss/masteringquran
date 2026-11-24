@@ -1,20 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Loader2, ExternalLink, BookOpen, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { ISLAMIC_DATA_BASE as DATA_BASE, publishedNumber, sunnahUrl as sunnahLink, type HadithRecord as Hadith } from "@/lib/hadith";
 
-// Same CDN the Hadith page uses.
-const DATA_BASE = "https://cdn.jsdelivr.net/gh/fauwadwali-oss/nwv-islamic-data@main";
 
-interface Hadith {
-    hadithnumber: number | string;
-    arabicnumber: number | string;
-    text: string;
-    grades?: Array<{ name?: string; grade?: string }>;
-    reference?: { book: number; hadith: number };
-}
 
 interface CollectionData {
     metadata: {
@@ -72,35 +63,19 @@ function isNarratorOnly(text: string, exclusions: string[], searchTerms: string[
     return !matchesAnyTerm(remainder, searchTerms);
 }
 
-function highlightTerms(text: string, terms: string[]): string {
-    // Return plain text with <mark> around each term match. For rendering we'll
-    // feed this into dangerouslySetInnerHTML — safe because text is from our
-    // trusted CDN JSON and we don't inject user input here.
-    let out = text;
-    // Sort by length desc so longer phrases match first
-    const sorted = [...terms].sort((a, b) => b.length - a.length);
-    for (const t of sorted) {
-        const re = new RegExp(`(${escapeRegExp(t)})`, "gi");
-        out = out.replace(
-            re,
-            '<mark class="bg-emerald-200/80 dark:bg-emerald-800/60 text-emerald-900 dark:text-emerald-200 rounded px-0.5">$1</mark>',
-        );
-    }
-    return out;
+function highlightTerms(text: string, terms: string[]): ReactNode {
+    if (!terms.length) return text;
+    // Longer phrases first so they win over their parts.
+    const alternatives = [...terms].sort((a, b) => b.length - a.length).map(escapeRegExp).join("|");
+    return text.split(new RegExp(`(${alternatives})`, "gi")).map((part, i) =>
+        i % 2 ? (
+            <mark key={i} className="bg-emerald-200/80 dark:bg-emerald-800/60 text-emerald-900 dark:text-emerald-200 rounded px-0.5">{part}</mark>
+        ) : part,
+    );
 }
 
 function escapeRegExp(s: string): string {
     return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-// Grade badge color based on common classifications in fawazahmed0's data.
-function gradeBadge(grade?: string): { label: string; color: string } | null {
-    if (!grade) return null;
-    const g = grade.toLowerCase();
-    if (g.includes("sahih") || g.includes("authentic")) return { label: grade, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" };
-    if (g.includes("hasan") || g.includes("good")) return { label: grade, color: "bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300" };
-    if (g.includes("daif") || g.includes("da'if") || g.includes("weak")) return { label: grade, color: "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" };
-    return { label: grade, color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300" };
 }
 
 interface Props {
@@ -186,7 +161,7 @@ export default function ProphetHadithBrowser({
                         <h3 className="font-semibold text-slate-900 dark:text-white">Hadiths from Prophet Muhammad ﷺ</h3>
                     </div>
                     <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                        Every authenticated hadith is a narration from the Prophet Muhammad ﷺ. Browse the full collections of Sahih al-Bukhari and Sahih Muslim, over 15,000 hadiths combined, organized by book and chapter.
+                        Browse the full collections of Sahih al-Bukhari and Sahih Muslim, over 15,000 hadiths combined, organized by book and chapter.
                     </p>
                     <div className="flex gap-2 pt-2 flex-wrap">
                         <a
@@ -304,16 +279,15 @@ function HadithCard({
     searchTerms: string[];
 }) {
     const collectionName = collection === "bukhari" ? "Sahih al-Bukhari" : "Sahih Muslim";
-    const sunnahUrl = `https://sunnah.com/${collection}:${hadith.hadithnumber}`;
-    const grade = hadith.grades?.[0]?.grade;
-    const gradeInfo = gradeBadge(grade);
+    const sunnahUrl = sunnahLink(hadith, collection);
+    const number = publishedNumber(hadith, collection);
 
     return (
         <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-2">
             <div className="flex items-center justify-between gap-2 flex-wrap">
                 <div className="flex items-center gap-2 text-xs">
                     <span className="font-semibold text-indigo-700 dark:text-indigo-400">{collectionName}</span>
-                    <span className="text-slate-400">#{hadith.hadithnumber}</span>
+                    <span className="text-slate-400">{number ? `#${number}` : "Unnumbered"}</span>
                     {hadith.reference && (
                         <span className="text-slate-400">
                             (Book {hadith.reference.book}, Hadith {hadith.reference.hadith})
@@ -321,12 +295,7 @@ function HadithCard({
                     )}
                 </div>
                 <div className="flex items-center gap-2">
-                    {gradeInfo && (
-                        <span className={cn("text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded", gradeInfo.color)}>
-                            {gradeInfo.label}
-                        </span>
-                    )}
-                    <a
+                    {sunnahUrl && <a
                         href={sunnahUrl}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -334,13 +303,10 @@ function HadithCard({
                         title="View on sunnah.com"
                     >
                         sunnah.com <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
+                    </a>}
                 </div>
             </div>
-            <p
-                className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: highlightTerms(hadith.text, searchTerms) }}
-            />
+            <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{highlightTerms(hadith.text, searchTerms)}</p>
         </div>
     );
 }

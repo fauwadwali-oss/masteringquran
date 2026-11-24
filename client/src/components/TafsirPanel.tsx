@@ -1,3 +1,4 @@
+import { ISLAMIC_DATA_BASE as DATA_BASE } from "@/lib/hadith";
 import { useEffect, useState } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 
@@ -8,7 +9,6 @@ interface TafsirPanelProps {
     editionName: string;
 }
 
-const DATA_BASE = "https://cdn.jsdelivr.net/gh/fauwadwali-oss/nwv-islamic-data@main";
 
 // Strip HTML/Markdown artifacts that occasionally appear in the source data
 const cleanTafsirText = (text: string): string =>

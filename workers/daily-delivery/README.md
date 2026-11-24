@@ -90,13 +90,13 @@ frontend can subscribe users with the same public key.
 
 ### 4. Verify the schema is in place
 
-Run `supabase/migrations/002_phase5_6_schema.sql` in the Supabase SQL editor.
+Run `supabase/migrations/002_phase5_6_schema.sql`, then `006_ai_limit_account_email.sql`, in the Supabase SQL editor.
 
 ## Manual testing
 
 ```bash
-# One-off run (useful while iterating)
-curl -X POST https://mq-daily-delivery.<your-subdomain>.workers.dev/run
+# One-off run (needs the RUN_TOKEN secret; the route is off when it is not set)
+curl -X POST -H "Authorization: Bearer $RUN_TOKEN" https://mq-daily-delivery.<your-subdomain>.workers.dev/run
 
 # Check the worker is alive
 curl https://mq-daily-delivery.<your-subdomain>.workers.dev/health
