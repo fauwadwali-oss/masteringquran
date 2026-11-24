@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { isNativePlatform } from "@/lib/api";
 
 const GA_MEASUREMENT_ID = (import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined)?.trim();
 
@@ -43,7 +44,8 @@ export default function GoogleAnalytics() {
   const location = useLocation();
 
   useEffect(() => {
-    if (!GA_MEASUREMENT_ID) {
+    // The apps carry no analytics SDK.
+    if (!GA_MEASUREMENT_ID || isNativePlatform()) {
       return;
     }
 

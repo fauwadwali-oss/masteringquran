@@ -30,6 +30,7 @@ import org.json.JSONObject;
 public class VerseWidget extends AppWidgetProvider {
 
     private static final String TAG = "VerseWidget";
+    private static Typeface amiri;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager manager, int[] ids) {
@@ -100,11 +101,15 @@ public class VerseWidget extends AppWidgetProvider {
     private static Bitmap arabic(Context context, String text, int widthDp, int heightDp) {
         // Widgets share a small memory budget, so draw at no more than 2x.
         float density = Math.min(2f, context.getResources().getDisplayMetrics().density);
-        int width = Math.min(800, Math.round(widthDp * density));
-        int height = Math.min(700, Math.round(heightDp * density));
+        // Keep every update under about 1 MB, whatever size the widget is stretched to.
+        double area = (double) widthDp * heightDp * density * density;
+        if (area > 250_000) density *= (float) Math.sqrt(250_000 / area);
+        int width = Math.max(1, Math.round(widthDp * density));
+        int height = Math.max(1, Math.round(heightDp * density));
         TextPaint paint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.WHITE);
-        paint.setTypeface(Typeface.createFromAsset(context.getAssets(), "widget/Amiri-Regular.ttf"));
+        if (amiri == null) amiri = Typeface.createFromAsset(context.getAssets(), "widget/Amiri-Regular.ttf");
+        paint.setTypeface(amiri);
         StaticLayout layout = null;
         for (float dp = 34; dp >= 9; dp -= 1) {
             paint.setTextSize(dp * density);

@@ -20,7 +20,6 @@
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		71A7EA4A68A1CE31E42249C6 /* QuranWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC44961477C6111A8DF4567 /* QuranWidget.swift */; };
 		7A1C5E012F00000100A1B2C3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C5E002F00000100A1B2C3 /* SceneDelegate.swift */; };
-		B36E4BDDCAF804C6BA8ECE7F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A35FFFCD18CF9D8287E33F2 /* Foundation.framework */; };
 		F286D7E5FA1451337B2C5588 /* Amiri-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4EF99C05E5E801671AC3103 /* Amiri-Regular.ttf */; };
 		FE701D75011194FC953F48F2 /* QuranWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 562873E38AE779BDB8AF27BF /* QuranWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -63,7 +62,6 @@
 		562873E38AE779BDB8AF27BF /* QuranWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = QuranWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AC44961477C6111A8DF4567 /* QuranWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QuranWidget.swift; sourceTree = "<group>"; };
 		68822EBCC103049E16A16CEA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		6A35FFFCD18CF9D8287E33F2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		7A1C5E002F00000100A1B2C3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 		A74344469E990E5232A505F8 /* verses.json */ = {isa = PBXFileReference; includeInIndex = 1; path = verses.json; sourceTree = "<group>"; };
@@ -84,7 +82,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B36E4BDDCAF804C6BA8ECE7F /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,7 +91,6 @@
 		0E3F50EB76F8F90A49392BD0 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				6A35FFFCD18CF9D8287E33F2 /* Foundation.framework */,
 			);
 			name = iOS;
 			sourceTree = "<group>";

@@ -297,6 +297,9 @@ export default function Quran() {
         fetchSurahs();
     }, []);
 
+    // Only the newest request may change the page: a slow earlier one could bring back the old reciter.
+    const verseRequest = useRef(0);
+
     // Fetch Verses based on view mode
     useEffect(() => {
         if (viewMode === "surah" && currentSurah) {
@@ -385,6 +388,8 @@ export default function Quran() {
     const fetchSurahVerses = async () => {
         if (!currentSurah) return;
 
+        const request = ++verseRequest.current;
+        const stale = () => request !== verseRequest.current;
         setLoading(true);
         setError(null);
         try {
@@ -392,6 +397,7 @@ export default function Quran() {
                 `https://api.quran.com/api/v4/verses/by_chapter/${currentSurah.number}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
             );
             const data = await response.json();
+            if (stale()) return;
 
             if (Array.isArray(data.verses)) {
                 setVerses(mapQuranComVerses(data.verses));
@@ -408,13 +414,16 @@ export default function Quran() {
                 setError("Failed to fetch verses");
             }
         } catch (err) {
+            if (stale()) return;
             setError("An error occurred while fetching verses");
         } finally {
-            setLoading(false);
+            if (!stale()) setLoading(false);
         }
     };
 
     const fetchJuzVerses = async () => {
+        const request = ++verseRequest.current;
+        const stale = () => request !== verseRequest.current;
         setLoading(true);
         setError(null);
         try {
@@ -422,6 +431,7 @@ export default function Quran() {
                 `https://api.quran.com/api/v4/verses/by_juz/${currentJuz}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
             );
             const data = await response.json();
+            if (stale()) return;
 
             if (Array.isArray(data.verses)) {
                 setVerses(mapQuranComVerses(data.verses));
@@ -429,13 +439,16 @@ export default function Quran() {
                 setError("Failed to fetch Juz");
             }
         } catch (err) {
+            if (stale()) return;
             setError("An error occurred while fetching Juz");
         } finally {
-            setLoading(false);
+            if (!stale()) setLoading(false);
         }
     };
 
     const fetchPageVerses = async () => {
+        const request = ++verseRequest.current;
+        const stale = () => request !== verseRequest.current;
         setLoading(true);
         setError(null);
         try {
@@ -443,6 +456,7 @@ export default function Quran() {
                 `https://api.quran.com/api/v4/verses/by_page/${currentPage}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=50`
             );
             const data = await response.json();
+            if (stale()) return;
 
             if (Array.isArray(data.verses)) {
                 setVerses(mapQuranComVerses(data.verses));
@@ -450,13 +464,16 @@ export default function Quran() {
                 setError("Failed to fetch page");
             }
         } catch (err) {
+            if (stale()) return;
             setError("An error occurred while fetching page");
         } finally {
-            setLoading(false);
+            if (!stale()) setLoading(false);
         }
     };
 
     const fetchHizbVerses = async () => {
+        const request = ++verseRequest.current;
+        const stale = () => request !== verseRequest.current;
         setLoading(true);
         setError(null);
         try {
@@ -464,6 +481,7 @@ export default function Quran() {
                 `https://api.quran.com/api/v4/verses/by_hizb/${currentHizb}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
             );
             const data = await response.json();
+            if (stale()) return;
 
             if (Array.isArray(data.verses)) {
                 setVerses(mapQuranComVerses(data.verses));
@@ -471,13 +489,16 @@ export default function Quran() {
                 setError("Failed to fetch Hizb");
             }
         } catch (err) {
+            if (stale()) return;
             setError("An error occurred while fetching Hizb");
         } finally {
-            setLoading(false);
+            if (!stale()) setLoading(false);
         }
     };
 
     const fetchRubVerses = async () => {
+        const request = ++verseRequest.current;
+        const stale = () => request !== verseRequest.current;
         setLoading(true);
         setError(null);
         try {
@@ -485,16 +506,20 @@ export default function Quran() {
                 `https://api.quran.com/api/v4/verses/by_rub/${currentRub}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
             );
             const data = await response.json();
+            if (stale()) return;
             if (Array.isArray(data.verses)) setVerses(mapQuranComVerses(data.verses));
             else setError("Failed to fetch Rub");
         } catch (err) {
+            if (stale()) return;
             setError("An error occurred while fetching Rub");
         } finally {
-            setLoading(false);
+            if (!stale()) setLoading(false);
         }
     };
 
     const fetchManzilVerses = async () => {
+        const request = ++verseRequest.current;
+        const stale = () => request !== verseRequest.current;
         setLoading(true);
         setError(null);
         try {
@@ -502,12 +527,14 @@ export default function Quran() {
                 `https://api.quran.com/api/v4/verses/by_manzil/${currentManzil}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=700`
             );
             const data = await response.json();
+            if (stale()) return;
             if (Array.isArray(data.verses)) setVerses(mapQuranComVerses(data.verses));
             else setError("Failed to fetch Manzil");
         } catch (err) {
+            if (stale()) return;
             setError("An error occurred while fetching Manzil");
         } finally {
-            setLoading(false);
+            if (!stale()) setLoading(false);
         }
     };
 

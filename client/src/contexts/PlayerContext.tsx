@@ -55,6 +55,8 @@ export interface ReaderVerse {
 }
 
 interface Session {
+    /** The voice this session was started with. */
+    reciter: string;
     source: PlayerSource;
     playlistId: string;
     playlistName: string;
@@ -70,6 +72,7 @@ interface Session {
 export type PlayerStatus = "idle" | "loading" | "playing" | "paused";
 
 export interface NowPlaying {
+    reciter: string;
     source: PlayerSource;
     playlistId: string;
     playlistName: string;
@@ -277,6 +280,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     // What the reader asked for, as opposed to what the audio element is doing:
     // a WebView can pause audio by itself when the app goes to the background.
     const wantPlay = useRef(false);
+    const loading = useRef(false);
     const [status, setStatus] = useState<PlayerStatus>("idle");
     const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
     const [continuous, setContinuousState] = useState(false);
@@ -298,6 +302,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         const segment = s.segments[s.seg];
         const surah = getSurah(segment?.surah ?? s.surahs[s.order[s.pos]])!;
         setNowPlaying({
+            reciter: s.reciter,
             source: s.source,
             playlistId: s.playlistId,
             playlistName: s.playlistName,
@@ -326,7 +331,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         if (s.source !== "playlist") return;
         const pos = nextPosition(s.pos, s.order.length, settingsRef.current.repeat);
         if (pos === null || pos === s.pos) return;
-        void fetchSegments(s.surahs[s.order[pos]], s.mode, settingsRef.current.reciter, s.voice).catch(() => undefined);
+        void fetchSegments(s.surahs[s.order[pos]], s.mode, s.reciter, s.voice).catch(() => undefined);
     }, []);
 
     const playSegment = useCallback((index: number) => {
@@ -354,17 +359,25 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         s.segments = [];
         s.seg = 0;
         playGen.current++;
+        wantPlay.current = true;
+        loading.current = true;
         audioRef.current?.pause();
         setStatus("loading");
         publish();
         try {
-            const segments = await fetchSegments(surahNumber, s.mode, settingsRef.current.reciter, s.voice);
+            const segments = await fetchSegments(surahNumber, s.mode, s.reciter, s.voice);
             if (token !== loadToken.current || session.current !== s) return;
+            loading.current = false;
             s.segments = segments;
-            playSegment(0);
+            // Paused while this was loading: stay paused.
+            if (wantPlay.current) playSegment(0);
+            else publish();
         } catch {
             if (token !== loadToken.current) return;
+            loading.current = false;
+            wantPlay.current = false;
             setStatus("paused");
+            setNowPlayingState("paused");
             toast.error(`Could not load ${getSurah(surahNumber)?.englishName ?? "this surah"}. Check your connection and try again.`);
         }
     }, [playSegment, publish]);
@@ -402,6 +415,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         const order = buildOrder(playlist.surahs.length, settingsRef.current.shuffle, start);
         session.current = {
             source: "playlist",
+            reciter: settingsRef.current.reciter,
             playlistId: playlist.id,
             playlistName: playlist.name,
             surahs: [...playlist.surahs],
@@ -418,7 +432,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const playSurah = useCallback((surah: number) => {
         if (!getSurah(surah)) return;
         session.current = {
-            source: "surah", playlistId: "", playlistName: "Whole surah", surahs: [surah], mode: "arabic", voice: "en",
+            source: "surah", reciter: settingsRef.current.reciter, playlistId: "", playlistName: "Whole surah", surahs: [surah], mode: "arabic", voice: "en",
             order: [0], pos: 0, segments: [], seg: 0,
         };
         void loadTrack(0);
@@ -431,8 +445,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         const index = playable.indexOf(start);
         if (index < 0) return;
         loadToken.current++;
+        loading.current = false;
         session.current = {
-            source: "verses", playlistId: "", playlistName: "Quran reader", surahs: [start.surah], mode: "arabic", voice: "en",
+            source: "verses", reciter: settingsRef.current.reciter, playlistId: "", playlistName: "Quran reader", surahs: [start.surah], mode: "arabic", voice: "en",
             order: [0], pos: 0, seg: index,
             segments: playable.map((v) => ({ url: v.url, kind: "arabic" as const, ayah: v.ayah, surah: v.surah })),
         };
@@ -442,18 +457,27 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const pause = useCallback(() => {
         wantPlay.current = false;
         audioRef.current?.pause();
+        if (loading.current) {
+            setStatus("paused");
+            setNowPlayingState("paused");
+        }
     }, []);
 
     const toggle = useCallback(() => {
         const el = audioRef.current;
         const s = session.current;
         if (!el || !s) return;
+        if (loading.current) {
+            wantPlay.current = !wantPlay.current;
+            setStatus(wantPlay.current ? "loading" : "paused");
+            return;
+        }
         if (!s.segments.length) {
             void loadTrack(s.pos);
             return;
         }
         if (el.paused) {
-            if (!el.src || el.ended) {
+            if (!el.src || el.ended || !isCurrentSource()) {
                 playSegment(s.seg);
                 return;
             }
@@ -467,7 +491,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             wantPlay.current = false;
             el.pause();
         }
-    }, [loadTrack, playSegment]);
+    }, [isCurrentSource, loadTrack, playSegment]);
 
     const next = useCallback(() => {
         const s = session.current;
@@ -495,6 +519,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     const stop = useCallback(() => {
         loadToken.current++;
+        loading.current = false;
         playGen.current++;
         wantPlay.current = false;
         session.current = null;
@@ -512,6 +537,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     const stopRef = useRef(stop);
     stopRef.current = stop;
+
+    const pauseRef = useRef(pause);
+    pauseRef.current = pause;
 
     const cycleRepeat = useCallback(() => {
         setSettings((s) => ({ ...s, repeat: s.repeat === "off" ? "all" : s.repeat === "all" ? "one" : "off" }));
@@ -536,6 +564,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setSettings((s) => ({ ...s, reciter }));
         // A whole surah starts again with the new voice; paused audio is dropped.
         if (session.current?.source === "surah") {
+            session.current.reciter = reciter;
             if (wantPlay.current) void loadTrack(0);
             else stopRef.current();
         } else if (session.current?.source === "verses") stopRef.current();
@@ -548,8 +577,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     // Other audio on the page (a verse, the whole-surah button) pauses the playlist.
     useEffect(() => onAudioFocusLost("playlist", () => {
-        wantPlay.current = false;
-        audioRef.current?.pause();
+        pauseRef.current();
     }), []);
 
     // The Android WebView pauses audio a few seconds after the app leaves the
@@ -581,7 +609,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             if (el.ended) return;
             // Paused by the system while in the background (the Android WebView does
             // this): keep showing "playing" so it resumes when the reader comes back.
-            if (document.visibilityState === "hidden" && wantPlay.current) return;
+            if (document.visibilityState === "hidden" && wantPlay.current && !loading.current) return;
             setStatus((st) => (st === "loading" ? st : "paused"));
             setNowPlayingState("paused");
         };
@@ -633,14 +661,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         if (!nowPlaying) return;
         const { source, surah, ayah, kind, playlistName } = nowPlaying;
         const voice = TRANSLATION_VOICES.find((v) => v.id === nowPlaying.voice);
-        const artist = kind === "translation" ? (voice ? `${voice.label} translation, ${voice.credit}` : "Translation") : reciterName(settings.reciter);
+        const artist = kind === "translation" ? (voice ? `${voice.label} translation, ${voice.credit}` : "Translation") : reciterName(nowPlaying.reciter);
         setNowPlayingMetadata({
             title: ayah ? `Surah ${surah.englishName}, Ayah ${ayah} of ${surah.ayahs}` : `Surah ${surah.englishName}`,
             artist,
             album: source === "playlist" ? playlistName : "Mastering Quran",
             surah: { number: surah.number, arabicName: surah.arabicName, englishName: surah.englishName },
         });
-    }, [nowPlaying, settings.reciter]);
+    }, [nowPlaying]);
 
     // Seek bar on the lock screen, for whole-surah audio.
     useEffect(() => {
@@ -653,10 +681,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         el.addEventListener("loadedmetadata", update);
         el.addEventListener("seeked", update);
         el.addEventListener("play", update);
+        // Without this a paused card jumps back to the last position it was told about.
+        el.addEventListener("pause", update);
         return () => {
             el.removeEventListener("loadedmetadata", update);
             el.removeEventListener("seeked", update);
             el.removeEventListener("play", update);
+            el.removeEventListener("pause", update);
         };
     }, [audio]);
 

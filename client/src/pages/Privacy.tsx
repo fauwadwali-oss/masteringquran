@@ -32,7 +32,7 @@ export default function Privacy() {
               <li><strong>Sign-in activity.</strong> We record the steps of signing up, signing in, and resetting a password (for example, which option you chose and whether it worked) to find and fix problems. These records do not include your email address or password.</li>
               <li><strong>Ask Wali questions.</strong> When you use Ask Wali, your question and the recent messages in that conversation are sent to Anthropic to write the answer. Your name and email are not included. We do not save your questions; we store how many you asked each day to apply the daily limit.</li>
               <li><strong>Daily reminders.</strong> If you turn them on, we store your email address or a push notification address, your timezone, and your delivery time.</li>
-              <li><strong>Usage data.</strong> We use Google Analytics to count page views, referrers, and some actions, and a page-speed script from msdrills.com, a site we operate, to measure loading speed. We do not show ads or sell personal information.</li>
+              <li><strong>Usage data.</strong> We use Google Analytics to count page views, referrers, and some actions, and a page-speed script from msdrills.com, a site we operate, to measure loading speed. The iOS and Android apps do not include either. We do not show ads or sell personal information.</li>
               <li><strong>Server logs.</strong> Our host (Cloudflare) keeps standard access logs (IP, user agent, request URL) for security and performance.</li>
             </ul>
           </section>
@@ -52,7 +52,7 @@ export default function Privacy() {
               <li><strong>Resend</strong>: sends sign-in, welcome, and daily verse emails.</li>
               <li><strong>Quran.com, AlQuran.cloud, Islamic Network, and jsDelivr</strong>: Quran text, recitation, tafsir, hadith, and study content.</li>
               <li><strong>metals.dev</strong>: gold and silver prices for the zakat calculator.</li>
-              <li><strong>Google Analytics</strong>: usage statistics.</li>
+              <li><strong>Google Analytics</strong>: usage statistics on the website (not in the apps).</li>
             </ul>
           </section>
 
