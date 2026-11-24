@@ -67,7 +67,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function Layout({ children }: { children: ReactNode }) {
-  const { nowPlaying } = usePlayer();
+  const { nowPlaying, readerBar } = usePlayer();
   return (
     <div className="flex min-h-screen flex-col bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.08),transparent_30%),linear-gradient(180deg,#f8fffb_0%,#f8fafc_42%,#ffffff_100%)] text-slate-950 dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_28%),linear-gradient(180deg,#020617_0%,#0f172a_52%,#020617_100%)] dark:text-slate-100">
       <Navbar />
@@ -75,7 +75,7 @@ function Layout({ children }: { children: ReactNode }) {
       <main className="flex-grow">{children}</main>
       <Footer />
       {/* Room for the mini player, so it never covers the end of a page */}
-      {nowPlaying && <div aria-hidden style={{ height: `calc(${MINI_PLAYER_HEIGHT} + env(safe-area-inset-bottom))` }} />}
+      {nowPlaying && !(readerBar && nowPlaying.source === "verses") && <div aria-hidden style={{ height: `calc(${MINI_PLAYER_HEIGHT} + env(safe-area-inset-bottom))` }} />}
       <MiniPlayer />
     </div>
   );

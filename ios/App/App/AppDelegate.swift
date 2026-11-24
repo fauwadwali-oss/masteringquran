@@ -1,11 +1,13 @@
 import UIKit
+import AVFoundation
 import Capacitor
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // Recitation is media playback: it carries on when the phone locks and ignores the silent switch.
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
         return true
     }
 

@@ -41,9 +41,21 @@ interface Segment {
     url: string;
     kind: "arabic" | "translation";
     ayah?: number;
+    /** Verses picked in the reader can span surahs (juz, page). */
+    surah?: number;
+}
+
+/** A playlist, one whole surah, or the verses open in the reader. */
+export type PlayerSource = "playlist" | "surah" | "verses";
+
+export interface ReaderVerse {
+    surah: number;
+    ayah: number;
+    url: string;
 }
 
 interface Session {
+    source: PlayerSource;
     playlistId: string;
     playlistName: string;
     surahs: number[];
@@ -58,6 +70,7 @@ interface Session {
 export type PlayerStatus = "idle" | "loading" | "playing" | "paused";
 
 export interface NowPlaying {
+    source: PlayerSource;
     playlistId: string;
     playlistName: string;
     surah: SurahInfo;
@@ -88,6 +101,14 @@ interface PlayerContextValue {
     nowPlaying: NowPlaying | null;
     audio: HTMLAudioElement | null;
     playPlaylist: (playlist: Playlist, startIndex?: number) => void;
+    playSurah: (surah: number) => void;
+    playVerses: (verses: ReaderVerse[], startIndex: number) => void;
+    /** Whether reader verses run on to the next one. */
+    continuous: boolean;
+    setContinuous: (on: boolean) => void;
+    /** True while the reader's own verse bar shows what is playing, so the mini player steps aside. */
+    readerBar: boolean;
+    setReaderBar: (on: boolean) => void;
     toggle: () => void;
     pause: () => void;
     next: () => void;
@@ -258,6 +279,15 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const wantPlay = useRef(false);
     const [status, setStatus] = useState<PlayerStatus>("idle");
     const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
+    const [continuous, setContinuousState] = useState(false);
+    const continuousRef = useRef(false);
+    const setContinuous = useCallback((on: boolean) => {
+        continuousRef.current = on;
+        setContinuousState(on);
+    }, []);
+    const [readerBar, setReaderBar] = useState(false);
+    // Holds the next file so a locked phone never waits on the network between verses.
+    const preloader = useRef<HTMLAudioElement | null>(null);
 
     const publish = useCallback(() => {
         const s = session.current;
@@ -265,9 +295,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             setNowPlaying(null);
             return;
         }
-        const surah = getSurah(s.surahs[s.order[s.pos]])!;
         const segment = s.segments[s.seg];
+        const surah = getSurah(segment?.surah ?? s.surahs[s.order[s.pos]])!;
         setNowPlaying({
+            source: s.source,
             playlistId: s.playlistId,
             playlistName: s.playlistName,
             surah,
@@ -278,6 +309,24 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             ayah: segment?.ayah,
             kind: segment?.kind ?? (s.mode === "translation" ? "translation" : "arabic"),
         });
+    }, []);
+
+    // iOS suspends the app soon after audio stops, so what comes next is fetched early.
+    const prepareNext = useCallback(() => {
+        const s = session.current;
+        if (!s) return;
+        const upcoming = s.segments[s.seg + 1];
+        if (upcoming) {
+            if (s.source === "verses" && !continuousRef.current) return;
+            preloader.current ??= new Audio();
+            preloader.current.preload = "auto";
+            if (preloader.current.src !== upcoming.url) preloader.current.src = upcoming.url;
+            return;
+        }
+        if (s.source !== "playlist") return;
+        const pos = nextPosition(s.pos, s.order.length, settingsRef.current.repeat);
+        if (pos === null || pos === s.pos) return;
+        void fetchSegments(s.surahs[s.order[pos]], s.mode, settingsRef.current.reciter, s.voice).catch(() => undefined);
     }, []);
 
     const playSegment = useCallback((index: number) => {
@@ -293,7 +342,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             if (gen === playGen.current && e?.name !== "AbortError") setStatus("paused");
         });
         publish();
-    }, [publish]);
+        prepareNext();
+    }, [publish, prepareNext]);
 
     const loadTrack = useCallback(async (pos: number) => {
         const s = session.current;
@@ -329,15 +379,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const handleEnded = useCallback(() => {
         const s = session.current;
         if (!s || !isCurrentSource()) return;
-        if (s.seg + 1 < s.segments.length) {
+        if (s.seg + 1 < s.segments.length && (s.source !== "verses" || continuousRef.current)) {
             playSegment(s.seg + 1);
             return;
         }
-        const next = nextPosition(s.pos, s.order.length, settingsRef.current.repeat);
+        const next = s.source === "playlist" ? nextPosition(s.pos, s.order.length, settingsRef.current.repeat) : null;
         if (next === null) {
             wantPlay.current = false;
             setStatus("paused");
-            s.seg = 0;
+            setNowPlayingState("paused");
+            if (s.source !== "verses") s.seg = 0;
             publish();
             return;
         }
@@ -350,6 +401,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         const start = Math.min(Math.max(0, startIndex), playlist.surahs.length - 1);
         const order = buildOrder(playlist.surahs.length, settingsRef.current.shuffle, start);
         session.current = {
+            source: "playlist",
             playlistId: playlist.id,
             playlistName: playlist.name,
             surahs: [...playlist.surahs],
@@ -362,6 +414,30 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         };
         void loadTrack(settingsRef.current.shuffle ? 0 : start);
     }, [loadTrack]);
+
+    const playSurah = useCallback((surah: number) => {
+        if (!getSurah(surah)) return;
+        session.current = {
+            source: "surah", playlistId: "", playlistName: "Whole surah", surahs: [surah], mode: "arabic", voice: "en",
+            order: [0], pos: 0, segments: [], seg: 0,
+        };
+        void loadTrack(0);
+    }, [loadTrack]);
+
+    const playVerses = useCallback((verses: ReaderVerse[], startIndex: number) => {
+        const start = verses[startIndex];
+        if (!start) return;
+        const playable = verses.filter((v) => v.url);
+        const index = playable.indexOf(start);
+        if (index < 0) return;
+        loadToken.current++;
+        session.current = {
+            source: "verses", playlistId: "", playlistName: "Quran reader", surahs: [start.surah], mode: "arabic", voice: "en",
+            order: [0], pos: 0, seg: index,
+            segments: playable.map((v) => ({ url: v.url, kind: "arabic" as const, ayah: v.ayah, surah: v.surah })),
+        };
+        playSegment(index);
+    }, [playSegment]);
 
     const pause = useCallback(() => {
         wantPlay.current = false;
@@ -395,13 +471,22 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     const next = useCallback(() => {
         const s = session.current;
-        if (s) void loadTrack(skipForward(s.pos, s.order.length));
-    }, [loadTrack]);
+        if (!s) return;
+        if (s.source === "verses") {
+            if (s.seg + 1 < s.segments.length) playSegment(s.seg + 1);
+            return;
+        }
+        void loadTrack(skipForward(s.pos, s.order.length));
+    }, [loadTrack, playSegment]);
 
     const previous = useCallback(() => {
         const s = session.current;
         const el = audioRef.current;
         if (!s) return;
+        if (s.source === "verses") {
+            playSegment((el?.currentTime ?? 0) > 3 ? s.seg : Math.max(0, s.seg - 1));
+            return;
+        }
         // Like a music app: the first press goes back to the start of this surah.
         const started = s.mode === "arabic" ? (el?.currentTime ?? 0) > 3 : s.seg > 1;
         if (started) playSegment(0);
@@ -425,6 +510,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setNowPlayingState("none");
     }, []);
 
+    const stopRef = useRef(stop);
+    stopRef.current = stop;
+
     const cycleRepeat = useCallback(() => {
         setSettings((s) => ({ ...s, repeat: s.repeat === "off" ? "all" : s.repeat === "all" ? "one" : "off" }));
     }, []);
@@ -442,11 +530,20 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setSettings((prev) => ({ ...prev, shuffle }));
     }, [publish]);
 
-    const setReciter = useCallback((reciter: string) => setSettings((s) => ({ ...s, reciter })), []);
+    const setReciter = useCallback((reciter: string) => {
+        if (reciter === settingsRef.current.reciter) return;
+        settingsRef.current = { ...settingsRef.current, reciter };
+        setSettings((s) => ({ ...s, reciter }));
+        // A whole surah starts again with the new voice; paused audio is dropped.
+        if (session.current?.source === "surah") {
+            if (wantPlay.current) void loadTrack(0);
+            else stopRef.current();
+        } else if (session.current?.source === "verses") stopRef.current();
+    }, [loadTrack]);
 
     // Stop when the reader signs out: playlists belong to the account.
     useEffect(() => {
-        if (!userId) stop();
+        if (!userId && session.current?.source === "playlist") stop();
     }, [userId, stop]);
 
     // Other audio on the page (a verse, the whole-surah button) pauses the playlist.
@@ -495,6 +592,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             if (s.segments.length > 1) handleEnded();
             else {
                 setStatus("paused");
+                setNowPlayingState("paused");
                 toast.error("This recitation could not be played. Try another reciter.");
             }
         };
@@ -522,7 +620,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             ["stop", () => stop()],
             ["seekto", (d) => {
                 const el = audioRef.current;
-                if (el && d.seekTime != null && session.current?.mode === "arabic") el.currentTime = d.seekTime;
+                if (el && d.seekTime != null && Number.isFinite(el.duration)) el.currentTime = Math.min(Math.max(0, d.seekTime), el.duration);
             }],
         ];
         for (const [action, handler] of handlers) setNowPlayingHandler(action, handler);
@@ -533,13 +631,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (!nowPlaying) return;
-        const { surah, mode, ayah, kind, playlistName } = nowPlaying;
+        const { source, surah, ayah, kind, playlistName } = nowPlaying;
         const voice = TRANSLATION_VOICES.find((v) => v.id === nowPlaying.voice);
         const artist = kind === "translation" ? (voice ? `${voice.label} translation, ${voice.credit}` : "Translation") : reciterName(settings.reciter);
         setNowPlayingMetadata({
-            title: mode === "arabic" || !ayah ? surah.englishName : `${surah.englishName}, verse ${ayah}`,
+            title: ayah ? `Surah ${surah.englishName}, Ayah ${ayah} of ${surah.ayahs}` : `Surah ${surah.englishName}`,
             artist,
-            album: playlistName,
+            album: source === "playlist" ? playlistName : "Mastering Quran",
+            surah: { number: surah.number, arabicName: surah.arabicName, englishName: surah.englishName },
         });
     }, [nowPlaying, settings.reciter]);
 
@@ -548,7 +647,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         const el = audioRef.current;
         if (!el) return;
         const update = () => {
-            if (session.current?.mode !== "arabic" || !Number.isFinite(el.duration) || el.duration <= 0) return;
+            if (!session.current || !Number.isFinite(el.duration) || el.duration <= 0) return;
             setNowPlayingPosition(el.duration, Math.min(el.currentTime, el.duration), el.playbackRate);
         };
         el.addEventListener("loadedmetadata", update);
@@ -580,12 +679,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         nowPlaying,
         audio,
         playPlaylist,
+        playSurah,
+        playVerses,
+        continuous,
+        setContinuous,
+        readerBar,
+        setReaderBar,
         toggle,
         pause,
         next,
         previous,
         stop,
-    }), [playlists, playlistsReady, setPlaylists, settings, setReciter, cycleRepeat, toggleShuffle, status, nowPlaying, audio, playPlaylist, toggle, pause, next, previous, stop]);
+    }), [playlists, playlistsReady, setPlaylists, settings, setReciter, cycleRepeat, toggleShuffle, status, nowPlaying, audio, playPlaylist, playSurah, playVerses, continuous, setContinuous, readerBar, toggle, pause, next, previous, stop]);
 
     return (
         <PlayerContext.Provider value={value}>

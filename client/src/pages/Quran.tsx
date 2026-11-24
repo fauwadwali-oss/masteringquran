@@ -1,5 +1,5 @@
 import { TRANSLATIONS, TAFSIRS } from "@/lib/study-editions";
-import { lazy, Suspense, useState, useEffect, useRef, useCallback } from "react";
+import { lazy, Suspense, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useSearchParams, useParams, useNavigate, Link } from "react-router-dom";
 import { Search, Play, Pause, BookOpen, Loader2, AlertCircle, Bookmark, BookmarkCheck, Volume2, VolumeX, SkipForward, SkipBack, ChevronLeft, ChevronRight, Star, X, Mic, Moon, Languages, Layers, Copy, Share2, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils";
 import { RECITERS, verseAudioId, chapterAudioId } from "@/lib/reciters";
 import { ReciterPicker } from "@/components/ReciterPicker";
 import { usePlayer } from "@/contexts/PlayerContext";
-import { claimAudioFocus, onAudioFocusLost } from "@/lib/audio-focus";
 import AddToPlaylist from "@/components/AddToPlaylist";
 
 const VerseActionsModal = lazy(() => import("@/components/VerseActionsModal"));
@@ -119,11 +118,10 @@ export default function Quran() {
     const [showSearchResults, setShowSearchResults] = useState(false);
 
     // Audio state
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentPlayingVerse, setCurrentPlayingVerse] = useState<number | null>(null);
-    const [isContinuousPlay, setIsContinuousPlay] = useState(false);
     // Shared with playlists, so one choice of reciter applies everywhere and is remembered.
-    const { reciter: selectedReciter, setReciter: setSelectedReciter } = usePlayer();
+    // Audio lives in the shared player, so it keeps going when the phone locks or the page changes.
+    const player = usePlayer();
+    const { reciter: selectedReciter, setReciter: setSelectedReciter, nowPlaying, status: playerStatus, continuous: isContinuousPlay, setContinuous: setIsContinuousPlay, setReaderBar } = player;
 
     // Translation state
     // Saheeh International by default (matches the prerendered pages and the Shorts); the reader's choice is remembered.
@@ -153,9 +151,9 @@ export default function Quran() {
     const [currentPage, setCurrentPage] = useState(1);
 
     // Full-surah audio
-    const [fullSurahPlaying, setFullSurahPlaying] = useState(false);
-    const [fullSurahLoading, setFullSurahLoading] = useState(false);
-    const fullSurahAudioRef = useRef<HTMLAudioElement | null>(null);
+    const fullSurahActive = nowPlaying?.source === "surah" && nowPlaying.surah.number === currentSurah?.number;
+    const fullSurahPlaying = fullSurahActive && playerStatus === "playing";
+    const fullSurahLoading = fullSurahActive && playerStatus === "loading";
 
     // Bookmarks state
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -217,7 +215,6 @@ export default function Quran() {
         });
     };
 
-    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Load bookmarks from localStorage
     useEffect(() => {
@@ -514,47 +511,10 @@ export default function Quran() {
         }
     };
 
-    // Full-surah audio playback
-    const toggleFullSurahAudio = async () => {
+    const toggleFullSurahAudio = () => {
         if (!currentSurah) return;
-        // If already playing, pause/stop
-        if (fullSurahAudioRef.current && fullSurahPlaying) {
-            fullSurahAudioRef.current.pause();
-            setFullSurahPlaying(false);
-            return;
-        }
-        // If we have an instance already queued, just play
-        if (fullSurahAudioRef.current) {
-            fullSurahAudioRef.current.play().catch(() => setFullSurahPlaying(false));
-            setFullSurahPlaying(true);
-            return;
-        }
-        // Fetch the full-surah audio URL
-        setFullSurahLoading(true);
-        try {
-            const r = await fetch(`https://api.quran.com/api/v4/chapter_recitations/${chapterAudioId(selectedReciter)}/${currentSurah.number}`);
-            const d: any = await r.json();
-            const url = d.audio_file?.audio_url;
-            if (!url) throw new Error("no url");
-            const audio = new Audio(url);
-            audio.onplay = () => claimAudioFocus("quran-page");
-            audio.onended = () => {
-                setFullSurahPlaying(false);
-                fullSurahAudioRef.current = null;
-            };
-            audio.onerror = () => {
-                setFullSurahPlaying(false);
-                fullSurahAudioRef.current = null;
-                setError("Failed to play full surah audio");
-            };
-            fullSurahAudioRef.current = audio;
-            audio.play();
-            setFullSurahPlaying(true);
-        } catch {
-            setError("Could not load full surah audio");
-        } finally {
-            setFullSurahLoading(false);
-        }
+        if (fullSurahActive) player.toggle();
+        else player.playSurah(currentSurah.number);
     };
 
     // The playlist mini player sits on top of this page's verse bar instead of under it.
@@ -576,24 +536,6 @@ export default function Quran() {
             root.style.removeProperty("--mq-mini-pad");
         };
     }, []);
-
-    // A playlist starting elsewhere pauses this page's audio.
-    useEffect(() => onAudioFocusLost("quran-page", () => {
-        audioRef.current?.pause();
-        if (fullSurahAudioRef.current) {
-            fullSurahAudioRef.current.pause();
-            setFullSurahPlaying(false);
-        }
-    }), []);
-
-    // Stop full-surah audio when surah or reciter changes
-    useEffect(() => {
-        if (fullSurahAudioRef.current) {
-            fullSurahAudioRef.current.pause();
-            fullSurahAudioRef.current = null;
-            setFullSurahPlaying(false);
-        }
-    }, [currentSurah, selectedReciter]);
 
     // Search functionality
     const handleSearch = async (e: React.FormEvent) => {
@@ -633,56 +575,31 @@ export default function Quran() {
     };
 
     // Audio playback
-    const playVerse = useCallback((verseIndex: number) => {
-        const verse = verses[verseIndex];
-        if (verse?.audio && audioRef.current) {
-            audioRef.current.src = verse.audio;
-            audioRef.current.play();
-            setCurrentPlayingVerse(verseIndex);
-            setIsPlaying(true);
-        }
-    }, [verses]);
+    const currentPlayingVerse = useMemo(() => {
+        if (nowPlaying?.source !== "verses") return null;
+        const index = verses.findIndex((v) => v.surahNumber === nowPlaying.surah.number && v.number === nowPlaying.ayah);
+        return index === -1 ? null : index;
+    }, [nowPlaying, verses]);
+    const isPlaying = currentPlayingVerse !== null && playerStatus === "playing";
+    const showsCurrent = currentPlayingVerse !== null;
+    useEffect(() => {
+        setReaderBar(showsCurrent);
+        return () => setReaderBar(false);
+    }, [showsCurrent, setReaderBar]);
 
-    const handleAudioEnded = useCallback(() => {
-        if (isContinuousPlay && currentPlayingVerse !== null) {
-            const nextIndex = currentPlayingVerse + 1;
-            if (nextIndex < verses.length) {
-                playVerse(nextIndex);
-            } else {
-                setIsPlaying(false);
-                setCurrentPlayingVerse(null);
-            }
-        } else {
-            setIsPlaying(false);
-            setCurrentPlayingVerse(null);
+    const playVerse = (verseIndex: number) => {
+        if (verseIndex === currentPlayingVerse) {
+            player.toggle();
+            return;
         }
-    }, [isContinuousPlay, currentPlayingVerse, verses.length, playVerse]);
-
-    const togglePlayPause = () => {
-        if (audioRef.current) {
-            if (isPlaying) {
-                audioRef.current.pause();
-                setIsPlaying(false);
-            } else if (currentPlayingVerse !== null) {
-                audioRef.current.play();
-                setIsPlaying(true);
-            } else {
-                playVerse(0);
-            }
-        }
+        player.playVerses(verses.map((v) => ({ surah: v.surahNumber, ayah: v.number, url: v.audio ?? "" })), verseIndex);
     };
 
-    const playNext = () => {
-        if (currentPlayingVerse !== null && currentPlayingVerse < verses.length - 1) {
-            playVerse(currentPlayingVerse + 1);
-        }
-    };
+    const togglePlayPause = () => playVerse(currentPlayingVerse ?? 0);
 
-    const playPrevious = () => {
-        if (currentPlayingVerse !== null && currentPlayingVerse > 0) {
-            playVerse(currentPlayingVerse - 1);
-        }
-    };
+    const playNext = () => player.next();
+
+    const playPrevious = () => player.previous();
 
     // Navigation handlers
     const handleSurahChange = (value: string) => {
@@ -1730,17 +1647,6 @@ export default function Quran() {
                 </div>
             </div>
 
-            {/* Hidden Audio Player */}
-            <audio
-                ref={audioRef}
-                onEnded={handleAudioEnded}
-                onPause={() => setIsPlaying(false)}
-                onPlay={() => {
-                    setIsPlaying(true);
-                    claimAudioFocus("quran-page");
-                }}
-                className="hidden"
-            />
         </div>
     );
 }

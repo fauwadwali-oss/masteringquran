@@ -8,6 +8,7 @@ import { describeAuthError, type AuthResult } from "@/lib/auth-errors";
 import { trackAuth } from "@/lib/auth-analytics";
 import { toast } from "sonner";
 import { apiUrl } from "@/lib/api";
+import { appShortcutPath } from "@/lib/app-shortcuts";
 import { clearLocalStudyData } from "@/lib/local-data";
 
 interface AuthContextValue {
@@ -153,6 +154,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (!nativePlatform) return;
             const { App: CapacitorApp } = await import("@capacitor/app");
             const finish = async (url: string) => {
+                const shortcut = appShortcutPath(url);
+                if (shortcut) {
+                    routeTo(shortcut);
+                    return;
+                }
                 if (!url.startsWith(MOBILE_AUTH_CALLBACK)) return;
                 const recovery = isRecoveryUrl(url);
                 const { errorCode } = getAuthParams(url);

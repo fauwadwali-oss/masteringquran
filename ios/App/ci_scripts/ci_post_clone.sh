@@ -9,5 +9,6 @@ if ! command -v npm >/dev/null 2>&1; then
 fi
 
 npm ci --include=dev
-npm run build
+# The apps do not need the 8,000 crawler pages.
+SKIP_PRERENDER=1 npm run build
 npx cap sync ios
