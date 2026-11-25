@@ -37,7 +37,7 @@ const FAQS: QA[] = [
     },
     {
         q: "What is the AI scoped to?",
-        a: "Quran, hadith (with gradings where available), and tafsir only. The AI is explicitly told to decline fiqh rulings, fatwas, personal religious guidance, and matters of ijtihad — for those, consult a qualified scholar. It is a study companion, not a jurist.",
+        a: "Quran, hadith (with gradings where available), and tafsir only. It can describe what the sources say, including on worship and law, but it is told never to give fatwas or rulings on anyone's own situation. For those, consult a qualified scholar. It is a study companion, not a jurist.",
     },
     {
         q: "How are prayer times calculated?",
