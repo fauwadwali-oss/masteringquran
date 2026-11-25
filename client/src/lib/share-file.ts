@@ -1,7 +1,6 @@
 // The Android app's WebView has no Web Share and ignores downloads of generated files,
 // so there these go through the native ShareFile plugin. Everywhere else the browser does it.
 import { Capacitor, registerPlugin } from "@capacitor/core";
-import { isNativePlatform } from "@/lib/api";
 
 interface NativeFile {
     name: string;
@@ -16,6 +15,7 @@ const ShareFile = registerPlugin<{
     open(options: NativeFile): Promise<void>;
 }>("ShareFile");
 
+export const isIosApp = () => Capacitor.getPlatform() === "ios";
 export const isAndroidApp = () => Capacitor.getPlatform() === "android";
 
 async function native(blob: Blob, name: string): Promise<NativeFile> {
@@ -61,6 +61,22 @@ export async function copyImage(blob: Blob, name: string): Promise<boolean> {
     return true;
 }
 
+/** Copies text, with a fallback for WebViews that refuse the Clipboard API. Throws when neither works. */
+export async function copyText(text: string): Promise<void> {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch {
+        const area = document.createElement("textarea");
+        area.value = text;
+        area.style.cssText = "position:fixed;opacity:0";
+        document.body.appendChild(area);
+        area.select();
+        const copied = document.execCommand("copy");
+        area.remove();
+        if (!copied) throw new Error("copy refused");
+    }
+}
+
 /** Saves a picture. "gallery" means it went to the phone's gallery without any visible sign. */
 export async function saveImage(blob: Blob, name: string): Promise<"gallery" | "handed-off"> {
     if (isAndroidApp()) {
@@ -69,13 +85,23 @@ export async function saveImage(blob: Blob, name: string): Promise<"gallery" | "
         await ShareFile.share(file); // Android 9 and older: save from the share sheet.
         return "handed-off";
     }
-    browserDownload(blob, name);
+    if (isIosApp()) await iosShare(blob, name);
+    else browserDownload(blob, name);
     return "handed-off";
 }
 
 export async function saveCalendar(blob: Blob, name: string): Promise<void> {
     if (isAndroidApp()) await ShareFile.open(await native(blob, name));
     else browserDownload(blob, name);
+}
+
+// The iPhone WebView ignores downloads; its share sheet offers Save Image and Save to Files.
+async function iosShare(blob: Blob, name: string) {
+    try {
+        await navigator.share({ files: [new File([blob], name, { type: blob.type.split(";")[0] })] });
+    } catch (e) {
+        if ((e as { name?: string })?.name !== "AbortError") throw e;
+    }
 }
 
 function browserDownload(blob: Blob, name: string) {
@@ -87,10 +113,4 @@ function browserDownload(blob: Blob, name: string) {
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-/** This page's address on the website. Inside the apps the address bar holds a local one nobody else can open. */
-export function publicPageUrl(): string {
-    const { origin, pathname, search, hash } = window.location;
-    return `${isNativePlatform() ? "https://masteringquran.com" : origin}${pathname}${search}${hash}`;
 }

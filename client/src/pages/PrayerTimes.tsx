@@ -1,8 +1,10 @@
+import { isIosApp } from "@/lib/share-file";
+import { toast } from "sonner";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { BellRing, Compass, MapPin, Moon, Pencil, Sun, Sunrise, Sunset } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { downloadPrayerCalendar } from "@/lib/prayer-ics";
+import { addToIosCalendar, downloadPrayerCalendar } from "@/lib/prayer-ics";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -130,6 +132,23 @@ export default function PrayerTimes() {
         ? now.toLocaleDateString("en-US", { timeZone: place.timeZone, weekday: "long", month: "long", day: "numeric", year: "numeric" })
         : now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
     const hijri = hijriDate(now, place?.timeZone);
+    const addReminders = async () => {
+        if (!place) return;
+        try {
+            if (!isIosApp()) {
+                await downloadPrayerCalendar(place, settings);
+                return;
+            }
+            if (!window.confirm("Add the next 30 days of prayer times to your calendar? Adding them again makes duplicates.")) return;
+            const added = await addToIosCalendar(place, settings);
+            toast.success(`${added} prayer times added to your calendar`);
+        } catch (e) {
+            toast.error((e as { code?: string })?.code === "denied"
+                ? "Allow calendar access for Mastering Quran in Settings, then try again."
+                : "The prayer times could not be added to your calendar.");
+        }
+    };
+
     const qibla = place ? qiblaBearing(place.latitude, place.longitude) : null;
 
     // Share of the day between today's Fajr and Isha that has passed, for the progress bar.
@@ -439,7 +458,7 @@ export default function PrayerTimes() {
                                         </p>
                                     </div>
                                 </div>
-                                <Button onClick={() => { downloadPrayerCalendar(place, settings).catch(console.error); }} className="shrink-0 bg-emerald-700 text-white hover:bg-emerald-800">
+                                <Button onClick={addReminders} className="shrink-0 bg-emerald-700 text-white hover:bg-emerald-800">
                                     Add to calendar
                                 </Button>
                             </div>

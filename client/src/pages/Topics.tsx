@@ -1,3 +1,4 @@
+import LoadFailed from "@/components/LoadFailed";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, HandCoins, Shield, Users, BookOpen, Sun, CloudRain, Sparkles, Scale, Anchor, Flame, Leaf, Star, Wallet, UserCheck, BookCheck, Swords, MessageSquare, AlertTriangle, Compass, Search, Loader2, ArrowLeft } from "lucide-react";
@@ -72,6 +73,10 @@ export default function Topics() {
     const [selected, setSelected] = useState<Topic | null>(null);
     const [verses, setVerses] = useState<VerseFetched[]>([]);
     const [loading, setLoading] = useState(false);
+    const open = (topic: Topic) => {
+        setLoading(true);
+        setSelected(topic);
+    };
     const [search, setSearch] = useState("");
 
     useEffect(() => {
@@ -132,8 +137,11 @@ export default function Topics() {
                             <div className="flex justify-center py-16">
                                 <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
                             </div>
+                        ) : verses.length === 0 ? (
+                            <LoadFailed onRetry={() => open({ ...selected })} />
                         ) : (
                             <div className="space-y-4">
+                                {verses.length < selected.verses.length && <p role="status" className="text-center text-sm text-amber-700 dark:text-amber-300">Some verses could not be loaded.</p>}
                                 {verses.map((v, i) => (
                                     <Card key={i} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                                         <CardContent className="p-6 space-y-3">
@@ -201,8 +209,8 @@ export default function Topics() {
                                     key={t.id}
                                     role="button"
                                     tabIndex={0}
-                                    onClick={() => setSelected(t)}
-                                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSelected(t)}
+                                    onClick={() => open(t)}
+                                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && open(t)}
                                     className={`cursor-pointer border-2 border-slate-200 dark:border-slate-700 ${c.border} dark:${c.border} bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:-translate-y-1`}
                                 >
                                     <CardContent className="p-5 space-y-3">

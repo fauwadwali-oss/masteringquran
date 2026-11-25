@@ -64,11 +64,12 @@ export default function LearnFirstSurah() {
                                     const key = `${v.verseKey}-${i}`;
                                     const isHovered = hoveredWord === key;
                                     return (
-                                        <button
+                                        <div role="button" tabIndex={0}
                                             key={key}
                                             onMouseEnter={() => setHoveredWord(key)}
                                             onMouseLeave={() => setHoveredWord(null)}
                                             onClick={() => setHoveredWord(isHovered ? null : key)}
+                            onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setHoveredWord(isHovered ? null : key); } }}
                                             className={cn(
                                                 "group rounded-lg px-3 py-2 transition-all border text-center",
                                                 isHovered
@@ -91,7 +92,7 @@ export default function LearnFirstSurah() {
                                                     )}
                                                 </div>
                                             )}
-                                        </button>
+                                        </div>
                                     );
                                 })}
                             </div>

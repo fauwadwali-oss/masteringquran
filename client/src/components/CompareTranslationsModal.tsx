@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Loader2, X } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 
 interface Props {
     verseKey: string;
@@ -57,19 +58,11 @@ export default function CompareTranslationsModal({ verseKey, onClose }: Props) {
     }, [verseKey]);
 
     return (
-        <div className="fixed inset-0 z-[100] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-            <div
-                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-                    <div>
-                        <p className="text-xs text-slate-500 uppercase tracking-wider">Compare translations</p>
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Quran {verseKey}</h3>
-                    </div>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
-                        <X className="h-4 w-4" />
-                    </button>
+        <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+            <DialogContent className="z-[100] flex max-h-[85dvh] flex-col sm:max-w-3xl gap-0 overflow-hidden rounded-2xl border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-slate-900">
+                <div className="border-b border-slate-200 px-6 py-4 dark:border-slate-800">
+                    <DialogDescription className="text-xs uppercase tracking-wider text-slate-500">Compare translations</DialogDescription>
+                    <DialogTitle className="text-lg font-semibold text-slate-900 dark:text-white">Quran {verseKey}</DialogTitle>
                 </div>
                 <div className="overflow-y-auto p-6 space-y-5">
                     {loading ? (
@@ -78,6 +71,7 @@ export default function CompareTranslationsModal({ verseKey, onClose }: Props) {
                         </div>
                     ) : (
                         <>
+                            {!arabic && Object.keys(translations).length === 0 && <p role="alert" className="text-sm text-slate-600 dark:text-slate-300">We could not load the translations. Check your internet connection.</p>}
                             {arabic && (
                                 <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
                                     <p className="font-amiri text-2xl md:text-3xl leading-loose text-slate-900 dark:text-slate-100 text-right" dir="rtl">
@@ -104,7 +98,7 @@ export default function CompareTranslationsModal({ verseKey, onClose }: Props) {
                         </>
                     )}
                 </div>
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 }

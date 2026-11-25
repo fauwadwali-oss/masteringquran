@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { listAll, listByStatus, getDueForReview, MemorizationEntry, MemorizationStatus } from "@/lib/queries/memorization";
+import LoadFailed from "@/components/LoadFailed";
 import RequireAuth from "@/components/RequireAuth";
 
 const STATUS_COLORS: Record<MemorizationStatus, string> = {
@@ -27,14 +28,15 @@ function Inner() {
     const [all, setAll] = useState<MemorizationEntry[]>([]);
     const [due, setDue] = useState<MemorizationEntry[]>([]);
     const [loading, setLoading] = useState(true);
+    const [failed, setFailed] = useState(false);
 
     useEffect(() => {
         if (!user) return;
+        setFailed(false);
         Promise.all([listAll(user.id), getDueForReview(user.id)]).then(([allRows, dueRows]) => {
             setAll(allRows);
             setDue(dueRows);
-            setLoading(false);
-        });
+        }).catch(() => setFailed(true)).finally(() => setLoading(false));
     }, [user]);
 
     const counts = {
@@ -59,6 +61,8 @@ function Inner() {
                         <div className="flex justify-center py-16">
                             <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
                         </div>
+                    ) : failed ? (
+                        <LoadFailed />
                     ) : (
                         <>
                             <div className="grid grid-cols-3 gap-3">
@@ -94,7 +98,7 @@ function Inner() {
                                                         <p className="text-xs text-slate-500">Last reviewed {m.last_reviewed_at ? new Date(m.last_reviewed_at).toLocaleDateString() : "never"}</p>
                                                     </div>
                                                     <Button asChild size="sm" variant="outline">
-                                                        <Link to="/quran">Review →</Link>
+                                                        <Link to={`/quran/${m.verse_key.replace(":", "/")}`}>Review →</Link>
                                                     </Button>
                                                 </CardContent>
                                             </Card>
@@ -117,7 +121,7 @@ function Inner() {
                                         {all.map((m) => (
                                             <Card key={m.id} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                                                 <CardContent className="p-4 flex items-center justify-between flex-wrap gap-2">
-                                                    <Link to="/quran" className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">
+                                                    <Link to={`/quran/${m.verse_key.replace(":", "/")}`} className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">
                                                         Quran {m.verse_key}
                                                     </Link>
                                                     <div className="flex items-center gap-2">

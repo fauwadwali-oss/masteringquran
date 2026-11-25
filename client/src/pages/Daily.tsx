@@ -1,3 +1,5 @@
+import LoginModal from "@/components/LoginModal";
+import { isNativePlatform } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Bell, BellOff, Loader2, Check, AlertCircle, Clock, Trash2, BookOpen, Heart, Quote, GraduationCap } from "lucide-react";
@@ -96,12 +98,14 @@ function ab2b64url(buf: ArrayBuffer | null): string {
 
 export default function Daily() {
     const { user, loading: authLoading } = useAuth();
+    const [showLogin, setShowLogin] = useState(false);
+    const push = !!VAPID_PUBLIC_KEY && !isNativePlatform();
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50/40 to-white dark:from-slate-950 dark:to-slate-900 py-10 px-4">
             <SEO
                 title="Daily Reminders, Mastering Quran"
-                description="Get a verse a day via email or push notification. Pick your timezone and delivery time."
+                description="Get a verse of the Quran a day by email. Pick your timezone and delivery time."
             />
             <div className="max-w-3xl mx-auto space-y-6">
                 <div className="text-center space-y-2">
@@ -111,7 +115,7 @@ export default function Daily() {
                     </div>
                     <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">A verse a day</h1>
                     <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                        One Quran verse delivered every day at the time you choose, by email, push notification, or both.
+                        One Quran verse delivered every day at the time you choose, {push ? "by email, push notification, or both." : "by email."}
                     </p>
                 </div>
 
@@ -132,9 +136,7 @@ export default function Daily() {
                             <p className="text-slate-700 dark:text-slate-300">
                                 Sign in to subscribe to daily verses.
                             </p>
-                            <Link to="/ask" className="text-sm text-emerald-700 hover:underline">
-                                Go to sign-in →
-                            </Link>
+                            <Button className="bg-emerald-600 text-white hover:bg-emerald-700" onClick={() => setShowLogin(true)}>Sign in</Button>
                         </CardContent>
                     </Card>
                 )}
@@ -142,7 +144,7 @@ export default function Daily() {
                 {user && (
                     <>
                         <EmailSubscriptionCard userId={user.id} defaultEmail={user.email ?? ""} />
-                        <PushSubscriptionCard userId={user.id} />
+                        {push && <PushSubscriptionCard userId={user.id} />}
                     </>
                 )}
 
@@ -157,6 +159,7 @@ export default function Daily() {
                     </CardContent>
                 </Card>
             </div>
+            <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to get a verse a day." />
         </div>
     );
 }

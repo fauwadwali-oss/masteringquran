@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, X, NotebookText, Target, CheckCircle2, BookOpen, Flame } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { getNote, upsertNote, deleteNote } from "@/lib/queries/notes";
@@ -42,6 +44,10 @@ export default function VerseActionsModal({ surah, ayah, onClose }: Props) {
             }
             if (m) setStatusState(m.status);
             setLoading(false);
+        }).catch(() => {
+            // Closing avoids saving an empty note over one that could not be read.
+            toast.error("Your notes could not be loaded. Check your internet connection.");
+            onClose();
         });
     }, [user, verseKey]);
 
@@ -72,30 +78,22 @@ export default function VerseActionsModal({ surah, ayah, onClose }: Props) {
             setShowLogin(true);
             return;
         }
-        if (s === "none") {
-            await removeEntry(user.id, verseKey);
-            setStatusState("none");
-            return;
+        try {
+            if (s === "none") await removeEntry(user.id, verseKey);
+            else await setStatus(user.id, surah, ayah, s);
+            setStatusState(s);
+        } catch {
+            toast.error("That could not be saved. Please try again.");
         }
-        await setStatus(user.id, surah, ayah, s);
-        setStatusState(s);
     };
 
     return (
         <>
-            <div className="fixed inset-0 z-[100] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-                <div
-                    className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-md w-full overflow-hidden"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800">
-                        <div>
-                            <p className="text-xs text-slate-500">Quran {verseKey}</p>
-                            <h3 className="text-base font-semibold text-slate-900 dark:text-white">Notes &amp; memorization</h3>
-                        </div>
-                        <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800">
-                            <X className="h-4 w-4" />
-                        </button>
+            <Dialog open={!showLogin} onOpenChange={(open) => { if (!open) onClose(); }}>
+                <DialogContent className="z-[100] gap-0 sm:max-w-md overflow-hidden rounded-2xl border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-slate-900">
+                    <div className="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
+                        <DialogDescription className="text-xs text-slate-500">Quran {verseKey}</DialogDescription>
+                        <DialogTitle className="text-base font-semibold text-slate-900 dark:text-white">Notes &amp; memorization</DialogTitle>
                     </div>
 
                     {!user ? (
@@ -115,10 +113,11 @@ export default function VerseActionsModal({ surah, ayah, onClose }: Props) {
                         <div className="p-5 space-y-5 max-h-[70vh] overflow-y-auto">
                             {/* Note */}
                             <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                                <label htmlFor="verse-note" className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
                                     <NotebookText className="h-3.5 w-3.5" /> Your note
                                 </label>
                                 <textarea
+                                    id="verse-note"
                                     value={note}
                                     onChange={(e) => setNote(e.target.value)}
                                     placeholder="Reflections, cross-references, things to remember…"
@@ -164,8 +163,8 @@ export default function VerseActionsModal({ surah, ayah, onClose }: Props) {
                             </div>
                         </div>
                     )}
-                </div>
-            </div>
+                </DialogContent>
+            </Dialog>
             <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to save notes and track memorization." />
         </>
     );

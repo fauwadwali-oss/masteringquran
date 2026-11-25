@@ -6,24 +6,30 @@ import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { listAllNotes, deleteNote, Note } from "@/lib/queries/notes";
+import { toast } from "sonner";
+import LoadFailed from "@/components/LoadFailed";
 import RequireAuth from "@/components/RequireAuth";
 
 function Inner() {
     const { user } = useAuth();
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(true);
+    const [failed, setFailed] = useState(false);
 
     useEffect(() => {
         if (!user) return;
-        listAllNotes(user.id).then((rows) => {
-            setNotes(rows);
-            setLoading(false);
-        });
+        setFailed(false);
+        listAllNotes(user.id).then(setNotes).catch(() => setFailed(true)).finally(() => setLoading(false));
     }, [user]);
 
     const remove = async (verseKey: string) => {
         if (!user) return;
-        await deleteNote(user.id, verseKey);
+        try {
+            await deleteNote(user.id, verseKey);
+        } catch {
+            toast.error("The note could not be deleted");
+            return;
+        }
         setNotes((prev) => prev.filter((n) => n.verse_key !== verseKey));
     };
 
@@ -43,6 +49,8 @@ function Inner() {
                         <div className="flex justify-center py-16">
                             <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
                         </div>
+                    ) : failed ? (
+                        <LoadFailed />
                     ) : notes.length === 0 ? (
                         <Card className="p-12 text-center">
                             <p className="text-slate-500 mb-4">No notes yet. Add one from any verse in the Quran reader.</p>
@@ -56,7 +64,7 @@ function Inner() {
                                 <Card key={n.id} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                                     <CardContent className="p-5 space-y-2">
                                         <div className="flex items-center justify-between">
-                                            <Link to="/quran" className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">
+                                            <Link to={`/quran/${n.verse_key.replace(":", "/")}`} className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">
                                                 Quran {n.verse_key}
                                             </Link>
                                             <div className="flex items-center gap-2">

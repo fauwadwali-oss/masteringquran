@@ -7,12 +7,15 @@ import { Input } from "@/components/ui/input";
 import SEO from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { listBookmarks, removeBookmark, Bookmark } from "@/lib/queries/bookmarks";
+import { toast } from "sonner";
+import LoadFailed from "@/components/LoadFailed";
 import RequireAuth from "@/components/RequireAuth";
 
 function Inner() {
     const { user } = useAuth();
     const [items, setItems] = useState<Bookmark[]>([]);
     const [loading, setLoading] = useState(true);
+    const [failed, setFailed] = useState(false);
     const [collections, setCollections] = useState<Record<string, string>>({});
     const [activeCollection, setActiveCollection] = useState("All");
     const [newCollection, setNewCollection] = useState("");
@@ -21,10 +24,8 @@ function Inner() {
 
     useEffect(() => {
         if (!user) return;
-        listBookmarks(user.id).then((rows) => {
-            setItems(rows);
-            setLoading(false);
-        });
+        setFailed(false);
+        listBookmarks(user.id).then(setItems).catch(() => setFailed(true)).finally(() => setLoading(false));
         try {
             setCollections(JSON.parse(localStorage.getItem(`mq_bookmark_collections_${user.id}`) || "{}"));
         } catch {
@@ -46,7 +47,12 @@ function Inner() {
 
     const remove = async (verseKey: string) => {
         if (!user) return;
-        await removeBookmark(user.id, verseKey);
+        try {
+            await removeBookmark(user.id, verseKey);
+        } catch {
+            toast.error("The bookmark could not be removed");
+            return;
+        }
         setItems((prev) => prev.filter((b) => b.verse_key !== verseKey));
         const next = { ...collections };
         delete next[verseKey];
@@ -108,6 +114,8 @@ function Inner() {
                         <div className="flex justify-center py-16">
                             <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
                         </div>
+                    ) : failed ? (
+                        <LoadFailed />
                     ) : items.length === 0 ? (
                         <Card className="p-12 text-center">
                             <p className="text-slate-500 mb-4">No bookmarks yet.</p>
@@ -120,7 +128,7 @@ function Inner() {
                             {visibleItems.map((b) => (
                                 <Card key={b.id} className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                                     <CardContent className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                        <Link to={`/quran`} className="flex-1 group">
+                                        <Link to={`/quran/${b.surah}/${b.ayah}`} className="flex-1 group">
                                             <p className="font-semibold text-emerald-700 dark:text-emerald-400 group-hover:underline">
                                                 Quran {b.verse_key}
                                             </p>

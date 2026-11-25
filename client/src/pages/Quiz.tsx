@@ -3,16 +3,9 @@ import { Trophy, CheckCircle2, XCircle, RotateCcw, Sparkles, Loader2 } from "luc
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SEO from "@/components/SEO";
+import LoadFailed from "@/components/LoadFailed";
+import { getSurah } from "@/lib/surah-list";
 import { NAMES } from "@/lib/islamic-data";
-
-const SURAH_NAMES: Record<number, string> = {
-    1: "Al-Fatihah", 2: "Al-Baqarah", 3: "Aal-Imran", 4: "An-Nisa", 5: "Al-Ma'idah",
-    6: "Al-An'am", 7: "Al-A'raf", 8: "Al-Anfal", 9: "At-Tawbah", 10: "Yunus",
-    11: "Hud", 12: "Yusuf", 13: "Ar-Ra'd", 14: "Ibrahim", 15: "Al-Hijr",
-    16: "An-Nahl", 17: "Al-Isra", 18: "Al-Kahf", 19: "Maryam", 20: "Ta-Ha",
-    36: "Ya-Sin", 55: "Ar-Rahman", 56: "Al-Waqi'ah", 67: "Al-Mulk", 112: "Al-Ikhlas",
-    113: "Al-Falaq", 114: "An-Nas",
-};
 
 type Mode = "verse_surah" | "name_meaning" | null;
 
@@ -82,7 +75,7 @@ export default function Quiz() {
     const [mode, setMode] = useState<Mode>(null);
     const [score, setScore] = useState({ right: 0, wrong: 0 });
     const [q, setQ] = useState<VerseQ | NameQ | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [picked, setPicked] = useState<string | number | null>(null);
 
     const loadNext = async () => {
@@ -123,6 +116,7 @@ export default function Quiz() {
         setMode(null);
         setScore({ right: 0, wrong: 0 });
         setQ(null);
+        setLoading(true);
     };
 
     if (!mode) {
@@ -143,14 +137,14 @@ export default function Quiz() {
                         </div>
 
                         <div className="grid sm:grid-cols-2 gap-4">
-                            <Card role="button" tabIndex={0} onClick={() => start("verse_surah")} className="cursor-pointer border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-emerald-400 transition-all hover:shadow-lg">
+                            <Card role="button" tabIndex={0} onClick={() => start("verse_surah")} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); start("verse_surah"); } }} className="cursor-pointer border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-emerald-400 transition-all hover:shadow-lg">
                                 <CardContent className="p-6 space-y-3">
                                     <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl flex items-center justify-center text-2xl">📖</div>
                                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Which Surah?</h3>
                                     <p className="text-sm text-slate-600 dark:text-slate-400">A random verse appears — pick the Surah it comes from.</p>
                                 </CardContent>
                             </Card>
-                            <Card role="button" tabIndex={0} onClick={() => start("name_meaning")} className="cursor-pointer border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-amber-400 transition-all hover:shadow-lg">
+                            <Card role="button" tabIndex={0} onClick={() => start("name_meaning")} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); start("name_meaning"); } }} className="cursor-pointer border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-amber-400 transition-all hover:shadow-lg">
                                 <CardContent className="p-6 space-y-3">
                                     <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 rounded-xl flex items-center justify-center text-2xl">✨</div>
                                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white">99 Names meaning</h3>
@@ -177,7 +171,9 @@ export default function Quiz() {
                         </div>
                     </div>
 
-                    {loading || !q ? (
+                    {!loading && !q ? (
+                        <LoadFailed onRetry={loadNext} />
+                    ) : loading || !q ? (
                         <Card className="p-16 text-center">
                             <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mx-auto" />
                         </Card>
@@ -203,7 +199,7 @@ export default function Quiz() {
                                                         onClick={() => answer(n)}
                                                         className={`p-3 rounded-xl border text-sm font-medium transition-colors text-left ${showResult ? (correct ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300" : isPicked ? "border-rose-400 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300" : "border-slate-200 dark:border-slate-700 text-slate-500") : "border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-emerald-400 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20"}`}
                                                     >
-                                                        {n}. {SURAH_NAMES[n] || `Surah ${n}`}
+                                                        {n}. {(getSurah(n)?.englishName ?? `Surah ${n}`)}
                                                     </button>
                                                 );
                                             })}

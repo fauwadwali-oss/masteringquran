@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { arabicSpeech } from "@/lib/arabic-speech";
+import { isAndroidApp } from "@/lib/share-file";
 import { cn } from "@/lib/utils";
 
 // Audio source priority:
@@ -55,12 +58,16 @@ export default function ArabicAudioButton({
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
+    const spoken = useRef(0);
+    const speaking = useRef(false);
+
     useEffect(() => {
         return () => {
             // Stop anything playing on unmount
             if (audioRef.current) {
                 audioRef.current.pause();
             }
+            if (speaking.current) void arabicSpeech.stop().catch(() => undefined);
             if (utteranceRef.current) {
                 window.speechSynthesis.cancel();
             }
@@ -74,6 +81,11 @@ export default function ArabicAudioButton({
         }
         if (typeof window !== "undefined" && "speechSynthesis" in window) {
             window.speechSynthesis.cancel();
+        }
+        if (isAndroidApp()) {
+            spoken.current++;
+            speaking.current = false;
+            void arabicSpeech.stop().catch(() => undefined);
         }
         utteranceRef.current = null;
         setPlaying(false);
@@ -112,6 +124,23 @@ export default function ArabicAudioButton({
     };
 
     const speak = () => {
+        if (isAndroidApp()) {
+            // The Android WebView has no speech, so the phone's own voice reads it.
+            const id = ++spoken.current;
+            speaking.current = true;
+            setPlaying(true);
+            arabicSpeech.speak({ text, rate })
+                .catch((e: { code?: string }) => {
+                    if (id !== spoken.current) return;
+                    toast.error(e?.code === "no-voice" ? "Your phone has no Arabic voice. Add one in Settings, under Text-to-speech." : "The pronunciation could not be played.");
+                })
+                .finally(() => {
+                    if (id !== spoken.current) return;
+                    speaking.current = false;
+                    setPlaying(false);
+                });
+            return;
+        }
         if (typeof window === "undefined" || !("speechSynthesis" in window)) {
             setErr(true);
             setPlaying(false);

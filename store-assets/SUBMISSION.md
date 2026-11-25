@@ -19,6 +19,7 @@ Background audio: recitation and playlists continue while the phone is locked, w
 - Choose the new build instead of 41
 - App Privacy answers match `ios/App/App/PrivacyInfo.xcprivacy`: name, email, user ID, other user content, other financial info (zakat), product interaction (sign-in steps), all linked and not used for tracking; search history not linked
 - Availability: leave out mainland China (religious content and AI need permits there)
+- Calendar (add only) and photo (add only) permissions: both are asked when the reader taps the button; nothing is collected
 - Support URL: https://masteringquran.com/support
 - Age rating questions
 

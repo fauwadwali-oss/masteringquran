@@ -61,6 +61,11 @@ public class VerseWidget extends AppWidgetProvider {
             int textDp = heightDp - 22 - (tall ? 46 : 0);
             int englishLines = (int) Math.ceil(english.length() * englishSp * 0.52 / widthDp) + 1;
             int englishDp = showEnglish ? (int) (englishLines * englishSp * 1.35) : 0;
+            // On a small widget the Arabic comes first: show it whole, without the translation.
+            if (showEnglish && textDp - englishDp < Math.max(44, verse.getString("ar").length() * 0.45)) {
+                showEnglish = false;
+                englishDp = 0;
+            }
             int arabicDp = Math.max(30, textDp - englishDp);
 
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.verse_widget);
@@ -122,7 +127,9 @@ public class VerseWidget extends AppWidgetProvider {
         }
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
-        canvas.translate(0, Math.max(0, (height - layout.getHeight()) / 2f));
+        float fit = Math.min(1f, height / (float) layout.getHeight());
+        canvas.translate(width * (1 - fit) / 2f, Math.max(0, (height - layout.getHeight() * fit) / 2f));
+        canvas.scale(fit, fit);
         layout.draw(canvas);
         return bitmap;
     }

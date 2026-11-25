@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Send, Sparkles, Loader2, AlertCircle, AlertTriangle, CheckCircle2, PenLine, ShieldCheck, Wrench, BookOpen, ScrollText, Search, Lightbulb, Lock, Library, MessageCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import ReportAnswer from "@/components/ReportAnswer";
@@ -280,7 +281,7 @@ function AskInner() {
                     <div className="mb-4 rounded-2xl border border-emerald-200 dark:border-emerald-900/50 bg-white dark:bg-slate-900 p-5 space-y-3 text-sm text-slate-700 dark:text-slate-300">
                         <p className="font-semibold text-slate-900 dark:text-white">Before you ask</p>
                         <p>
-                            Ask Wali is an AI assistant. Your questions and this conversation are sent to Anthropic, the company behind the Claude AI model, to write the answer. Your name and email are not sent. Please leave out private details. See the <a href="/privacy" className="underline">Privacy Policy</a>.
+                            Ask Wali is an AI assistant. Your questions and this conversation are sent to Anthropic, the company behind the Claude AI model, to write the answer. Your name and email are not sent. Please leave out private details. See the <Link to="/privacy" className="underline">Privacy Policy</Link>.
                         </p>
                         <Button
                             className="bg-emerald-600 hover:bg-emerald-700 text-white"
