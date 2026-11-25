@@ -4,7 +4,7 @@ import { getSurah } from "@/lib/surah-list";
 import { TRANSLATIONS, TAFSIRS } from "@/lib/study-editions";
 import { lazy, Suspense, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useSearchParams, useParams, useNavigate, Link } from "react-router-dom";
-import { Search, Play, Pause, BookOpen, Loader2, AlertCircle, Bookmark, BookmarkCheck, Volume2, VolumeX, SkipForward, SkipBack, ChevronLeft, ChevronRight, Star, X, Mic, Moon, Languages, Layers, Copy, Share2, Check, Sparkles } from "lucide-react";
+import { Search, Play, Pause, BookOpen, Loader2, AlertCircle, Bookmark, BookmarkCheck, Volume2, VolumeX, SkipForward, SkipBack, ChevronLeft, ChevronRight, LocateFixed, Star, X, Mic, Moon, Languages, Layers, Copy, Share2, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { RECITERS, verseAudioId, chapterAudioId } from "@/lib/reciters";
 import { ReciterPicker } from "@/components/ReciterPicker";
 import { usePlayer } from "@/contexts/PlayerContext";
+import { useFollowRecitation } from "@/hooks/useFollowRecitation";
 import AddToPlaylist from "@/components/AddToPlaylist";
 
 const VerseActionsModal = lazy(() => import("@/components/VerseActionsModal"));
@@ -621,7 +622,18 @@ export default function Quran() {
         return () => setReaderBar(false);
     }, [showsCurrent, setReaderBar]);
 
+    const recited = currentPlayingVerse === null ? null : verses[currentPlayingVerse];
+    const { away: awayFromRecitation, startFollow, returnToVerse } = useFollowRecitation(
+        recited && !loading ? `ayah-${recited.surahNumber}-${recited.number}` : null,
+        verses,
+        verseBarRef,
+        // Opening a link to a verse shows that verse, not the one being recited.
+        !target?.ayah,
+    );
+
     const playVerse = (verseIndex: number) => {
+        // Pausing leaves the page where it is.
+        if (!(verseIndex === currentPlayingVerse && isPlaying)) startFollow();
         if (verseIndex === currentPlayingVerse) {
             player.toggle();
             return;
@@ -631,9 +643,15 @@ export default function Quran() {
 
     const togglePlayPause = () => playVerse(currentPlayingVerse ?? 0);
 
-    const playNext = () => player.next();
+    const playNext = () => {
+        startFollow();
+        player.next();
+    };
 
-    const playPrevious = () => player.previous();
+    const playPrevious = () => {
+        startFollow();
+        player.previous();
+    };
 
     // Navigation handlers
     const handleSurahChange = (value: string) => {
@@ -1607,6 +1625,18 @@ export default function Quran() {
 
             {/* Floating Audio Player */}
             <div ref={verseBarRef} className="fixed bottom-0 left-0 right-0 z-50">
+                {awayFromRecitation && (
+                    <div className="pointer-events-none absolute inset-x-0 bottom-full flex justify-center pb-3">
+                        <Button
+                            size="sm"
+                            onClick={returnToVerse}
+                            className="pointer-events-auto h-11 gap-2 rounded-full bg-emerald-600 px-5 text-white shadow-lg hover:bg-emerald-700"
+                        >
+                            <LocateFixed className="h-4 w-4" aria-hidden="true" />
+                            Back to current verse
+                        </Button>
+                    </div>
+                )}
                 <div className="border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
                     <div className="mx-auto max-w-4xl px-3 py-3 md:px-4 md:py-4">
                         <div className="flex items-center justify-between gap-4">
