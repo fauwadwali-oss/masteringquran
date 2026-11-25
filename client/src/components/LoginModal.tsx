@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2, Mail, CheckCircle2, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { rememberAuthReturn } from "@/lib/auth-return";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -59,7 +59,11 @@ export default function LoginModal({ open, onClose, reason, initialView = "signi
             setView(initialView);
             trackAuth("auth_modal_open", { view: initialView, source });
         }
-        if (!open) openedRef.current = false;
+        if (!open) {
+            openedRef.current = false;
+            setSent(null);
+            setError(null);
+        }
     }, [open, initialView, source]);
 
     const switchView = (next: View) => {
@@ -371,7 +375,7 @@ export default function LoginModal({ open, onClose, reason, initialView = "signi
                         )}
 
                         <p className="text-xs text-center text-slate-500">
-                            By continuing you agree to the <a href="/terms" className="underline">Terms</a> and <a href="/privacy" className="underline">Privacy Policy</a>.
+                            By continuing you agree to the <Link to="/terms" onClick={onClose} className="underline">Terms</Link> and <Link to="/privacy" onClick={onClose} className="underline">Privacy Policy</Link>.
                         </p>
                     </form>
                 )}

@@ -131,10 +131,10 @@ export default function SimilarVersesPanel({ verseKey }: Props) {
                 </div>
                 {v ? (
                     <>
-                        <p className="font-amiri text-lg leading-relaxed text-slate-900 dark:text-slate-100 text-right mb-2 line-clamp-2" dir="rtl">
+                        <p className="font-amiri text-lg leading-relaxed text-slate-900 dark:text-slate-100 text-right mb-2" dir="rtl">
                             {v.arabic}
                         </p>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
+                        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                             {v.english}
                         </p>
                     </>

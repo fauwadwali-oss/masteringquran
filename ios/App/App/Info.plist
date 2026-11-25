@@ -39,6 +39,12 @@
 	<false/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Mastering Quran uses your location to show prayer times and the Qibla direction for where you are.</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>Mastering Quran adds the prayer times you choose to your calendar.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Mastering Quran adds the prayer times you choose to your calendar.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Mastering Quran saves the verse pictures you choose to your photo library.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Mastering Quran uses your location to show prayer times and the Qibla direction for where you are.</string>
 	<key>UIBackgroundModes</key>

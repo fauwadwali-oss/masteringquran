@@ -220,9 +220,10 @@ function VerseBlock({ verse }: { verse: GradSurahVerse }) {
                     {verse.words.map((w, i) => {
                         const isOpen = openedWord === i;
                         return (
-                            <button
+                            <div role="button" tabIndex={0}
                                 key={i}
                                 onClick={() => setOpenedWord(isOpen ? null : i)}
+                            onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setOpenedWord(isOpen ? null : i); } }}
                                 className={cn(
                                     "rounded-lg px-2.5 py-1.5 transition-all border text-center",
                                     isOpen
@@ -245,7 +246,7 @@ function VerseBlock({ verse }: { verse: GradSurahVerse }) {
                                         )}
                                     </div>
                                 )}
-                            </button>
+                            </div>
                         );
                     })}
                 </div>

@@ -1,4 +1,6 @@
-import { publicPageUrl, shareText } from "@/lib/share-file";
+import { copyText, shareText } from "@/lib/share-file";
+import { fetchAllVerses } from "@/lib/fetch-verses";
+import { getSurah } from "@/lib/surah-list";
 import { TRANSLATIONS, TAFSIRS } from "@/lib/study-editions";
 import { lazy, Suspense, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useSearchParams, useParams, useNavigate, Link } from "react-router-dom";
@@ -69,6 +71,26 @@ interface Bookmark {
     verseNumber: number;
     surahName: string;
     timestamp: number;
+}
+
+function readLocalBookmarks(): Bookmark[] {
+    try {
+        const saved = JSON.parse(localStorage.getItem("quranBookmarks") ?? "[]");
+        return Array.isArray(saved) ? saved : [];
+    } catch {
+        return [];
+    }
+}
+
+function writeLocalBookmarks(list: Bookmark[]) {
+    if (list.length) localStorage.setItem("quranBookmarks", JSON.stringify(list));
+    else localStorage.removeItem("quranBookmarks");
+}
+
+/** Right-to-left script and font for Urdu; everything else reads left to right. */
+function translationStyle(id: string) {
+    const urdu = TRANSLATIONS.find((t) => t.id === id)?.language === "Urdu";
+    return { dir: urdu ? ("rtl" as const) : ("ltr" as const), className: urdu ? "text-right leading-loose font-noto-nastaliq text-lg" : "leading-relaxed text-[15px]", rtl: urdu };
 }
 
 // Strip HTML footnote markers from Quran.com translation text
@@ -183,31 +205,42 @@ export default function Quran() {
 
     // Auth-aware bookmark sync
     const { user } = useAuth();
+    // Signed in, bookmarks live in the account; signed out, on this device. Signing in moves them over.
     useEffect(() => {
-        if (!user) return;
-        // Migrate any localStorage bookmarks to Supabase once per session
-        const migrated = sessionStorage.getItem("mq_bookmarks_migrated");
-        if (migrated) return;
-        const raw = localStorage.getItem("quranBookmarks");
-        if (!raw) {
-            sessionStorage.setItem("mq_bookmarks_migrated", "1");
+        if (!user) {
+            setBookmarks(readLocalBookmarks());
             return;
         }
-        try {
-            const local: Array<{ surahNumber: number; verseNumber: number; surahName?: string }> = JSON.parse(raw);
-            void import("@/lib/queries/bookmarks").then(({ addBookmark }) =>
-                Promise.all(
-                    local.map((b) => addBookmark(user.id, b.surahNumber, b.verseNumber, b.surahName).catch(() => null)),
-                ),
-            ).then(() => {
-                    sessionStorage.setItem("mq_bookmarks_migrated", "1");
-                    localStorage.removeItem("quranBookmarks");
-                    toast.success(`Synced ${local.length} bookmark${local.length === 1 ? "" : "s"} to your account`);
-                });
-        } catch {
-            sessionStorage.setItem("mq_bookmarks_migrated", "1");
-        }
-    }, [user]);
+        let active = true;
+        void (async () => {
+            const { addBookmark, listBookmarks } = await import("@/lib/queries/bookmarks");
+            const local = readLocalBookmarks();
+            const kept: Bookmark[] = [];
+            for (const b of local) {
+                try {
+                    await addBookmark(user.id, b.surahNumber, b.verseNumber, b.surahName);
+                } catch {
+                    kept.push(b); // Try again next time.
+                }
+            }
+            if (local.length) {
+                writeLocalBookmarks(kept);
+                if (kept.length < local.length) toast.success("Your bookmarks are saved to your account");
+            }
+            try {
+                const rows = await listBookmarks(user.id);
+                if (!active) return;
+                setBookmarks([
+                    ...rows.map((r) => ({ surahNumber: r.surah, verseNumber: r.ayah, surahName: getSurah(r.surah)?.englishName ?? "", timestamp: Date.parse(r.created_at) })),
+                    ...kept,
+                ]);
+            } catch {
+                if (active) toast.error("Your bookmarks could not be loaded");
+            }
+        })();
+        return () => { active = false; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.id]);
     const toggleSimilar = (verseKey: string) => {
         setExpandedSimilar((prev) => {
             const next = new Set(prev);
@@ -217,39 +250,27 @@ export default function Quran() {
     };
 
 
-    // Load bookmarks from localStorage
-    useEffect(() => {
-        const saved = localStorage.getItem("quranBookmarks");
-        if (saved) {
-            setBookmarks(JSON.parse(saved));
-        }
-    }, []);
-
-    // Save bookmarks to localStorage
-    const saveBookmark = (surahNumber: number, verseNumber: number, surahName: string) => {
-        const newBookmark: Bookmark = {
-            surahNumber,
-            verseNumber,
-            surahName,
-            timestamp: Date.now()
-        };
-
-        const exists = bookmarks.some(
-            b => b.surahNumber === surahNumber && b.verseNumber === verseNumber
-        );
-
-        if (exists) {
-            const filtered = bookmarks.filter(
-                b => !(b.surahNumber === surahNumber && b.verseNumber === verseNumber)
-            );
-            setBookmarks(filtered);
-            localStorage.setItem("quranBookmarks", JSON.stringify(filtered));
-            toast.success("Bookmark removed");
-        } else {
-            const updated = [...bookmarks, newBookmark];
-            setBookmarks(updated);
-            localStorage.setItem("quranBookmarks", JSON.stringify(updated));
-            toast.success("Bookmark added");
+    const saveBookmark = async (surahNumber: number, verseNumber: number, surahName: string) => {
+        const before = bookmarks;
+        const same = (b: Bookmark) => b.surahNumber === surahNumber && b.verseNumber === verseNumber;
+        const exists = before.some(same);
+        const next = exists ? before.filter((b) => !same(b)) : [...before, { surahNumber, verseNumber, surahName, timestamp: Date.now() }];
+        setBookmarks(next);
+        try {
+            if (user) {
+                const { addBookmark, removeBookmark } = await import("@/lib/queries/bookmarks");
+                if (exists) await removeBookmark(user.id, `${surahNumber}:${verseNumber}`);
+                else await addBookmark(user.id, surahNumber, verseNumber, surahName);
+                // One kept on this device after a failed sync must not come back.
+                if (exists) writeLocalBookmarks(readLocalBookmarks().filter((b) => !same(b)));
+            } else {
+                writeLocalBookmarks(next);
+            }
+            toast.success(exists ? "Bookmark removed" : "Bookmark added");
+        } catch {
+            // Undo only this verse: others may have changed meanwhile.
+            setBookmarks((now) => (exists ? [...now.filter((b) => !same(b)), ...before.filter(same)] : now.filter((b) => !same(b))));
+            toast.error("Your bookmark could not be saved. Please try again.");
         }
     };
 
@@ -289,7 +310,7 @@ export default function Quran() {
                     setError("Failed to fetch Surahs");
                 }
             } catch (err) {
-                setError("An error occurred while fetching Surahs");
+                setError("We could not load this. Check your internet connection and try again.");
             } finally {
                 setLoading(false);
             }
@@ -394,18 +415,15 @@ export default function Quran() {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_chapter/${currentSurah.number}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
-            );
-            const data = await response.json();
+            const loaded = await fetchAllVerses(`https://api.quran.com/api/v4/verses/by_chapter/${currentSurah.number}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name`);
             if (stale()) return;
 
-            if (Array.isArray(data.verses)) {
-                setVerses(mapQuranComVerses(data.verses));
+            if (loaded.length) {
+                setVerses(mapQuranComVerses(loaded));
                 localStorage.setItem("lastViewedSurah", currentSurah.number.toString());
                 // Fire-and-forget: record today's reading activity for streak tracking
                 if (user) {
-                    const firstVerse = data.verses[0];
+                    const firstVerse = loaded[0];
                     const vkey = firstVerse?.verse_key || `${currentSurah.number}:1`;
                     void import("@/lib/queries/streak")
                         .then(({ recordReading }) => recordReading(user.id, vkey))
@@ -416,7 +434,7 @@ export default function Quran() {
             }
         } catch (err) {
             if (stale()) return;
-            setError("An error occurred while fetching verses");
+            setError("We could not load this. Check your internet connection and try again.");
         } finally {
             if (!stale()) setLoading(false);
         }
@@ -428,20 +446,17 @@ export default function Quran() {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_juz/${currentJuz}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
-            );
-            const data = await response.json();
+            const loaded = await fetchAllVerses(`https://api.quran.com/api/v4/verses/by_juz/${currentJuz}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name`);
             if (stale()) return;
 
-            if (Array.isArray(data.verses)) {
-                setVerses(mapQuranComVerses(data.verses));
+            if (loaded.length) {
+                setVerses(mapQuranComVerses(loaded));
             } else {
                 setError("Failed to fetch Juz");
             }
         } catch (err) {
             if (stale()) return;
-            setError("An error occurred while fetching Juz");
+            setError("We could not load this. Check your internet connection and try again.");
         } finally {
             if (!stale()) setLoading(false);
         }
@@ -453,20 +468,17 @@ export default function Quran() {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_page/${currentPage}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=50`
-            );
-            const data = await response.json();
+            const loaded = await fetchAllVerses(`https://api.quran.com/api/v4/verses/by_page/${currentPage}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name`);
             if (stale()) return;
 
-            if (Array.isArray(data.verses)) {
-                setVerses(mapQuranComVerses(data.verses));
+            if (loaded.length) {
+                setVerses(mapQuranComVerses(loaded));
             } else {
                 setError("Failed to fetch page");
             }
         } catch (err) {
             if (stale()) return;
-            setError("An error occurred while fetching page");
+            setError("We could not load this. Check your internet connection and try again.");
         } finally {
             if (!stale()) setLoading(false);
         }
@@ -478,20 +490,17 @@ export default function Quran() {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_hizb/${currentHizb}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
-            );
-            const data = await response.json();
+            const loaded = await fetchAllVerses(`https://api.quran.com/api/v4/verses/by_hizb/${currentHizb}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name`);
             if (stale()) return;
 
-            if (Array.isArray(data.verses)) {
-                setVerses(mapQuranComVerses(data.verses));
+            if (loaded.length) {
+                setVerses(mapQuranComVerses(loaded));
             } else {
                 setError("Failed to fetch Hizb");
             }
         } catch (err) {
             if (stale()) return;
-            setError("An error occurred while fetching Hizb");
+            setError("We could not load this. Check your internet connection and try again.");
         } finally {
             if (!stale()) setLoading(false);
         }
@@ -503,16 +512,13 @@ export default function Quran() {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_rub/${currentRub}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=300`
-            );
-            const data = await response.json();
+            const loaded = await fetchAllVerses(`https://api.quran.com/api/v4/verses/by_rub/${currentRub}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name`);
             if (stale()) return;
-            if (Array.isArray(data.verses)) setVerses(mapQuranComVerses(data.verses));
+            if (loaded.length) setVerses(mapQuranComVerses(loaded));
             else setError("Failed to fetch Rub");
         } catch (err) {
             if (stale()) return;
-            setError("An error occurred while fetching Rub");
+            setError("We could not load this. Check your internet connection and try again.");
         } finally {
             if (!stale()) setLoading(false);
         }
@@ -524,16 +530,13 @@ export default function Quran() {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(
-                `https://api.quran.com/api/v4/verses/by_manzil/${currentManzil}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name&per_page=700`
-            );
-            const data = await response.json();
+            const loaded = await fetchAllVerses(`https://api.quran.com/api/v4/verses/by_manzil/${currentManzil}?translations=${selectedTranslation},${secondaryTranslation}&audio=${verseAudioId(selectedReciter)}&fields=text_uthmani,text_uthmani_tajweed,sajdah_type&words=true&word_fields=text_uthmani,translation,transliteration,audio_url,char_type_name`);
             if (stale()) return;
-            if (Array.isArray(data.verses)) setVerses(mapQuranComVerses(data.verses));
+            if (loaded.length) setVerses(mapQuranComVerses(loaded));
             else setError("Failed to fetch Manzil");
         } catch (err) {
             if (stale()) return;
-            setError("An error occurred while fetching Manzil");
+            setError("We could not load this. Check your internet connection and try again.");
         } finally {
             if (!stale()) setLoading(false);
         }
@@ -663,24 +666,27 @@ export default function Quran() {
         return reciter?.name || "Select Reciter";
     };
 
-    // Copy verse to clipboard
-    const copyVerseToClipboard = (verse: VerseData, surahName: string) => {
-        const text = `${surahName} ${verse.number}\n${verse.arabic}\n\n${verse.english}`;
-        navigator.clipboard.writeText(text).then(() => {
-            setCopiedVerseId(verse.globalNumber);
-            toast.success("Verse copied to clipboard");
-            setTimeout(() => setCopiedVerseId(null), 2000);
-        });
+    // Juz, page and other views mix surahs, so the name comes from the verse itself.
+    const verseLabel = (verse: VerseData) => `${getSurah(verse.surahNumber)?.englishName ?? "Quran"} ${verse.surahNumber}:${verse.number}`;
+
+    const copyVerseToClipboard = (verse: VerseData) => {
+        copyText(`${verseLabel(verse)}\n${verse.arabic}\n\n${verse.english}`)
+            .then(() => {
+                setCopiedVerseId(verse.globalNumber);
+                toast.success("Verse copied to clipboard");
+                setTimeout(() => setCopiedVerseId(null), 2000);
+            })
+            .catch(() => toast.error("Could not copy the verse"));
     };
 
-    // Share verse
-    const shareVerse = (verse: VerseData, surahName: string) => {
-        const text = `${surahName} ${verse.number}\n${verse.english}`;
-        shareText("Quran Verse", text, publicPageUrl())
+    const shareVerse = (verse: VerseData) => {
+        shareText("Quran Verse", `${verseLabel(verse)}\n${verse.english}`, `https://masteringquran.com/quran/${verse.surahNumber}/${verse.number}`)
             .then((result) => {
-                if (result === "unsupported") copyVerseToClipboard(verse, surahName);
+                if (result === "unsupported") copyVerseToClipboard(verse);
             })
-            .catch(() => copyVerseToClipboard(verse, surahName));
+            .catch((e: unknown) => {
+                if ((e as { name?: string })?.name !== "AbortError") copyVerseToClipboard(verse);
+            });
     };
 
     return (
@@ -1383,6 +1389,8 @@ export default function Quran() {
                             <Card
                                 key={`${verse.globalNumber}-${index}`}
                                 id={`ayah-${verse.surahNumber}-${verse.number}`}
+                                // Long sections (a Manzil can hold 1,600 verses): skip drawing what is off screen.
+                                style={verses.length > 300 ? { contentVisibility: "auto", containIntrinsicSize: "auto 480px" } : undefined}
                                 className={`overflow-hidden transition-all duration-500 group ${
                                     highlightVerse === verse.number
                                         ? 'ring-2 ring-amber-400 shadow-2xl shadow-amber-400/20 scroll-mt-24'
@@ -1484,18 +1492,18 @@ export default function Quran() {
                                                     {getTranslationName(selectedTranslation)}
                                                 </p>
                                             </div>
-                                            <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-[15px]">
+                                            <p className={cn("text-slate-700 dark:text-slate-300", translationStyle(selectedTranslation).className)} dir={translationStyle(selectedTranslation).dir}>
                                                 {verse.english}
                                             </p>
                                         </div>
-                                        <div className="space-y-3 text-right">
-                                            <div className="flex items-center gap-2 justify-end">
+                                        <div className="space-y-3">
+                                            <div className={cn("flex items-center gap-2", translationStyle(secondaryTranslation).rtl ? "justify-end" : "flex-row-reverse justify-end")}>
                                                 <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
                                                     {getTranslationName(secondaryTranslation)}
                                                 </p>
                                                 <div className="w-1 h-4 bg-indigo-500 rounded-full"></div>
                                             </div>
-                                            <p className="text-slate-700 dark:text-slate-300 leading-loose font-noto-nastaliq text-lg" dir="rtl">
+                                            <p className={cn("text-slate-700 dark:text-slate-300", translationStyle(secondaryTranslation).className)} dir={translationStyle(secondaryTranslation).dir}>
                                                 {verse.urdu}
                                             </p>
                                         </div>
@@ -1516,7 +1524,7 @@ export default function Quran() {
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            onClick={() => copyVerseToClipboard(verse, currentSurah?.englishName || 'Verse')}
+                                            onClick={() => copyVerseToClipboard(verse)}
                                             className="text-xs rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 gap-2"
                                         >
                                             {copiedVerseId === verse.globalNumber ? (
@@ -1534,7 +1542,7 @@ export default function Quran() {
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            onClick={() => shareVerse(verse, currentSurah?.englishName || 'Verse')}
+                                            onClick={() => shareVerse(verse)}
                                             className="text-xs rounded-lg text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 gap-2"
                                         >
                                             <Share2 className="h-4 w-4" />

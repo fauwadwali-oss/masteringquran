@@ -22,9 +22,12 @@ struct WidgetVerse: Decodable {
 
     static let fallback = WidgetVerse(s: 94, a: 6, name: "Ash-Sharh", ar: "إِنَّ مَعَ ٱلْعُسْرِ يُسْرًا", en: "Indeed, with hardship [will be] ease.")
 
+    /// Verses whose whole translation fits on the Lock Screen.
+    static let short: [WidgetVerse] = all.filter { $0.en.count <= 85 }
+
     /// The same verse for everyone on a given calendar day.
-    static func on(_ date: Date) -> WidgetVerse {
-        guard !all.isEmpty else { return fallback }
+    static func on(_ date: Date, from list: [WidgetVerse] = all) -> WidgetVerse {
+        guard !list.isEmpty else { return fallback }
         var utc = Calendar(identifier: .gregorian)
         utc.timeZone = TimeZone(identifier: "UTC")!
         var gregorian = Calendar(identifier: .gregorian)
@@ -32,7 +35,7 @@ struct WidgetVerse: Decodable {
         let local = gregorian.dateComponents([.year, .month, .day], from: date)
         let midnight = utc.date(from: local) ?? date
         let day = Int(midnight.timeIntervalSince1970 / 86_400)
-        return all[((day % all.count) + all.count) % all.count]
+        return list[((day % list.count) + list.count) % list.count]
     }
 }
 
@@ -94,13 +97,14 @@ struct VerseWidgetView: View {
         case .accessoryInline:
             Text("Quran \(entry.verse.s):\(entry.verse.a)").widgetURL(entry.verse.url)
         case .accessoryRectangular:
+            let verse = WidgetVerse.on(entry.date, from: WidgetVerse.short)
             VStack(alignment: .leading, spacing: 1) {
-                Text(entry.verse.reference).font(.caption2.weight(.semibold)).widgetAccentable()
-                Text(entry.verse.en).font(.caption2).lineLimit(3).minimumScaleFactor(0.7)
+                Text(verse.reference).font(.caption2.weight(.semibold)).widgetAccentable()
+                Text(verse.en).font(.caption2).minimumScaleFactor(0.6)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .widgetBackdrop(Color.clear)
-            .widgetURL(entry.verse.url)
+            .widgetURL(verse.url)
         default:
             homeScreen
         }

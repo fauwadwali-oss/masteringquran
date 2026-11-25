@@ -140,11 +140,11 @@ export default function TodayStrip() {
                                 </div>
                                 {verse ? (
                                     <>
-                                        <p className="font-amiri text-2xl leading-loose text-slate-900 dark:text-slate-100 text-right line-clamp-2" dir="rtl" lang="ar">
+                                        <p className="font-amiri text-2xl leading-loose text-slate-900 dark:text-slate-100 text-right" dir="rtl" lang="ar">
                                             {verse.arabic}
                                         </p>
-                                        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-4">
-                                            {clampText(verse.english, 160)}
+                                        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                            {verse.english}
                                         </p>
                                         <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">— Quran {verse.verse_key} · Saheeh International</p>
                                     </>

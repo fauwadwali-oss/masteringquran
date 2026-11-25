@@ -64,7 +64,7 @@ export default function Home() {
                 <div className="max-w-6xl mx-auto">
                     <SectionHeader pill="Daily companions" title="For every part of the day" icon={Heart} accent="amber" />
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <Tile to="/prayer-times" icon={Clock} color="indigo" title="Prayer Times" description="Accurate salah timings for your location, 22 calculation methods." />
+                        <Tile to="/prayer-times" icon={Clock} color="indigo" title="Prayer Times" description="Accurate salah timings for your location, 12 calculation methods." />
                         <Tile to="/qibla" icon={Compass} color="purple" title="Qibla Direction" description="Precise bearing to the Ka'bah from wherever you are." />
                         <Tile to="/names" icon={Star} color="amber" title="99 Names of Allah" description="Al-Asma al-Husna with Arabic, meaning, and reflection." />
                         <Tile to="/duas" icon={Heart} color="teal" title="Duas" description="56 sourced supplications across 15 categories." />

@@ -1,3 +1,4 @@
+import { isAndroidApp } from "@/lib/share-file";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -585,7 +586,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const resumeIfWanted = useCallback(() => {
         const el = audioRef.current;
         // Skip while a new surah is loading: the element still holds the old file.
-        if (!el || !wantPlay.current || !el.paused || !isCurrentSource()) return;
+        if (!isAndroidApp() || !el || !wantPlay.current || !el.paused || !isCurrentSource()) return;
         if (el.ended) handleEnded();
         else el.play().catch(() => undefined);
     }, [handleEnded, isCurrentSource]);
@@ -609,7 +610,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             if (el.ended) return;
             // Paused by the system while in the background (the Android WebView does
             // this): keep showing "playing" so it resumes when the reader comes back.
-            if (document.visibilityState === "hidden" && wantPlay.current && !loading.current) return;
+            if (isAndroidApp() && document.visibilityState === "hidden" && wantPlay.current && !loading.current) return;
             setStatus((st) => (st === "loading" ? st : "paused"));
             setNowPlayingState("paused");
         };

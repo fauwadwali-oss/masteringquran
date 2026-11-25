@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import SEO from "@/components/SEO";
-import { copyImage, saveImage, shareImage } from "@/lib/share-file";
+import { copyImage, copyText, saveImage, shareImage } from "@/lib/share-file";
 import { cn } from "@/lib/utils";
 
 type Format = "square" | "story";
@@ -290,7 +290,12 @@ export default function Share() {
 
     const onCopyCaption = async () => {
         if (!caption) return;
-        await navigator.clipboard.writeText(caption);
+        try {
+            await copyText(caption);
+        } catch {
+            setErr("Couldn't copy the caption.");
+            return;
+        }
         setCopied("caption");
         setTimeout(() => setCopied("idle"), 2000);
     };
@@ -481,6 +486,7 @@ export default function Share() {
                                             <button
                                                 type="button"
                                                 role="switch"
+                                                aria-label="Include translation"
                                                 aria-checked={showTranslation}
                                                 onClick={() => setShowTranslation((value) => !value)}
                                                 className={cn(
@@ -682,7 +688,7 @@ const VersePoster = forwardRef<HTMLDivElement, { verse: VerseData; template: Tem
                                             className={cn("max-w-[96%] font-medium", template.translationColor, compact ? "leading-[1.45]" : "leading-relaxed")}
                                             style={{ fontSize: longTranslation ? "0.95em" : "1.08em" }}
                                         >
-                                            &ldquo;{verse.translation}&rdquo;
+                                            {/^["“]/.test(verse.translation) || /["”]$/.test(verse.translation) ? verse.translation : <>&ldquo;{verse.translation}&rdquo;</>}
                                         </p>
                                     </>
                                 )}

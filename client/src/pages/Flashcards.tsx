@@ -27,7 +27,7 @@ const SURAH_CARDS: FlashCard[] = [
     { front: "يوسف", back: "Yusuf", backSub: "Joseph · 111 verses · Meccan", dir: "rtl" },
     { front: "الكهف", back: "Al-Kahf", backSub: "The Cave · 110 verses · Meccan", dir: "rtl" },
     { front: "مريم", back: "Maryam", backSub: "Mary · 98 verses · Meccan", dir: "rtl" },
-    { front: "طه", back: "Ta-Ha", backSub: "98 verses · Meccan · Opens with disjointed letters", dir: "rtl" },
+    { front: "طه", back: "Ta-Ha", backSub: "135 verses · Meccan · Opens with disjointed letters", dir: "rtl" },
     { front: "يس", back: "Ya-Sin", backSub: "83 verses · Meccan · 'Heart of the Quran'", dir: "rtl" },
     { front: "الرحمن", back: "Ar-Rahman", backSub: "The Most Merciful · 78 verses · Medinan · Refrain of 31 verses", dir: "rtl" },
     { front: "الواقعة", back: "Al-Waqi'ah", backSub: "The Inevitable · 96 verses · Meccan", dir: "rtl" },
@@ -197,7 +197,14 @@ export default function Flashcards() {
                     ) : (
                         <>
                             <Card
+                                role="button"
+                                tabIndex={0}
                                 onClick={() => setFlipped(!flipped)}
+                                onKeyDown={(e) => {
+                                    if (e.key !== "Enter" && e.key !== " ") return;
+                                    e.preventDefault();
+                                    setFlipped(!flipped);
+                                }}
                                 className={`cursor-pointer border-2 ${colors.border} bg-white dark:bg-slate-900 min-h-[300px] flex items-center justify-center select-none transition-transform hover:scale-[1.01]`}
                             >
                                 <CardContent className="p-8 text-center w-full">

@@ -128,14 +128,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [recoveryPending, setRecoveryPending] = useState(() => isRecoveryUrl(INITIAL_URL));
     const configured = isSupabaseConfigured();
 
+    // Signed-out visitors do not load the sign-in library until they need it. After signing in,
+    // listen for changes so the session keeps its refreshed token.
+    const [listen, setListen] = useState(() =>
+        isNativePlatform() ||
+        window.location.pathname === "/auth/callback" ||
+        /(?:code|access_token|refresh_token)=/.test(INITIAL_URL) ||
+        hasStoredSupabaseSession(),
+    );
+    useEffect(() => {
+        if (session) setListen(true);
+    }, [session]);
+
     useEffect(() => {
         if (!configured) {
             setLoading(false);
             return;
         }
         const nativePlatform = isNativePlatform();
-        const authCallback = window.location.pathname === "/auth/callback" || /(?:code|access_token|refresh_token)=/.test(window.location.href);
-        if (!nativePlatform && !authCallback && !hasStoredSupabaseSession()) {
+        if (!listen) {
             setLoading(false);
             return;
         }
@@ -202,7 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             unsubscribe?.();
             void appUrlListener?.remove();
         };
-    }, [configured]);
+    }, [configured, listen]);
 
     const signInWithEmail = async (email: string, redirectTo?: string): Promise<AuthResult> => {
         if (!configured) return { error: "Sign-in is not available right now. Please try again later." };
