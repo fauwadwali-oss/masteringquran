@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Send, Sparkles, Loader2, AlertCircle, AlertTriangle, CheckCircle2, PenLine, ShieldCheck, Wrench, BookOpen, ScrollText, Search, Lightbulb, Lock, Library, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import ReportAnswer from "@/components/ReportAnswer";
 import LoginModal from "@/components/LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiUrl } from "@/lib/api";
+import { checkHadith, findCitations, type AskSource } from "@/lib/citations";
 
 /** One Quran quote or reference checked by /api/ask against the canonical text. */
 interface QuoteCheck {
@@ -23,6 +24,7 @@ interface Message {
     content: string;
     tools?: string[];
     quotes?: QuoteCheck[];
+    sources?: AskSource[];
 }
 
 const SUGGESTIONS = [
@@ -54,14 +56,46 @@ function hasConsent(): boolean {
     }
 }
 
+interface ChatState {
+    userId: string | null;
+    messages: Message[];
+    loading: boolean;
+    error: string | null;
+}
+
+/** Kept outside the page so opening a cited verse and coming back does not lose the conversation. */
+const chatStore = (() => {
+    let state: ChatState = { userId: null, messages: [], loading: false, error: null };
+    const listeners = new Set<() => void>();
+    return {
+        get: () => state,
+        set: (next: ChatState) => {
+            state = next;
+            listeners.forEach((l) => l());
+        },
+        subscribe: (l: () => void) => {
+            listeners.add(l);
+            return () => {
+                listeners.delete(l);
+            };
+        },
+    };
+})();
+
 function AskInner() {
     const [consented, setConsented] = useState(hasConsent);
     const [quota, setQuota] = useState<{ used: number; limit: number } | null>(null);
-    const { session } = useAuth();
-    const [messages, setMessages] = useState<Message[]>([]);
+    const { session, user } = useAuth();
+    const chat = useSyncExternalStore(chatStore.subscribe, chatStore.get);
+    // Another account on this device starts with an empty chat.
+    const mine = chat.userId === user?.id;
+    const messages = mine ? chat.messages : [];
+    const loading = mine && chat.loading;
+    const error = mine ? chat.error : null;
     const [input, setInput] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    useEffect(() => {
+        if (user && chatStore.get().userId !== user.id) chatStore.set({ userId: user.id, messages: [], loading: false, error: null });
+    }, [user]);
     const scrollRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -71,11 +105,18 @@ function AskInner() {
 
     const submit = async (userText: string) => {
         if (!userText.trim() || loading || !consented) return;
-        setError(null);
+        const userId = user?.id ?? null;
+        // Ignore an answer that arrives after someone else signed in on this device.
+        const patch = (p: Partial<ChatState>) => {
+            if (chatStore.get().userId === userId) chatStore.set({ ...chatStore.get(), ...p });
+        };
+        const setMessages = (next: Message[] | ((prev: Message[]) => Message[])) =>
+            patch({ messages: typeof next === "function" ? next(chatStore.get().messages) : next });
+        patch({ error: null });
         const nextHistory = [...messages, { role: "user" as const, content: userText }];
         setMessages([...nextHistory, { role: "assistant", content: "" }]);
         setInput("");
-        setLoading(true);
+        patch({ loading: true });
 
         try {
             const res = await fetch(apiUrl("/api/ask"), {
@@ -135,6 +176,13 @@ function AskInner() {
                             }
                             return copy;
                         });
+                    } else if (evt.type === "sources") {
+                        setMessages((prev) => {
+                            const copy = [...prev];
+                            const last = copy[copy.length - 1];
+                            if (last?.role === "assistant") copy[copy.length - 1] = { ...last, sources: [...(last.sources || []), ...evt.sources] };
+                            return copy;
+                        });
                     } else if (evt.type === "quote_check") {
                         setMessages((prev) => {
                             const copy = [...prev];
@@ -149,11 +197,11 @@ function AskInner() {
             }
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
-            setError(msg);
+            patch({ error: msg });
             // Drop the empty placeholder on failure
             setMessages((prev) => prev.filter((m, i) => !(i === prev.length - 1 && m.role === "assistant" && !m.content)));
         } finally {
-            setLoading(false);
+            patch({ loading: false });
             setTimeout(() => inputRef.current?.focus(), 0);
         }
     };
@@ -186,7 +234,7 @@ function AskInner() {
                 <div className="mb-6 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2">
                     <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                     <p>
-                        This is an AI assistant. It only answers questions about Quran, hadith, and classical tafsir, and will decline fiqh rulings or fatwas. Always verify with a qualified scholar.
+                        This is an AI assistant. It only answers questions about Quran, hadith, and classical tafsir, and will not give personal rulings or fatwas. Words outside quotation marks are its own summary. Always verify with a qualified scholar.
                     </p>
                 </div>
 
@@ -218,7 +266,7 @@ function AskInner() {
 
                 {messages.length === 0 && (
                     <div className="mb-8 grid gap-3 sm:grid-cols-3">
-                        <SourceCard title="Source cards" body="Tool calls show when Quran, tafsir, or hadith sources are being read." />
+                        <SourceCard title="Check the sources" body="Tap a verse or hadith reference to open it. Hadith gradings appear under the answer." />
                         <SourceCard title="Continue studying" body="Every answer can lead into Quran reading, related topics, or share cards." />
                         <SourceCard title="Scope guard" body="Designed for Quran, hadith, and tafsir study rather than fatwa decisions." />
                     </div>
@@ -246,13 +294,16 @@ function AskInner() {
                                     </div>
                                 )}
                                 <p className={`whitespace-pre-wrap leading-relaxed ${m.role === "user" ? "text-[15px]" : "text-[15px] text-slate-800 dark:text-slate-200"}`}>
-                                    {m.content ? <AnswerText content={m.content} quotes={m.quotes} /> : (m.role === "assistant" && loading && i === messages.length - 1 ? (
+                                    {m.content ? (m.role === "assistant" ? <AnswerText content={m.content} quotes={m.quotes} /> : m.content) : (m.role === "assistant" && loading && i === messages.length - 1 ? (
                                         <span className="inline-flex items-center gap-2 text-slate-500">
                                             <Loader2 className="h-4 w-4 animate-spin" /> Thinking…
                                         </span>
                                     ) : "")}
                                 </p>
                                 {m.role === "assistant" && m.quotes && m.quotes.length > 0 && <QuoteBadge quotes={m.quotes} />}
+                                {m.role === "assistant" && m.content && !(loading && i === messages.length - 1) && (
+                                    <SourceList content={m.content} own={m.sources ?? []} all={messages.slice(0, i + 1).flatMap((x) => x.sources ?? [])} />
+                                )}
                                 {m.role === "assistant" && m.content && (
                                     <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
                                         <LinkButton to="/quran" label="Continue in Quran" />
@@ -340,13 +391,13 @@ function AskInner() {
 /** Answer text with corrected and unverified Quran quotes marked where they appear. */
 function AnswerText({ content, quotes }: { content: string; quotes?: QuoteCheck[] }) {
     const flagged = (quotes ?? []).filter((q) => q.status !== "verified");
-    if (!flagged.length) return <>{content}</>;
+    if (!flagged.length) return <LinkedText text={content} />;
     const parts: ReactNode[] = [];
     let pos = 0;
     flagged.forEach((q, i) => {
         const at = content.indexOf(q.text, pos);
         if (at === -1) return;
-        parts.push(content.slice(pos, at));
+        parts.push(<LinkedText key={`t${i}`} text={content.slice(pos, at)} />);
         const unverified = q.status === "unverified";
         parts.push(
             <span key={i} title={q.note}>
@@ -367,8 +418,54 @@ function AnswerText({ content, quotes }: { content: string; quotes?: QuoteCheck[
         );
         pos = at + q.text.length;
     });
-    parts.push(content.slice(pos));
+    parts.push(<LinkedText key="end" text={content.slice(pos)} />);
     return <>{parts}</>;
+}
+
+/** Text with its Quran and hadith references made tappable. */
+function LinkedText({ text }: { text: string }) {
+    const parts: ReactNode[] = [];
+    let pos = 0;
+    findCitations(text).forEach((c, i) => {
+        if (c.start < pos) return;
+        parts.push(text.slice(pos, c.start));
+        parts.push(
+            <Link key={i} to={c.to} className="font-medium text-emerald-700 underline decoration-emerald-300 underline-offset-4 hover:decoration-emerald-600 dark:text-emerald-300">
+                {c.text}
+            </Link>,
+        );
+        pos = c.end;
+    });
+    parts.push(text.slice(pos));
+    return <>{parts}</>;
+}
+
+/** Hadith and tafsir behind an answer, with gradings, and a warning for hadith nobody looked up. */
+function SourceList({ content, own, all }: { content: string; own: AskSource[]; all: AskSource[] }) {
+    const hadith = checkHadith(content, all);
+    const tafsir = own.filter((s): s is AskSource & { kind: "tafsir" } => s.kind === "tafsir").filter((s, i, list) => list.findIndex((x) => x.name === s.name && x.reference === s.reference) === i);
+    if (!hadith.length && !tafsir.length) return null;
+    return (
+        <div className="mt-3 space-y-1.5 rounded-xl border border-slate-100 bg-slate-50/60 p-3 text-xs text-slate-700 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-300">
+            <p className="font-semibold text-slate-900 dark:text-white">Sources to check</p>
+            <ul className="space-y-1.5">
+                {hadith.map(({ citation, source }) => (
+                    <li key={citation.to}>
+                        <Link to={citation.to} className="font-medium text-emerald-700 underline underline-offset-2 dark:text-emerald-300">{citation.text}</Link>
+                        <span className={`block ${source ? "text-slate-500 dark:text-slate-400" : "text-amber-700 dark:text-amber-300"}`}>
+                            {source ? source.grading ?? "Looked up" : "Not looked up for this answer. Check it before relying on it."}
+                        </span>
+                    </li>
+                ))}
+                {tafsir.map((s) => (
+                    <li key={`${s.name}${s.reference}`}>
+                        {s.name}, <Link to={`/quran/${s.reference.replace(":", "/")}`} className="font-medium text-emerald-700 underline underline-offset-2 dark:text-emerald-300">Quran {s.reference}</Link>
+                        <span className="block text-slate-500 dark:text-slate-400">Read for this answer</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
 }
 
 function QuoteBadge({ quotes }: { quotes: QuoteCheck[] }) {
@@ -421,9 +518,9 @@ function SourceCard({ title, body }: { title: string; body: string }) {
 
 function LinkButton({ to, label }: { to: string; label: string }) {
     return (
-        <a href={to} className="rounded-full border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 dark:border-emerald-900 dark:text-emerald-300 dark:hover:bg-emerald-950/40">
+        <Link to={to} className="rounded-full border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 dark:border-emerald-900 dark:text-emerald-300 dark:hover:bg-emerald-950/40">
             {label}
-        </a>
+        </Link>
     );
 }
 

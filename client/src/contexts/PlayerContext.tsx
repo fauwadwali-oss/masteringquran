@@ -284,9 +284,21 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const loading = useRef(false);
     const [status, setStatus] = useState<PlayerStatus>("idle");
     const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
-    const [continuous, setContinuousState] = useState(false);
-    const continuousRef = useRef(false);
+    // On unless the reader turned it off; their choice is remembered.
+    const [continuous, setContinuousState] = useState(() => {
+        try {
+            return localStorage.getItem("mq-auto-play") !== "off";
+        } catch {
+            return true;
+        }
+    });
+    const continuousRef = useRef(continuous);
     const setContinuous = useCallback((on: boolean) => {
+        try {
+            localStorage.setItem("mq-auto-play", on ? "on" : "off");
+        } catch {
+            /* storage blocked */
+        }
         continuousRef.current = on;
         setContinuousState(on);
     }, []);

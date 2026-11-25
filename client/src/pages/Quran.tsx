@@ -1697,14 +1697,14 @@ export default function Quran() {
                                     variant={isContinuousPlay ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => setIsContinuousPlay(!isContinuousPlay)}
-                                    className={`h-10 px-4 rounded-xl gap-2 transition-all ${
+                                    className={`h-10 px-3 rounded-xl gap-1.5 sm:px-4 sm:gap-2 transition-all ${
                                         isContinuousPlay
                                             ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md'
                                             : 'hover:bg-emerald-50 dark:hover:bg-emerald-900/30'
                                     }`}
                                 >
                                     {isContinuousPlay ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-                                    <span className="sr-only sm:not-sr-only">Auto-play</span>
+                                    <span className="text-xs sm:text-sm">Auto<span className="hidden sm:inline">-play</span></span>
                                 </Button>
                             </div>
                         </div>

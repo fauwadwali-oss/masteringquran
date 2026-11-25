@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, ChevronRight, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import LoginModal from "@/components/LoginModal";
 import SEO from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { LESSONS, type Lesson } from "@/lib/content/arabic-foundations";
@@ -26,6 +27,7 @@ export default function LessonLayout({ lessonId, children, seoTitle, seoDescript
     const navigate = useNavigate();
     const [completed, setCompleted] = useState<Record<string, LessonProgress>>({});
     const [marking, setMarking] = useState(false);
+    const [showLogin, setShowLogin] = useState(false);
 
     const lesson = LESSONS.find((l) => l.id === lessonId) as Lesson;
     const lessonIndex = LESSONS.findIndex((l) => l.id === lessonId);
@@ -47,7 +49,7 @@ export default function LessonLayout({ lessonId, children, seoTitle, seoDescript
     const onComplete = async () => {
         if (!user) {
             toast.error("Sign in to save your progress across devices.", {
-                action: { label: "Sign in", onClick: () => navigate("/ask") },
+                action: { label: "Sign in", onClick: () => setShowLogin(true) },
             });
             return;
         }
@@ -89,6 +91,7 @@ export default function LessonLayout({ lessonId, children, seoTitle, seoDescript
                 title={seoTitle ?? `${lesson.title}, Learn Arabic`}
                 description={seoDescription ?? lesson.subtitle}
             />
+            <LoginModal open={showLogin} onClose={() => setShowLogin(false)} reason="Sign in to save your lesson progress." />
             <div className="mx-auto max-w-4xl space-y-6">
                 {/* Breadcrumb */}
                 <div className="flex items-center justify-between flex-wrap gap-2">

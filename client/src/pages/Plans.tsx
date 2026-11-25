@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { BookOpen, Calendar, CheckCircle2, ArrowLeft, Play, RotateCcw, Target } from "lucide-react";
@@ -7,38 +7,76 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import SEO from "@/components/SEO";
 import { READING_PLANS, ReadingPlan, PlanSegment, getPlanById } from "@/lib/plans";
 import { useAuth } from "@/contexts/AuthContext";
-import { getLocalProgress, startPlan, markDayComplete, resetPlan, PlanProgress } from "@/lib/queries/plans";
+import { getLocalProgress, startPlan, markDayComplete, resetPlan, syncPlan, PlanProgress } from "@/lib/queries/plans";
+import { mergeProgress } from "@/lib/plan-progress";
 import RequireAuth from "@/components/RequireAuth";
 
 function PlanDetail({ plan, onBack }: { plan: ReadingPlan; onBack: () => void }) {
     const { user } = useAuth();
-    const [progress, setProgress] = useState<PlanProgress | null>(null);
-    const [busy, setBusy] = useState(false);
+    const userId = user?.id;
+    const [saved, setSaved] = useState<PlanProgress | null>(null);
+    const [sync, setSync] = useState<"loading" | "saved" | "offline">("loading");
+    const latest = useRef<PlanProgress | null>(null);
+    const queue = useRef<Promise<void>>(Promise.resolve());
+    const mounted = useRef(true);
+    // After a reset the record stays (so other devices learn of it) but the plan is not running.
+    const progress = saved?.started_at ? { ...saved, started_at: saved.started_at } : null;
+
+    const show = useCallback((p: PlanProgress | null) => {
+        latest.current = p;
+        setSaved(p);
+    }, []);
+
+    // One at a time, so a slower earlier save cannot undo a later one.
+    const runSync = useCallback(() => {
+        if (!userId) return;
+        queue.current = queue.current.then(async () => {
+            try {
+                const merged = await syncPlan(userId, plan.id, () => latest.current);
+                if (!mounted.current) return;
+                // A day marked while this was saving is still in what is shown; its own sync follows.
+                show(mergeProgress(latest.current, merged));
+                setSync("saved");
+            } catch {
+                if (mounted.current) setSync("offline");
+            }
+        });
+    }, [userId, plan.id, show]);
 
     useEffect(() => {
-        if (!user) return;
-        setProgress(getLocalProgress(user.id, plan.id));
-    }, [user, plan.id]);
+        mounted.current = true;
+        if (!userId) return;
+        show(getLocalProgress(userId, plan.id));
+        runSync();
+        const onReturn = () => {
+            if (!document.hidden) runSync();
+        };
+        window.addEventListener("online", onReturn);
+        document.addEventListener("visibilitychange", onReturn);
+        return () => {
+            mounted.current = false;
+            window.removeEventListener("online", onReturn);
+            document.removeEventListener("visibilitychange", onReturn);
+        };
+    }, [userId, plan.id, show, runSync]);
 
-    const start = async () => {
-        if (!user) return;
-        setBusy(true);
-        const p = await startPlan(user.id, plan.id);
-        setProgress(p);
-        setBusy(false);
+    const start = () => {
+        if (!userId) return;
+        show(startPlan(userId, plan.id, latest.current));
+        runSync();
     };
 
     const reset = () => {
-        if (!user) return;
-        if (!confirm("Reset progress? This cannot be undone.")) return;
-        resetPlan(user.id, plan.id);
-        setProgress(null);
+        if (!userId || !latest.current) return;
+        if (!confirm("Reset progress on all your devices? This cannot be undone.")) return;
+        show(resetPlan(userId, latest.current));
+        runSync();
     };
 
     const complete = (day: number) => {
-        if (!user) return;
-        const p = markDayComplete(user.id, plan.id, day);
-        setProgress({ ...p });
+        if (!userId || !latest.current) return;
+        show(markDayComplete(userId, latest.current, day));
+        runSync();
     };
 
     const completedCount = progress?.completed_days.length ?? 0;
@@ -63,17 +101,12 @@ function PlanDetail({ plan, onBack }: { plan: ReadingPlan; onBack: () => void })
                 </div>
             </div>
 
-            {!user ? (
-                <Card className="p-8 text-center">
-                    <p className="text-slate-600 dark:text-slate-400 mb-4">Sign in to start and track your progress across devices.</p>
-                    <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                        <Link to="/ask">Sign in</Link>
-                    </Button>
-                </Card>
+            {!progress && sync === "loading" ? (
+                <Card className="p-8 text-center text-slate-600 dark:text-slate-400" role="status">Checking your progress…</Card>
             ) : !progress ? (
                 <Card className="p-8 text-center space-y-3">
                     <p className="text-slate-600 dark:text-slate-400">You haven't started this plan yet.</p>
-                    <Button onClick={start} disabled={busy} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <Button onClick={start} className="bg-emerald-600 hover:bg-emerald-700 text-white">
                         <Play className="mr-2 h-4 w-4" /> Start plan
                     </Button>
                 </Card>
@@ -93,6 +126,11 @@ function PlanDetail({ plan, onBack }: { plan: ReadingPlan; onBack: () => void })
                                 <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all" style={{ width: `${percent}%` }} />
                             </div>
                             <p className="text-xs text-slate-500">{percent}% complete · Started {new Date(progress.started_at).toLocaleDateString()}</p>
+                            {sync === "offline" && (
+                                <p role="status" className="text-xs text-amber-700 dark:text-amber-300">
+                                    Saved on this device. It will copy to your account when you are back online.
+                                </p>
+                            )}
                         </CardContent>
                     </Card>
 
@@ -139,13 +177,13 @@ function PlanDetail({ plan, onBack }: { plan: ReadingPlan; onBack: () => void })
 }
 
 function PlanLink({ seg }: { seg: PlanSegment }) {
-    // Link to /quran; we don't deep-link into specific verse yet but the reader remembers lastViewedSurah
     let preview = "";
+    const to = seg.kind === "surah" ? `/quran/${seg.surah}` : seg.kind === "range" ? `/quran/${seg.from.replace(":", "/")}` : "/quran";
     if (seg.kind === "juz") preview = `Juz ${seg.juz}`;
     else if (seg.kind === "surah") preview = `Surah ${seg.surah}`;
     else if (seg.kind === "range") preview = `${seg.from} → ${seg.to}`;
     return (
-        <Link to="/quran" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
+        <Link to={to} className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
             {preview} ↗
         </Link>
     );
@@ -167,7 +205,7 @@ function PlansInner() {
             <section className="py-12 px-6">
                 <div className="max-w-3xl mx-auto">
                     {selected ? (
-                        <PlanDetail plan={selected} onBack={() => setSelectedId(null)} />
+                        <PlanDetail key={selected.id} plan={selected} onBack={() => setSelectedId(null)} />
                     ) : (
                         <>
                             <div className="text-center mb-8 space-y-2">
