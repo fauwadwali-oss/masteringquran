@@ -439,7 +439,7 @@ export default function PrayerTimes() {
                                         </p>
                                     </div>
                                 </div>
-                                <Button onClick={() => downloadPrayerCalendar(place, settings)} className="shrink-0 bg-emerald-700 text-white hover:bg-emerald-800">
+                                <Button onClick={() => { downloadPrayerCalendar(place, settings).catch(console.error); }} className="shrink-0 bg-emerald-700 text-white hover:bg-emerald-800">
                                     Add to calendar
                                 </Button>
                             </div>

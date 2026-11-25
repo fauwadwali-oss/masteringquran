@@ -1,11 +1,13 @@
-import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Check, Copy, Download, Loader2, Palette, RefreshCw, Share2, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import * as htmlToImage from "html-to-image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import SEO from "@/components/SEO";
+import { copyImage, saveImage, shareImage } from "@/lib/share-file";
 import { cn } from "@/lib/utils";
 
 type Format = "square" | "story";
@@ -228,7 +230,9 @@ export default function Share() {
         }
         const dataUrl = await htmlToImage.toPng(cardRef.current, {
             cacheBust: true,
-            pixelRatio: format === "story" ? 2.5 : 2,
+            // 1080 px wide; less for a very tall card, so phones do not run out of memory.
+            pixelRatio: Math.min(1080 / cardRef.current.offsetWidth, 2400 / cardRef.current.offsetHeight),
+            style: { transform: "none", position: "relative" },
             backgroundColor: undefined,
         });
         const res = await fetch(dataUrl);
@@ -248,20 +252,15 @@ export default function Share() {
         ? `${poster.arabic ? `${poster.arabic}\n\n` : ""}"${poster.translation}"\n\n${poster.surahEnglish}\nmasteringquran.com`
         : "";
 
+    const fileName = `mastering-quran-${(poster?.verseKey ?? "card").replace(":", "-")}-${format}.png`;
+
     const onDownload = async () => {
         if (!poster) return;
         try {
             setDownloading(true);
             const blob = await generatePng();
             if (!blob) return;
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `mastering-quran-${poster.verseKey.replace(":", "-")}-${format}.png`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
+            if ((await saveImage(blob, fileName)) === "gallery") toast.success("Saved to your gallery, in Mastering Quran");
         } catch (e) {
             console.error(e);
             setErr("Couldn't generate the image. Try another template.");
@@ -275,8 +274,7 @@ export default function Share() {
             setDownloading(true);
             const blob = await generatePng();
             if (!blob) return;
-            if ("ClipboardItem" in window && navigator.clipboard?.write) {
-                await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+            if (await copyImage(blob, fileName)) {
                 setCopied("image");
                 setTimeout(() => setCopied("idle"), 2000);
             } else {
@@ -303,21 +301,13 @@ export default function Share() {
             setDownloading(true);
             const blob = await generatePng();
             if (!blob) return;
-            const file = new File([blob], `mastering-quran-${poster.verseKey}-${format}.png`, { type: "image/png" });
-            const shareData: ShareData = {
-                title: `Mastering Quran ${cardKind} card`,
-                text: `"${poster.translation}" ${poster.surahEnglish}`,
-                files: [file] as any,
-            };
-            if (navigator.share && navigator.canShare?.(shareData as any)) {
-                await navigator.share(shareData);
-            } else if (navigator.share) {
-                await navigator.share({ title: shareData.title, text: shareData.text });
-            } else {
-                setErr("Share is not supported here. Download works.");
-            }
+            const result = await shareImage(blob, fileName, `Mastering Quran ${cardKind} card`, `"${poster.translation}" ${poster.surahEnglish}`);
+            if (result === "unsupported") setErr("Share is not supported here. Download works.");
         } catch (e: any) {
-            if (e?.name !== "AbortError") console.error(e);
+            if (e?.name !== "AbortError") {
+                console.error(e);
+                setErr("Couldn't share the image. Try Download instead.");
+            }
         } finally {
             setDownloading(false);
         }
@@ -587,87 +577,127 @@ export default function Share() {
     );
 }
 
+const DESIGN_WIDTH: Record<Format, number> = { square: 580, story: 400 };
+
 const VersePoster = forwardRef<HTMLDivElement, { verse: VerseData; template: Template; format: Format; showTranslation: boolean }>(
     function VersePoster({ verse, template, format, showTranslation }, ref) {
         const isStory = format === "story";
         const longArabic = verse.arabic.length > 190;
         const longTranslation = verse.translation.length > 250;
-        const compactSquare = !isStory && showTranslation && (verse.arabic.length > 240 || verse.translation.length > 420);
-        const displayTranslation = compactSquare && verse.translation.length > 430
-            ? `${verse.translation.slice(0, 430).replace(/\s+\S*$/, "")}...`
-            : verse.translation;
+        const compact = showTranslation && (verse.arabic.length > 240 || verse.translation.length > 420);
+        const aspectRatio = isStory ? "9 / 16" : "1 / 1";
+        const designWidth = DESIGN_WIDTH[format];
+        const frameEl = useRef<HTMLDivElement>(null);
+        const [preview, setPreview] = useState({ scale: 1, height: 0 });
+        const cardEl = useRef<HTMLDivElement | null>(null);
+        const bodyEl = useRef<HTMLDivElement>(null);
+        const textEl = useRef<HTMLDivElement>(null);
+
+        // Quran text must never be cut: shrink the text to fit, and if a verse is still too
+        // long at a readable size, let the card grow taller.
+        useLayoutEffect(() => {
+            const card = cardEl.current, body = bodyEl.current, text = textEl.current;
+            if (!card || !body || !text) return;
+            let active = true;
+            const fit = () => {
+                if (!active) return;
+                card.style.aspectRatio = aspectRatio;
+                for (let size = 1; ; size -= 0.04) {
+                    text.style.fontSize = `${size}rem`;
+                    if (text.offsetHeight <= body.clientHeight) return;
+                    if (size < 0.52) break;
+                }
+                card.style.aspectRatio = "auto";
+            };
+            fit();
+            document.fonts?.ready.then(fit).catch(() => undefined);
+            return () => { active = false; };
+        }, [verse.arabic, verse.translation, showTranslation, aspectRatio]);
+
+        // The card is laid out at one size on every screen and only scaled for the preview,
+        // so every phone makes the same picture.
+        useLayoutEffect(() => {
+            const frame = frameEl.current, card = cardEl.current;
+            if (!frame || !card) return;
+            const measure = () => {
+                const scale = frame.clientWidth / card.offsetWidth;
+                setPreview({ scale, height: card.offsetHeight * scale });
+            };
+            measure();
+            const observer = new ResizeObserver(measure);
+            observer.observe(frame);
+            observer.observe(card);
+            return () => observer.disconnect();
+        }, []);
 
         return (
-            <div
-                ref={ref}
-                className={cn("relative flex w-full flex-col overflow-hidden", template.bgClass, isStory ? "aspect-[9/16] p-7" : "aspect-square p-5 md:p-7")}
-                style={{ aspectRatio: isStory ? "9 / 16" : "1 / 1" }}
-            >
-                <div className="absolute inset-0 opacity-[0.13] [background-image:linear-gradient(30deg,currentColor_1px,transparent_1px),linear-gradient(150deg,currentColor_1px,transparent_1px)] [background-size:38px_38px] text-white" />
-                <div className={cn("relative grid h-full min-h-0 grid-rows-[auto_1fr_auto] rounded-[1.75rem] border shadow-2xl backdrop-blur-sm", template.surfaceClass, compactSquare ? "p-4 md:p-5" : isStory ? "p-6" : "p-5 md:p-7")}>
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                            <img src="/mq-logo-mark.svg" alt="" crossOrigin="anonymous" className={cn("w-auto drop-shadow-md", compactSquare ? "h-7" : "h-9")} />
-                            <div>
-                                <p className={cn("font-bold leading-none", template.refColor, compactSquare ? "text-xs" : "text-sm")}>Mastering Quran</p>
-                                {!compactSquare && <p className={cn("mt-1 text-[10px] uppercase tracking-[0.22em]", template.mutedColor)}>Share a verse</p>}
+            <div ref={frameEl} className="relative w-full overflow-hidden" style={{ height: preview.height }}>
+                <div
+                    ref={(el) => {
+                        cardEl.current = el;
+                        if (typeof ref === "function") ref(el);
+                        else if (ref) ref.current = el;
+                    }}
+                    className={cn("absolute left-0 top-0 flex origin-top-left flex-col overflow-hidden", template.bgClass, isStory ? "p-4" : "p-6")}
+                    style={{ aspectRatio, width: designWidth, transform: `scale(${preview.scale})` }}
+                >
+                    <div className="absolute inset-0 opacity-[0.13] [background-image:linear-gradient(30deg,currentColor_1px,transparent_1px),linear-gradient(150deg,currentColor_1px,transparent_1px)] [background-size:38px_38px] text-white" />
+                    <div className={cn("relative grid min-h-0 flex-1 grid-rows-[auto_1fr_auto] rounded-[1.75rem] border shadow-2xl backdrop-blur-sm", template.surfaceClass, compact ? "p-5" : isStory ? "p-6" : "p-7")}>
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <img src="/mq-logo-mark.svg" alt="" crossOrigin="anonymous" className={cn("w-auto drop-shadow-md", compact ? "h-7" : "h-9")} />
+                                <div>
+                                    <p className={cn("font-bold leading-none whitespace-nowrap", template.refColor, compact ? "text-xs" : "text-sm")}>Mastering Quran</p>
+                                    {!compact && <p className={cn("mt-1 text-[10px] uppercase tracking-[0.22em]", template.mutedColor)}>Share a verse</p>}
+                                </div>
+                            </div>
+                            <div className={cn("shrink-0 whitespace-nowrap rounded-full border font-bold", template.refColor, "border-current/25", compact ? "px-2 py-0.5 text-[10px]" : "px-3 py-1 text-xs")}>
+                                {verse.verseKey}
                             </div>
                         </div>
-                        <div className={cn("rounded-full border font-bold", template.refColor, "border-current/25", compactSquare ? "px-2 py-0.5 text-[10px]" : "px-3 py-1 text-xs")}>
-                            {verse.verseKey}
-                        </div>
-                    </div>
 
-                    <div className={cn("flex min-h-0 flex-col items-center justify-center overflow-hidden text-center", compactSquare ? "gap-2 py-2" : isStory ? "gap-7 py-8" : "gap-5 py-5")}>
-                        <div className="flex w-full items-center gap-3">
-                            <span className={cn("h-px flex-1", template.accent, "opacity-55")} />
-                            <span className={cn("font-amiri", template.refColor, compactSquare ? "text-base" : "text-xl")}>﷽</span>
-                            <span className={cn("h-px flex-1", template.accent, "opacity-55")} />
-                        </div>
+                        <div ref={bodyEl} className="flex min-h-0 flex-col justify-center">
+                            <div ref={textEl} className={cn("flex shrink-0 flex-col items-center text-center", compact ? "gap-2 py-2" : isStory ? "gap-7 py-8" : "gap-5 py-5")}>
+                                <div className="flex w-full items-center gap-3">
+                                    <span className={cn("h-px flex-1", template.accent, "opacity-55")} />
+                                    <span className={cn("font-amiri", template.refColor, compact ? "text-base" : "text-xl")}>﷽</span>
+                                    <span className={cn("h-px flex-1", template.accent, "opacity-55")} />
+                                </div>
 
-                        <p
-                            className={cn("w-full text-right font-amiri font-normal", template.arabicColor)}
-                            dir="rtl"
-                            style={{
-                                lineHeight: compactSquare ? 1.75 : isStory ? 2.05 : 2,
-                                fontSize: compactSquare
-                                    ? "1.18rem"
-                                    : isStory
-                                        ? longArabic ? "1.75rem" : "2.25rem"
-                                        : longArabic ? "1.45rem" : "2.15rem",
-                            }}
-                        >
-                            {verse.arabic}
-                        </p>
-
-                        {showTranslation && (
-                            <>
-                                <div className={cn("rounded-full", template.accent, "opacity-75", compactSquare ? "h-0.5 w-10" : "h-1 w-14")} />
                                 <p
-                                    className={cn("font-medium", template.translationColor, compactSquare ? "max-w-[96%] leading-[1.45]" : "max-w-[92%] leading-relaxed")}
+                                    className={cn("w-full text-right font-amiri font-normal", template.arabicColor)}
+                                    dir="rtl"
                                     style={{
-                                        fontSize: compactSquare ? "0.68rem" : longTranslation ? "0.95rem" : "1.08rem",
+                                        lineHeight: compact ? 1.75 : 2,
+                                        fontSize: isStory ? (longArabic ? "1.75em" : "2.25em") : longArabic ? "1.45em" : "2.15em",
                                     }}
                                 >
-                                    &ldquo;{displayTranslation}&rdquo;
+                                    {verse.arabic}
                                 </p>
-                                {compactSquare && verse.translation.length > 430 && (
-                                    <p className={cn("text-[9px] font-semibold uppercase tracking-[0.18em]", template.mutedColor)}>
-                                        Full translation on Mastering Quran
-                                    </p>
-                                )}
-                            </>
-                        )}
-                    </div>
 
-                    <div className="flex items-end justify-between gap-4">
-                        <div>
-                            <p className={cn("font-amiri", template.refColor, compactSquare ? "text-base" : "text-xl")} dir="rtl">{verse.surahName}</p>
-                            <p className={cn("mt-1 font-semibold", template.mutedColor, compactSquare ? "text-[10px]" : "text-xs")}>{verse.surahEnglish}</p>
+                                {showTranslation && (
+                                    <>
+                                        <div className={cn("rounded-full", template.accent, "opacity-75", compact ? "h-0.5 w-10" : "h-1 w-14")} />
+                                        <p
+                                            className={cn("max-w-[96%] font-medium", template.translationColor, compact ? "leading-[1.45]" : "leading-relaxed")}
+                                            style={{ fontSize: longTranslation ? "0.95em" : "1.08em" }}
+                                        >
+                                            &ldquo;{verse.translation}&rdquo;
+                                        </p>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                        <div className="text-right">
-                            <p className={cn("uppercase tracking-[0.22em]", template.mutedColor, compactSquare ? "text-[8px]" : "text-[10px]")}>masteringquran.com</p>
-                            <p className={cn("mt-1", template.mutedColor, compactSquare ? "text-[10px]" : "text-xs")}>{verse.translator}</p>
+
+                        <div className="flex items-end justify-between gap-4">
+                            <div>
+                                <p className={cn("font-amiri", template.refColor, compact ? "text-base" : "text-xl")} dir="rtl">{verse.surahName}</p>
+                                <p className={cn("whitespace-nowrap mt-1 font-semibold", template.mutedColor, compact ? "text-[10px]" : "text-xs")}>{verse.surahEnglish}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className={cn("whitespace-nowrap uppercase tracking-[0.22em]", template.mutedColor, compact ? "text-[8px]" : "text-[10px]")}>masteringquran.com</p>
+                                <p className={cn("whitespace-nowrap mt-1", template.mutedColor, compact ? "text-[10px]" : "text-xs")}>{verse.translator}</p>
+                            </div>
                         </div>
                     </div>
                 </div>

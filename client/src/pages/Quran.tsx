@@ -1,3 +1,4 @@
+import { publicPageUrl, shareText } from "@/lib/share-file";
 import { TRANSLATIONS, TAFSIRS } from "@/lib/study-editions";
 import { lazy, Suspense, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useSearchParams, useParams, useNavigate, Link } from "react-router-dom";
@@ -675,15 +676,11 @@ export default function Quran() {
     // Share verse
     const shareVerse = (verse: VerseData, surahName: string) => {
         const text = `${surahName} ${verse.number}\n${verse.english}`;
-        if (navigator.share) {
-            navigator.share({
-                title: "Quran Verse",
-                text: text,
-                url: window.location.href
-            }).catch(() => copyVerseToClipboard(verse, surahName));
-        } else {
-            copyVerseToClipboard(verse, surahName);
-        }
+        shareText("Quran Verse", text, publicPageUrl())
+            .then((result) => {
+                if (result === "unsupported") copyVerseToClipboard(verse, surahName);
+            })
+            .catch(() => copyVerseToClipboard(verse, surahName));
     };
 
     return (

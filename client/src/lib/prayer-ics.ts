@@ -1,6 +1,7 @@
 // Prayer reminders as a calendar file: the phone's own calendar raises an alert at
 // each prayer time, so reminders work with the site closed and need no server.
 import { PRAYER_LABELS, addDays, timesFor, ymdInZone, type Place, type PrayerKey, type PrayerSettings } from "@/lib/prayer";
+import { saveCalendar } from "@/lib/share-file";
 
 const REMINDER_PRAYERS: PrayerKey[] = ["fajr", "dhuhr", "asr", "maghrib", "isha"];
 
@@ -62,12 +63,5 @@ export function prayerCalendar(place: Place, settings: PrayerSettings, days = 30
 
 export function downloadPrayerCalendar(place: Place, settings: PrayerSettings) {
     const blob = new Blob([prayerCalendar(place, settings)], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `prayer-times-${(place.slug || place.name).toLowerCase().replace(/[^a-z0-9]+/g, "-")}.ics`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return saveCalendar(blob, `prayer-times-${(place.slug || place.name).toLowerCase().replace(/[^a-z0-9]+/g, "-")}.ics`);
 }
