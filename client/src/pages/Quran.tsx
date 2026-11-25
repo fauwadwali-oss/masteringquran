@@ -627,13 +627,12 @@ export default function Quran() {
         recited && !loading ? `ayah-${recited.surahNumber}-${recited.number}` : null,
         verses,
         verseBarRef,
-        // Opening a link to a verse shows that verse, not the one being recited.
-        !target?.ayah,
+        target?.ayah ? `${target.surah}:${target.ayah}` : null,
     );
 
     const playVerse = (verseIndex: number) => {
         // Pausing leaves the page where it is.
-        if (!(verseIndex === currentPlayingVerse && isPlaying)) startFollow();
+        if (!(verseIndex === currentPlayingVerse && isPlaying)) startFollow(verseIndex === currentPlayingVerse);
         if (verseIndex === currentPlayingVerse) {
             player.toggle();
             return;
@@ -644,12 +643,12 @@ export default function Quran() {
     const togglePlayPause = () => playVerse(currentPlayingVerse ?? 0);
 
     const playNext = () => {
-        startFollow();
+        startFollow(false);
         player.next();
     };
 
     const playPrevious = () => {
-        startFollow();
+        startFollow(false);
         player.previous();
     };
 

@@ -31,9 +31,9 @@ export function useFollowRecitation(
     verseId: string | null,
     ready: unknown,
     barRef: { current: HTMLElement | null },
-    startFollowing: boolean,
+    openedVerse: string | null,
 ) {
-    const following = useRef(startFollowing);
+    const following = useRef(!openedVerse);
     const [away, setAway] = useState(false);
     const id = useRef(verseId);
     id.current = verseId;
@@ -45,6 +45,8 @@ export function useFollowRecitation(
     const settleTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
     const target = () => (id.current ? document.getElementById(id.current) : null);
+
+    const settleRef = useRef<() => void>(() => undefined);
 
     const bringIntoView = useCallback((force = false) => {
         const el = target();
@@ -58,6 +60,8 @@ export function useFollowRecitation(
         ours.current = true;
         const smooth = !reducedMotion() && !document.hidden && Math.abs(distance) < window.innerHeight * 2;
         window.scrollBy({ top: distance, behavior: smooth ? "smooth" : "instant" });
+        // At the end of the page nothing may move, and then no scroll event would clear this.
+        settleRef.current();
     }, [barRef]);
 
     const settle = useCallback(() => {
@@ -73,13 +77,23 @@ export function useFollowRecitation(
             const box = el.getBoundingClientRect();
             if (wasOurs) {
                 // Verses drawn during the scroll can change height, so land on the right spot.
-                if (following.current && !isInView(box, area)) bringIntoView(true);
+                if (following.current && !isInView(box, area)) {
+                    const max = document.documentElement.scrollHeight - window.innerHeight;
+                    if (window.scrollY < max - 1 && window.scrollY > 0) bringIntoView(true);
+                }
                 return;
             }
             following.current = isInView(box, area);
             setAway(!following.current);
         }, SETTLE_MS);
     }, [barRef, bringIntoView]);
+
+    settleRef.current = settle;
+
+    // Opening a link to a verse shows that verse, not the one being recited.
+    useEffect(() => {
+        if (openedVerse) following.current = false;
+    }, [openedVerse]);
 
     useEffect(() => {
         const byReader = () => {
@@ -150,12 +164,13 @@ export function useFollowRecitation(
     }, [bringIntoView]);
 
     /** The reader pressed play on a verse: follow from there, without moving a verse already in view. */
-    const startFollow = useCallback(() => {
+    const startFollow = useCallback((sameVerse: boolean) => {
         following.current = true;
         readerScrolling.current = false;
-        keepIfVisible.current = true;
+        // Another verse is brought into view once the player has moved to it.
+        keepIfVisible.current = !sameVerse;
         setAway(false);
-        bringIntoView();
+        if (sameVerse) bringIntoView();
     }, [bringIntoView]);
 
     const returnToVerse = useCallback(() => {

@@ -58,9 +58,7 @@ export function checkHadith(text: string, sources: AskSource[]): { citation: Cit
     const known = new Map<string, AskSource & { kind: "hadith" }>();
     for (const s of sources) {
         if (s.kind !== "hadith") continue;
-        const c = findCitations(s.citation).find((x) => x.kind === "hadith");
-        if (!c) continue;
-        known.set(hadithKey(c.to), s);
+        for (const c of findCitations(s.citation)) if (c.kind === "hadith") known.set(hadithKey(c.to), s);
     }
     const seen = new Set<string>();
     const out: { citation: Citation; source?: AskSource & { kind: "hadith" } }[] = [];

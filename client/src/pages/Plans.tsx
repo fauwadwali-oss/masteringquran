@@ -8,7 +8,6 @@ import SEO from "@/components/SEO";
 import { READING_PLANS, ReadingPlan, PlanSegment, getPlanById } from "@/lib/plans";
 import { useAuth } from "@/contexts/AuthContext";
 import { getLocalProgress, startPlan, markDayComplete, resetPlan, syncPlan, PlanProgress } from "@/lib/queries/plans";
-import { mergeProgress } from "@/lib/plan-progress";
 import RequireAuth from "@/components/RequireAuth";
 
 function PlanDetail({ plan, onBack }: { plan: ReadingPlan; onBack: () => void }) {
@@ -34,8 +33,7 @@ function PlanDetail({ plan, onBack }: { plan: ReadingPlan; onBack: () => void })
             try {
                 const merged = await syncPlan(userId, plan.id, () => latest.current);
                 if (!mounted.current) return;
-                // A day marked while this was saving is still in what is shown; its own sync follows.
-                show(mergeProgress(latest.current, merged));
+                show(merged);
                 setSync("saved");
             } catch {
                 if (mounted.current) setSync("offline");
@@ -190,6 +188,7 @@ function PlanLink({ seg }: { seg: PlanSegment }) {
 }
 
 function PlansInner() {
+    const { user } = useAuth();
     // ?plan=<id> opens a plan directly (e.g. the Ramadan page links to ?plan=ramadan).
     const [params, setParams] = useSearchParams();
     const selectedId = params.get("plan");
@@ -205,7 +204,7 @@ function PlansInner() {
             <section className="py-12 px-6">
                 <div className="max-w-3xl mx-auto">
                     {selected ? (
-                        <PlanDetail key={selected.id} plan={selected} onBack={() => setSelectedId(null)} />
+                        <PlanDetail key={`${user?.id}-${selected.id}`} plan={selected} onBack={() => setSelectedId(null)} />
                     ) : (
                         <>
                             <div className="text-center mb-8 space-y-2">

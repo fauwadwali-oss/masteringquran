@@ -2,7 +2,7 @@
 // reader's account so it follows them to other devices.
 
 import { supabase } from "@/lib/supabase";
-import { mergeProgress, sameProgress, type PlanProgress } from "@/lib/plan-progress";
+import { mergeProgress, type PlanProgress } from "@/lib/plan-progress";
 
 export type { PlanProgress };
 
@@ -48,25 +48,20 @@ export function resetPlan(userId: string, current: PlanProgress): PlanProgress {
     return progress;
 }
 
-/** Combines `shown` with the account's copy, saves the result in both places, and returns it. */
+/** Combines `shown` with the account's copy (the database merges, so devices cannot overwrite each other). */
 export async function syncPlan(userId: string, planId: string, shown: () => PlanProgress | null): Promise<PlanProgress | null> {
+    const sent = shown();
     const { data, error } = await supabase
-        .from("mq_plan_progress")
-        .select("plan_id, started_at, completed_days, reset_at")
-        .eq("user_id", userId)
-        .eq("plan_id", planId)
+        .rpc("mq_sync_plan", {
+            p_plan_id: planId,
+            p_started_at: sent?.started_at ?? null,
+            p_completed_days: sent?.completed_days ?? [],
+            p_reset_at: sent?.reset_at ?? null,
+        })
         .maybeSingle();
     if (error) throw error;
-    const remote = (data as PlanProgress | null) ?? null;
-    // Read what is shown only now, so a day marked during the request is kept.
-    const merged = mergeProgress(shown(), remote);
-    if (!merged) return null;
-    setLocalProgress(userId, merged);
-    if (!sameProgress(merged, remote)) {
-        const { error: saveError } = await supabase
-            .from("mq_plan_progress")
-            .upsert({ user_id: userId, ...merged, updated_at: new Date().toISOString() }, { onConflict: "user_id,plan_id" });
-        if (saveError) throw saveError;
-    }
+    // A day marked during the request is kept; its own sync follows.
+    const merged = mergeProgress(shown(), (data as PlanProgress | null) ?? null);
+    if (merged) setLocalProgress(userId, merged);
     return merged;
 }

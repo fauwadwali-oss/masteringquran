@@ -453,7 +453,7 @@ function SourceList({ content, own, all }: { content: string; own: AskSource[]; 
                     <li key={citation.to}>
                         <Link to={citation.to} className="font-medium text-emerald-700 underline underline-offset-2 dark:text-emerald-300">{citation.text}</Link>
                         <span className={`block ${source ? "text-slate-500 dark:text-slate-400" : "text-amber-700 dark:text-amber-300"}`}>
-                            {source ? source.grading ?? "Looked up" : "Not looked up for this answer. Check it before relying on it."}
+                            {source ? `${source.grading ?? "Looked up"}${own.includes(source) ? "" : " (looked up earlier in this chat)"}` : "Not looked up for this answer. Check it before relying on it."}
                         </span>
                     </li>
                 ))}
@@ -526,6 +526,9 @@ function LinkButton({ to, label }: { to: string; label: string }) {
 
 export default function Ask() {
     const { user, loading, configured } = useAuth();
+    useEffect(() => {
+        if (!loading && !user) chatStore.set({ userId: null, messages: [], loading: false, error: null });
+    }, [loading, user]);
     const [showLogin, setShowLogin] = useState(false);
 
     if (loading) {

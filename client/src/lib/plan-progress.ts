@@ -21,9 +21,3 @@ export function mergeProgress(a: PlanProgress | null, b: PlanProgress | null): P
         reset_at,
     };
 }
-
-export const sameProgress = (a: PlanProgress | null, b: PlanProgress | null) =>
-    !!a && !!b &&
-    a.completed_days.join() === b.completed_days.join() &&
-    Date.parse(a.started_at ?? "0") === Date.parse(b.started_at ?? "0") &&
-    Date.parse(a.reset_at ?? "0") === Date.parse(b.reset_at ?? "0");
