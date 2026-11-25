@@ -59,6 +59,7 @@ export default function ArabicAudioButton({
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
     const spoken = useRef(0);
+    const speaking = useRef(false);
 
     useEffect(() => {
         return () => {
@@ -66,7 +67,7 @@ export default function ArabicAudioButton({
             if (audioRef.current) {
                 audioRef.current.pause();
             }
-            if (isAndroidApp() && spoken.current) void arabicSpeech.stop().catch(() => undefined);
+            if (speaking.current) void arabicSpeech.stop().catch(() => undefined);
             if (utteranceRef.current) {
                 window.speechSynthesis.cancel();
             }
@@ -83,6 +84,7 @@ export default function ArabicAudioButton({
         }
         if (isAndroidApp()) {
             spoken.current++;
+            speaking.current = false;
             void arabicSpeech.stop().catch(() => undefined);
         }
         utteranceRef.current = null;
@@ -125,13 +127,18 @@ export default function ArabicAudioButton({
         if (isAndroidApp()) {
             // The Android WebView has no speech, so the phone's own voice reads it.
             const id = ++spoken.current;
+            speaking.current = true;
             setPlaying(true);
             arabicSpeech.speak({ text, rate })
                 .catch((e: { code?: string }) => {
                     if (id !== spoken.current) return;
                     toast.error(e?.code === "no-voice" ? "Your phone has no Arabic voice. Add one in Settings, under Text-to-speech." : "The pronunciation could not be played.");
                 })
-                .finally(() => { if (id === spoken.current) setPlaying(false); });
+                .finally(() => {
+                    if (id !== spoken.current) return;
+                    speaking.current = false;
+                    setPlaying(false);
+                });
             return;
         }
         if (typeof window === "undefined" || !("speechSynthesis" in window)) {

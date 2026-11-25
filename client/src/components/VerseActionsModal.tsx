@@ -90,7 +90,7 @@ export default function VerseActionsModal({ surah, ayah, onClose }: Props) {
     return (
         <>
             <Dialog open={!showLogin} onOpenChange={(open) => { if (!open) onClose(); }}>
-                <DialogContent className="z-[100] max-w-md gap-0 overflow-hidden rounded-2xl border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-slate-900">
+                <DialogContent className="z-[100] gap-0 sm:max-w-md overflow-hidden rounded-2xl border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-slate-900">
                     <div className="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
                         <DialogDescription className="text-xs text-slate-500">Quran {verseKey}</DialogDescription>
                         <DialogTitle className="text-base font-semibold text-slate-900 dark:text-white">Notes &amp; memorization</DialogTitle>

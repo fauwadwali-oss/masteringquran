@@ -15,6 +15,7 @@ public class ArabicSpeechPlugin extends Plugin {
 
     private TextToSpeech tts;
     private boolean ready;
+    private boolean initFailed;
     private PluginCall current;
     private int next;
 
@@ -23,7 +24,11 @@ public class ArabicSpeechPlugin extends Plugin {
         finish(null);
         current = call;
         if (tts == null) {
-            tts = new TextToSpeech(getContext(), this::onInit);
+            // Without a speech engine onInit runs, failing, before the constructor returns.
+            initFailed = false;
+            TextToSpeech created = new TextToSpeech(getContext(), this::onInit);
+            if (initFailed) created.shutdown();
+            else tts = created;
         } else if (ready) {
             start();
         }
@@ -38,11 +43,13 @@ public class ArabicSpeechPlugin extends Plugin {
 
     private synchronized void onInit(int status) {
         if (status != TextToSpeech.SUCCESS) {
+            initFailed = true;
             if (tts != null) tts.shutdown();
             tts = null;
             finish("no-voice");
             return;
         }
+        if (tts == null) return; // The app closed meanwhile.
         ready = true;
         tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override

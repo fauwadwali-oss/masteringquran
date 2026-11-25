@@ -18,6 +18,7 @@ function Inner() {
 
     useEffect(() => {
         if (!user) return;
+        setFailed(false);
         listAllNotes(user.id).then(setNotes).catch(() => setFailed(true)).finally(() => setLoading(false));
     }, [user]);
 

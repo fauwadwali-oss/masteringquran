@@ -53,7 +53,7 @@ export default function ReportAnswer({ question, answer }: { question: string; a
                 <DialogContent
                     // Keep clear of the iPhone Duo's right status column (safe-area inset is 0 elsewhere).
                     style={{ width: "min(28rem, calc(100% - 2rem - env(safe-area-inset-right)))", marginLeft: "calc(env(safe-area-inset-right) / -2)" }}
-                    className="z-[100] max-h-[85dvh] max-w-md overflow-y-auto rounded-2xl border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+                    className="z-[100] max-h-[85dvh] sm:max-w-md overflow-y-auto rounded-2xl border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
                 >
                     <DialogTitle>{sent ? "Report sent" : "Report this answer"}</DialogTitle>
                     <DialogDescription>

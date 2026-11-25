@@ -28,6 +28,7 @@ export default function Privacy() {
               <li><strong>Account information.</strong> If you sign in, we store your email address, Supabase user ID, and (if you choose one) a securely hashed password so bookmarks, notes, memorization progress, playlists, and daily reminder settings can sync across your devices. Reading-plan progress, bookmark collections, and the zakat form draft stay on your device.</li>
               <li><strong>Content you save.</strong> We store the bookmarks, notes, learning progress, memorization status, zakat records, and reminder preferences you choose to save.</li>
               <li><strong>Optional location.</strong> Prayer times and Qibla can use your device location when you grant permission. They are calculated on your device; we do not receive your coordinates.</li>
+              <li><strong>Optional calendar and photos.</strong> If you choose to add prayer times, the iPhone app adds them to your calendar and reads nothing from it on iOS 17 and later. If you save a verse picture, it is added to your photos. Both stay on your device and in your own accounts.</li>
               <li><strong>Messages and support.</strong> If you email us or submit a form, we receive your email address and the contents of your message.</li>
               <li><strong>Sign-in activity.</strong> We record the steps of signing up, signing in, and resetting a password (for example, which option you chose and whether it worked) to find and fix problems. These records do not include your email address or password.</li>
               <li><strong>Ask Wali questions.</strong> When you use Ask Wali, your question and the recent messages in that conversation are sent to Anthropic to write the answer. Your name and email are not included. We do not save your questions unless you report an answer; we store how many you asked each day to apply the daily limit.</li>
@@ -61,7 +62,7 @@ export default function Privacy() {
           <section>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Your choices</h2>
             <p>You can sign out at any time and remove saved items from the app where supported. You can permanently delete your account and its data at <a href="/account" className="text-blue-600 dark:text-blue-400 hover:underline">masteringquran.com/account</a> or in the app under your profile menu, then Account. You can also request deletion by emailing{" "}
-              <a href="mailto:fauwad@nusratwaliventures.com" className="text-blue-600 dark:text-blue-400 hover:underline">fauwad@nusratwaliventures.com</a>. You can also deny location and notification permissions in your device settings.
+              <a href="mailto:fauwad@nusratwaliventures.com" className="text-blue-600 dark:text-blue-400 hover:underline">fauwad@nusratwaliventures.com</a>. You can also deny location, calendar, and photo permissions in your device settings.
             </p>
           </section>
 

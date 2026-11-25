@@ -32,6 +32,7 @@ function Inner() {
 
     useEffect(() => {
         if (!user) return;
+        setFailed(false);
         Promise.all([listAll(user.id), getDueForReview(user.id)]).then(([allRows, dueRows]) => {
             setAll(allRows);
             setDue(dueRows);

@@ -59,7 +59,7 @@ export default function CompareTranslationsModal({ verseKey, onClose }: Props) {
 
     return (
         <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-            <DialogContent className="z-[100] flex max-h-[85dvh] max-w-3xl flex-col gap-0 overflow-hidden rounded-2xl border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-slate-900">
+            <DialogContent className="z-[100] flex max-h-[85dvh] flex-col sm:max-w-3xl gap-0 overflow-hidden rounded-2xl border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-slate-900">
                 <div className="border-b border-slate-200 px-6 py-4 dark:border-slate-800">
                     <DialogDescription className="text-xs uppercase tracking-wider text-slate-500">Compare translations</DialogDescription>
                     <DialogTitle className="text-lg font-semibold text-slate-900 dark:text-white">Quran {verseKey}</DialogTitle>

@@ -141,7 +141,7 @@ export default function Zakat() {
                 ? GOLD_NISAB_G * gold_price_per_gram
                 : SILVER_NISAB_G * silver_price_per_gram;
 
-        const meets_nisab = total_zakatable >= nisab_threshold;
+        const meets_nisab = nisab_threshold > 0 && total_zakatable >= nisab_threshold;
         const zakat_due = meets_nisab ? total_zakatable * ZAKAT_RATE : 0;
 
         return {
@@ -266,7 +266,11 @@ export default function Zakat() {
                             <Field
                                 label="Currency"
                                 value={form.currency}
-                                onChange={(v) => setForm((f) => ({ ...f, currency: v.toUpperCase().slice(0, 3) }))}
+                                onChange={(v) => {
+                                    // Prices belong to a currency: keeping them would give a wrong nisab.
+                                    setPriceSource(null);
+                                    setForm((f) => ({ ...f, currency: v.toUpperCase().slice(0, 3), gold_price: "", silver_price: "" }));
+                                }}
                                 placeholder="USD"
                             />
                             <Field
@@ -331,11 +335,16 @@ export default function Zakat() {
                             <Stat label={`Nisab (${snapshot.nisab_basis})`} value={fmt(snapshot.nisab_threshold)} />
                             <Stat
                                 label="Zakat due (2.5%)"
-                                value={snapshot.meets_nisab ? fmt(snapshot.zakat_due) : "None"}
+                                value={snapshot.nisab_threshold <= 0 ? "Enter prices" : snapshot.meets_nisab ? fmt(snapshot.zakat_due) : "None"}
                                 highlight={snapshot.meets_nisab}
                             />
                         </div>
-                        {!snapshot.meets_nisab && (
+                        {snapshot.nisab_threshold <= 0 && (
+                            <p role="status" className="text-sm text-amber-700 dark:text-amber-300 pt-2">
+                                Enter today's {form.nisab_basis} price in {form.currency || "your currency"} to work out the nisab.
+                            </p>
+                        )}
+                        {snapshot.nisab_threshold > 0 && !snapshot.meets_nisab && (
                             <p className="text-sm text-slate-600 dark:text-slate-400 pt-2">
                                 Your wealth is below the nisab threshold this year, so no zakat is obligatory.
                                 Optional <em>sadaqah</em> (charity) remains deeply rewarded.
@@ -343,7 +352,7 @@ export default function Zakat() {
                         )}
 
                         <div className="flex gap-2 flex-wrap pt-2">
-                            <Button onClick={onSave} disabled={saving || !user}>
+                            <Button onClick={onSave} disabled={saving || !user || snapshot.nisab_threshold <= 0}>
                                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                                 {user ? "Save this calculation" : "Sign in to save"}
                             </Button>

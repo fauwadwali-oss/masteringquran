@@ -116,6 +116,7 @@ export default function Quiz() {
         setMode(null);
         setScore({ right: 0, wrong: 0 });
         setQ(null);
+        setLoading(true);
     };
 
     if (!mode) {

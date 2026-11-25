@@ -73,6 +73,10 @@ export default function Topics() {
     const [selected, setSelected] = useState<Topic | null>(null);
     const [verses, setVerses] = useState<VerseFetched[]>([]);
     const [loading, setLoading] = useState(false);
+    const open = (topic: Topic) => {
+        setLoading(true);
+        setSelected(topic);
+    };
     const [search, setSearch] = useState("");
 
     useEffect(() => {
@@ -134,7 +138,7 @@ export default function Topics() {
                                 <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
                             </div>
                         ) : verses.length === 0 ? (
-                            <LoadFailed onRetry={() => setSelected({ ...selected })} />
+                            <LoadFailed onRetry={() => open({ ...selected })} />
                         ) : (
                             <div className="space-y-4">
                                 {verses.length < selected.verses.length && <p role="status" className="text-center text-sm text-amber-700 dark:text-amber-300">Some verses could not be loaded.</p>}
@@ -205,8 +209,8 @@ export default function Topics() {
                                     key={t.id}
                                     role="button"
                                     tabIndex={0}
-                                    onClick={() => setSelected(t)}
-                                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSelected(t)}
+                                    onClick={() => open(t)}
+                                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && open(t)}
                                     className={`cursor-pointer border-2 border-slate-200 dark:border-slate-700 ${c.border} dark:${c.border} bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:-translate-y-1`}
                                 >
                                     <CardContent className="p-5 space-y-3">

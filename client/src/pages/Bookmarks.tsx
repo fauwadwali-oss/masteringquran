@@ -24,6 +24,7 @@ function Inner() {
 
     useEffect(() => {
         if (!user) return;
+        setFailed(false);
         listBookmarks(user.id).then(setItems).catch(() => setFailed(true)).finally(() => setLoading(false));
         try {
             setCollections(JSON.parse(localStorage.getItem(`mq_bookmark_collections_${user.id}`) || "{}"));

@@ -35,6 +35,8 @@ class CalendarAddPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     private func save(_ call: CAPPluginCall) {
+        // The store was made before access was given.
+        store.reset()
         guard let calendar = store.defaultCalendarForNewEvents else {
             call.reject("No calendar", "failed")
             return

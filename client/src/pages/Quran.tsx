@@ -223,9 +223,10 @@ export default function Quran() {
                     kept.push(b); // Try again next time.
                 }
             }
+            // Uploaded ones leave this device even if the reader signed out meanwhile.
             if (local.length) {
                 writeLocalBookmarks(kept);
-                if (kept.length < local.length) toast.success("Your bookmarks are saved to your account");
+                if (active && kept.length < local.length) toast.success("Your bookmarks are saved to your account");
             }
             try {
                 const rows = await listBookmarks(user.id);
@@ -235,7 +236,9 @@ export default function Quran() {
                     ...kept,
                 ]);
             } catch {
-                if (active) toast.error("Your bookmarks could not be loaded");
+                if (!active) return;
+                setBookmarks(kept);
+                toast.error("Your bookmarks could not be loaded");
             }
         })();
         return () => { active = false; };
