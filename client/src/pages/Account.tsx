@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LoginModal from "@/components/LoginModal";
 import SEO from "@/components/SEO";
+import { isIosApp } from "@/lib/social-auth";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Account() {
@@ -59,6 +60,11 @@ export default function Account() {
                             <p className="text-sm">
                                 The same sign-in works on nusratwaliventures.com, so a profile there is deleted too. Sign-in diagnostics are kept without any link to you.
                             </p>
+                            {user?.identities?.some((i) => i.provider === "apple") && !isIosApp() && (
+                                <p className="text-sm">
+                                    This account uses Sign in with Apple. Delete it in the iPhone app to disconnect Apple at the same time. If you delete it here, we will show you how to disconnect Apple yourself.
+                                </p>
+                            )}
                             {loading ? (
                                 <Loader2 className="h-5 w-5 animate-spin" />
                             ) : user ? (

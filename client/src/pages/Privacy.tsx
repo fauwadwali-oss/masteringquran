@@ -30,7 +30,8 @@ export default function Privacy() {
               <li><strong>Optional location.</strong> Prayer times and Qibla can use your device location when you grant permission. They are calculated on your device; we do not receive your coordinates.</li>
               <li><strong>Messages and support.</strong> If you email us or submit a form, we receive your email address and the contents of your message.</li>
               <li><strong>Sign-in activity.</strong> We record the steps of signing up, signing in, and resetting a password (for example, which option you chose and whether it worked) to find and fix problems. These records do not include your email address or password.</li>
-              <li><strong>Ask Wali questions.</strong> When you use Ask Wali, your question and the recent messages in that conversation are sent to Anthropic to write the answer. Your name and email are not included. We do not save your questions; we store how many you asked each day to apply the daily limit.</li>
+              <li><strong>Ask Wali questions.</strong> When you use Ask Wali, your question and the recent messages in that conversation are sent to Anthropic to write the answer. Your name and email are not included. We do not save your questions unless you report an answer; we store how many you asked each day to apply the daily limit.</li>
+              <li><strong>Reported answers.</strong> If you report an Ask Wali answer, we save the question, the answer, your reason, any details you add, and your user ID, and receive a copy by email, so we can review it. The saved report is deleted with your account; email us to have the emailed copy deleted too.</li>
               <li><strong>Daily reminders.</strong> If you turn them on, we store your email address or a push notification address, your timezone, and your delivery time.</li>
               <li><strong>Usage data.</strong> We use Google Analytics to count page views, referrers, and some actions, and a page-speed script from msdrills.com, a site we operate, to measure loading speed. The iOS and Android apps do not include either. We do not show ads or sell personal information.</li>
               <li><strong>Server logs.</strong> Our host (Cloudflare) keeps standard access logs (IP, user agent, request URL) for security and performance.</li>
@@ -50,7 +51,7 @@ export default function Privacy() {
               <li><strong>Supabase</strong> — authentication and database for saved app features.</li>
               <li><strong>Google and Apple</strong>: sign-in, if you choose them. They share your email address (Apple can hide it) and, if you allow it, your name.</li>
               <li><strong>Anthropic</strong>: writes Ask Wali answers (the Claude AI model).</li>
-              <li><strong>Resend</strong>: sends sign-in, welcome, and daily verse emails.</li>
+              <li><strong>Resend</strong>: sends sign-in, welcome, and daily verse emails, and tells us about reported answers.</li>
               <li><strong>Quran.com, AlQuran.cloud, Islamic Network, and jsDelivr</strong>: Quran text, recitation, tafsir, hadith, and study content.</li>
               <li><strong>metals.dev</strong>: gold and silver prices for the zakat calculator.</li>
               <li><strong>Google Analytics</strong>: usage statistics on the website (not in the apps).</li>
@@ -66,7 +67,7 @@ export default function Privacy() {
 
           <section>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Children</h2>
-            <p>The Site is not directed at children under 13, and we do not knowingly collect personal information from children.</p>
+            <p>The Service is not directed at children under 13, and we do not knowingly collect personal information from children.</p>
           </section>
 
           <section>

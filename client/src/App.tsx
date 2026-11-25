@@ -63,6 +63,7 @@ const LearnWriting = lazy(() => import("./pages/learn/Writing"));
 const LearnGraduation = lazy(() => import("./pages/learn/Graduation"));
 const Tribute = lazy(() => import("./pages/Tribute"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const Support = lazy(() => import("./pages/Support"));
 const Terms = lazy(() => import("./pages/Terms"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -127,6 +128,7 @@ function App() {
                       <Route path="/topics" element={<Topics />} />
                       <Route path="/about" element={<About />} />
                       <Route path="/faq" element={<FAQ />} />
+                      <Route path="/support" element={<Support />} />
                       <Route path="/sources" element={<Sources />} />
                       <Route path="/auth/callback" element={<AuthCallback />} />
                       <Route path="/auth/reset-password" element={<ResetPassword />} />
