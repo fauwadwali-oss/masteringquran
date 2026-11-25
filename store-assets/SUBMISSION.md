@@ -19,8 +19,10 @@ Background audio: recitation and playlists continue while the phone is locked, w
 - Choose the new build instead of 41
 - App Privacy answers match `ios/App/App/PrivacyInfo.xcprivacy`: name, email, user ID, other user content, other financial info (zakat), product interaction (sign-in steps), all linked and not used for tracking; search history not linked
 - Availability: leave out mainland China (religious content and AI need permits there)
+- Support URL: https://masteringquran.com/support
 - Age rating questions
 
 ## Google Play
+- AI-generated content: readers report an answer in the app with Report answer (saved in mq_ai_reports and emailed)
 - Data safety: same data as above; account deletion URL https://masteringquran.com/account
 - Foreground service (media playback) was declared Oct 28 2026; update the description to say "Quran recitation and playlists"

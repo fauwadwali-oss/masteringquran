@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Send, Sparkles, Loader2, AlertCircle, AlertTriangle, CheckCircle2, PenLine, ShieldCheck, Wrench, BookOpen, ScrollText, Search, Lightbulb, Lock, Library, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
+import ReportAnswer from "@/components/ReportAnswer";
 import LoginModal from "@/components/LoginModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiUrl } from "@/lib/api";
@@ -256,6 +257,7 @@ function AskInner() {
                                         <LinkButton to="/quran" label="Continue in Quran" />
                                         <LinkButton to="/topics" label="Related topics" />
                                         <LinkButton to="/share" label="Make a verse card" />
+                                        {!(loading && i === messages.length - 1) && <ReportAnswer question={messages[i - 1]?.content ?? ""} answer={m.content} />}
                                     </div>
                                 )}
                             </div>
